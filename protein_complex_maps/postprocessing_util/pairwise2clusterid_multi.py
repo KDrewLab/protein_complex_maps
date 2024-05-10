@@ -3,6 +3,8 @@
 import argparse
 import itertools as it
 import pandas as pd
+import multiprocessing as mp
+from multiprocessing import Manager
 
 def main():
 
@@ -25,6 +27,8 @@ def main():
                                     help="Names of columns for ids in input_feature_matrix")
     parser.add_argument("--output_filename", action="store", dest="out_filename", required=True,
                                     help="Output filename ")
+    parser.add_argument("--procs", action="store", type=int, dest="procs", required=False, default=1,
+                                    help="Number processors to use (int), default=1)")
     args = parser.parse_args()
 
     clusters = []
@@ -43,6 +47,7 @@ def main():
     print "read input files"
     fout = open(args.out_filename,"wb")
 
+    feature_table = None
     if args.feature_matrix != None:
         #kdrew: read in feature matrix and set the id columns to be strings
         feature_table = pd.read_csv(args.feature_matrix,sep=args.sep, dtype = {args.id_columns[0]:str,args.id_columns[1]:str})
@@ -62,36 +67,80 @@ def main():
 
     print "Wrote Header"
 
-    for clustid, cluster in enumerate(clusters):
-        for prot_pair in it.combinations(cluster,2):
-            id1 = "%s_%s" % (clustid, prot_pair[0])
-            id2 = "%s_%s" % (clustid, prot_pair[1])
-            try:
-                score = pairwise_interactions[frozenset([prot_pair[0],prot_pair[1]])]
-            except KeyError:
-                continue
-            if args.feature_matrix != None:
-                out_list = []
-                ids_str_order = "%s" % sorted([prot_pair[0],prot_pair[1]])
-                for field in args.features:
-                    if ':' in field:
-                        r1 = int(field.split(':')[0])
-                        r2 = int(field.split(':')[1])
-                        out_list.append(str( (feature_table.loc[ids_str_order][feature_table.columns.values[r1:r2]] != 0.0).any() ) )
-                    elif args.write_value:
-                        #out_list.append(str(feature_table[feature_table['frozenset_ids_str_order'] == ids_str_order][field].values[0]))
-                        out_list.append(str( feature_table.loc[ids_str_order][field] ) )
-                    else:
-                        #kdrew: seems inefficent 
-                        #out_list.append(str(feature_table[feature_table['frozenset_ids_str_order'] == ids_str_order][field].values[0] != 0.0))
-                        out_list.append(str( feature_table.loc[ids_str_order][field] != 0.0))
+    #mgr = Manager()
+    #ns = mgr.Namespace()
+    #ns.pairwise_interactions = pairwise_interactions
+    #ns.feature_table = feature_table
 
-                fout.write("%s (pp) %s\t%s\t%s" % (id1, id2, score, "\t".join(out_list)))
-            else:
-                fout.write("%s (pp) %s\t%s" % (id1, id2, score))
-            fout.write("\n")
+    p = mp.Pool(args.procs, initializer=helper_init, initargs=({'pairwise_interactions':pairwise_interactions, 'feature_table':feature_table},))
+    input_list = []
+    for clustid, cluster in enumerate(clusters):
+        #feature_table_trim = feature_table.query("id1 in @cluster or id2 in @cluster")
+        #print feature_table_trim
+        #input_list.append({'clustid':clustid, 'cluster':cluster, 'pairwise_interactions':pairwise_interactions, 'feature_table':feature_table_trim, 'features':args.features, 'write_value':args.write_value})
+        input_list.append({'clustid':clustid, 'cluster':cluster, 'features':args.features, 'write_value':args.write_value})
+
+    for cluster_out in p.imap(pairwise_interaction_helper, input_list):
+        fout.write(cluster_out)
 
     fout.close()
+
+def helper_init(initargs):
+    #print initargs
+    #kdrew: still not working properly
+    init_dict = initargs
+    #kdrew: global variables? yuck!
+    global helper_pairwise_interactions
+    global helper_feature_table
+    helper_pairwise_interactions = init_dict['pairwise_interactions']
+    helper_feature_table = init_dict['feature_table']
+
+
+def pairwise_interaction_helper(parameter_dict):
+
+    global helper_pairwise_interactions
+    global helper_feature_table
+
+    clustid = parameter_dict['clustid']
+    cluster = parameter_dict['cluster']
+    features = parameter_dict['features']
+    write_value = parameter_dict['write_value']
+
+    #pairwise_interactions = parameter_dict['pairwise_interactions']
+    #feature_table = parameter_dict['feature_table']
+    feature_table = helper_feature_table.query("id1 in @cluster or id2 in @cluster") 
+
+    out_result = ""
+    for prot_pair in it.combinations(cluster,2):
+        id1 = "%s_%s" % (clustid, prot_pair[0])
+        id2 = "%s_%s" % (clustid, prot_pair[1])
+        try:
+            score = helper_pairwise_interactions[frozenset([prot_pair[0],prot_pair[1]])]
+        except KeyError:
+            continue
+        if feature_table is not None:
+            out_list = []
+            ids_str_order = "%s" % sorted([prot_pair[0],prot_pair[1]])
+            for field in features:
+                if ':' in field:
+                    r1 = int(field.split(':')[0])
+                    r2 = int(field.split(':')[1])
+                    out_list.append(str( (feature_table.loc[ids_str_order][feature_table.columns.values[r1:r2]] != 0.0).any() ) )
+                elif write_value:
+                    #out_list.append(str(feature_table[feature_table['frozenset_ids_str_order'] == ids_str_order][field].values[0]))
+                    out_list.append(str( feature_table.loc[ids_str_order][field] ) )
+                else:
+                    #kdrew: seems inefficent 
+                    #out_list.append(str(feature_table[feature_table['frozenset_ids_str_order'] == ids_str_order][field].values[0] != 0.0))
+                    out_list.append(str( feature_table.loc[ids_str_order][field] != 0.0))
+
+            #fout.write("%s (pp) %s\t%s\t%s" % (id1, id2, score, "\t".join(out_list)))
+            out_result = out_result + "%s (pp) %s\t%s\t%s\n" % (id1, id2, score, "\t".join(out_list))
+        else:
+            #fout.write("%s (pp) %s\t%s" % (id1, id2, score))
+            out_result = out_result + "%s (pp) %s\t%s\n" % (id1, id2, score)
+
+    return out_result
 
 if __name__ == "__main__":
     main()

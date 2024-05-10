@@ -39,8 +39,6 @@ def main():
                                     help="Add probability threshold markers to plot")
     parser.add_argument("--threshold_markers", action="store", dest="threshold_markers", nargs='+', required=False, default=[1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1],
                                     help="Sets which thresholds to plot along prcurve, default=[1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]")
-    parser.add_argument("--precision_markers", action="store", dest="precision_markers", nargs='+', required=False, default=[1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1],
-                                    help="Sets which precisions to report recall, default=[1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1]")
     parser.add_argument("--complete_benchmark", action="store_true", dest="complete_benchmark", required=False, default=False,
                                     help="Use the complete benchmark and set the probablility to 0.0, default=False")
     parser.add_argument("--add_tiny_noise", action="store_true", dest="add_tiny_noise", required=False, default=False,
@@ -155,58 +153,57 @@ def main():
 
         #print "precision: %s" % (list(precision),)
         #print "recall: %s" % (list(recall),)
-        print len(precision)
-        print len(recall)
-        print len(thresholds)
+        print "len(precision): %s" % len(precision)
+        print "len(recall): %s" % len(recall)
+        print "len(thresholds): %s" % len(thresholds)
 
-        #kdrew: from https://www.geeksforgeeks.org/python-find-closest-number-to-k-in-given-list/ 
+        for threshold_marker in [float(x) for x in args.threshold_markers]:
+            try:
+                j = next(i for i,x in enumerate(thresholds) if x >= threshold_marker) 
+                print "threshold: %s, precision: %s" % (threshold_marker, precision[j])
+            except StopIteration:
+                pass
 
-        for x in args.precision_markers:
-            closest_prec = precision[min(range(len(precision)), key = lambda i: abs(precision[i]-float(x)))]
-            index_of_prec = list(precision).index(closest_prec)
-            print "precision: %s, closest_precision: %s, recall: %s, threshold: %s" % (x, closest_prec, recall[index_of_prec], thresholds[index_of_prec])
 
-
-        if args.plot_thresholds:
-            #kdrew: set the index of the entry >= to threshold
-            threshold_indices = dict()
-            #kdrew: ensure passed in arguments are floats
-            for threshold_marker in [float(x) for x in args.threshold_markers]:
-                try:
-                    threshold_indices[threshold_marker] = next(i for i,x in enumerate(thresholds) if x >= threshold_marker) 
-                except StopIteration:
-                    pass
-
-            threshold_precisions = []
-            threshold_recalls = []
-            threshold_labels = []
-            for threshold_marker in threshold_indices:
-                threshold_precisions.append(precision[threshold_indices[threshold_marker]])
-                threshold_recalls.append(recall[threshold_indices[threshold_marker]])
-                threshold_labels.append(threshold_marker)
-
-                print "threshold %s" % threshold_marker
-                print "precision: %s" % precision[threshold_indices[threshold_marker]]
-                print "recall: %s" % recall[threshold_indices[threshold_marker]]
+        #if args.plot_thresholds:
+        #    #kdrew: set the index of the entry >= to threshold
+        #    threshold_indices = dict()
+        #    #kdrew: ensure passed in arguments are floats
+        #    for threshold_marker in [float(x) for x in args.threshold_markers]:
+        #        try:
+        #            threshold_indices[threshold_marker] = next(i for i,x in enumerate(thresholds) if x >= threshold_marker) 
+        #        except StopIteration:
+        #            pass
+        #
+        #    threshold_precisions = []
+        #    threshold_recalls = []
+        #    threshold_labels = []
+        #    for threshold_marker in threshold_indices:
+        #        threshold_precisions.append(precision[threshold_indices[threshold_marker]])
+        #        threshold_recalls.append(recall[threshold_indices[threshold_marker]])
+        #        threshold_labels.append(threshold_marker)
+        #
+        #        print "threshold %s" % threshold_marker
+        #        print "precision: %s" % precision[threshold_indices[threshold_marker]]
+        #        print "recall: %s" % recall[threshold_indices[threshold_marker]]
 
 
         label = args.results_wprob[i]
         if args.labels != None:
             label = args.labels[i]
-        line, = plt.plot(recall, precision, label=label)
-        if args.plot_thresholds:
-            plt.scatter(threshold_recalls, threshold_precisions, color=line.get_color())
-            for i, label in enumerate(threshold_labels):
-                plt.annotate(label, xy=(threshold_recalls[i],threshold_precisions[i]))
+        line, = plt.plot(thresholds, precision[:-1], label=label)
+        #if args.plot_thresholds:
+        #    plt.scatter(threshold_recalls, threshold_precisions, color=line.get_color())
+        #    for i, label in enumerate(threshold_labels):
+        #        plt.annotate(label, xy=(threshold_recalls[i],threshold_precisions[i]))
 
 
     #plt.clf()
-    plt.xlabel('Recall')
+    plt.xlabel('Thresholds')
     plt.ylabel('Precision')
     plt.ylim([0.0, 1.05])
     plt.xlim([0.0, 1.0])
-    #plt.title('Precision-Recall example: AUC={0:0.2f}'.format(average_precision))
-    plt.title('Precision-Recall')
+    plt.title('Precision-Thresholds')
     plt.legend(loc="upper right",fontsize=8)
 
     plt.savefig(args.output_file)
