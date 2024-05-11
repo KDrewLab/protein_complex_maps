@@ -54,7 +54,7 @@ def main():
             db.session.add(ce)
             db.session.commit()
         else:
-            print "Cannot find complex %s" % (complex_id)
+            print "Cannot find complex %s" % (row.complex_id)
 
 
 if __name__ == "__main__":
