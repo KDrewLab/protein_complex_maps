@@ -51,7 +51,7 @@ def pval(k,n,m,N):
 #kdrew: convert results into csv format
 def complexes_to_csv(complexes, prot_ids=[], pvalue_dict=None, genename_cannotfind_errors=None, genename_nocomplex_errors=None):
     complexes_dict = dict()
-    complexes_dict['humap2_id'] = []
+    complexes_dict['humap_id'] = []
     complexes_dict['rank'] = []
     if pvalue_dict != None:
         complexes_dict['pvalue'] = []
@@ -62,7 +62,7 @@ def complexes_to_csv(complexes, prot_ids=[], pvalue_dict=None, genename_cannotfi
     complexes_dict['genenames'] = []
 
     for comp in complexes:
-        complexes_dict['humap2_id'].append(comp.humap2_id)
+        complexes_dict['humap_id'].append(comp.humap_id)
         complexes_dict['rank'].append(comp.top_rank)
         if pvalue_dict != None:
             complexes_dict['pvalue'].append(pvalue_dict[comp])
@@ -74,7 +74,7 @@ def complexes_to_csv(complexes, prot_ids=[], pvalue_dict=None, genename_cannotfi
             
 
     if genename_cannotfind_errors != None:
-        complexes_dict['humap2_id'].append("COULD_NOT_FIND_GENENAMES")
+        complexes_dict['humap_id'].append("COULD_NOT_FIND_GENENAMES")
         complexes_dict['rank'].append(None)
         if pvalue_dict != None:
             complexes_dict['pvalue'].append(None)
@@ -85,7 +85,7 @@ def complexes_to_csv(complexes, prot_ids=[], pvalue_dict=None, genename_cannotfi
         complexes_dict['genenames'].append(None)
 
     if genename_nocomplex_errors != None:
-        complexes_dict['humap2_id'].append("NO_COMPLEXES_FOR_GENENAMES")
+        complexes_dict['humap_id'].append("NO_COMPLEXES_FOR_GENENAMES")
         complexes_dict['rank'].append(None)
         if pvalue_dict != None:
             complexes_dict['pvalue'].append(None)
@@ -366,7 +366,7 @@ def displayComplexes():
     #kdrew: do error checking
     try:
         #comp = db.session.query(cdb.Complex).filter_by(complex_id=complex_key).one()
-        comp = db.session.query(cdb.Complex).filter_by(humap2_id=complex_key).one()
+        comp = db.session.query(cdb.Complex).filter_by(humap_id=complex_key).one()
     except NoResultFound:
         comp = None
 
