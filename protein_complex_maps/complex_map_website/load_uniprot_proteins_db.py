@@ -5,8 +5,6 @@ import itertools as it
 
 import csv
 
-import protein_complex_maps.util.protein_util as pu
-
 import protein_complex_maps.complex_map_website.complex_db as cdb
 
 
@@ -32,30 +30,36 @@ def main():
         genenames = lsplit[4].split()
         uniprot_url = "http://www.uniprot.org/uniprot/%s" % (ACC)
 
-        for geneid in geneids:
-            if geneid != "":
-                protein = cdb.get_or_create(db,cdb.Protein, gene_id = geneid, uniprot_acc = ACC, proteinname = pname, uniprot_url = uniprot_url)
-                db.session.add(protein)
-                db.session.commit()
-
-                for genename in genenames:
-                    #kdrew: do a little clean up
-                    gname = genename.split(';')[0]
-                    gene = cdb.get_or_create(db,cdb.Gene, genename=gname, protein_key = protein.id)
-                    db.session.add(gene)
-                    db.session.commit()
+        #for geneid in geneids:
+        #       protein = cdb.get_or_create(db,cdb.Protein, uniprot_acc = ACC).first()
+        #    protein = db.session.query(cdb.Protein).filter_by(uniprot_acc=ACC).first()
+        #    if protein:
+        #        protein.gene_id = geneids[0]
+        #        db.session.add(protein)
+        #        db.session.commit()
+#
+#                for genename in genenames:
+#                    #kdrew: do a little clean up
+#                    gname = genename.split(';')[0]
+#                    gene = cdb.get_or_create(db,cdb.Gene, genename=gname, protein_key = protein.id)
+#                    db.session.add(gene)
+#                    db.session.commit()
 
 
         #kdrew: some entries in uniprot annotation file do not have geneid so cannot map protein in database exactly, just search based on uniprot acc instead
-        if len(geneids) == 1:
-            protein = db.session.query(cdb.Protein).filter_by(uniprot_acc=ACC).first()
-            if protein:
-                for genename in genenames:
-                    #kdrew: do a little clean up
-                    gname = genename.split(';')[0]
-                    gene = cdb.get_or_create(db,cdb.Gene, genename=gname, protein_key = protein.id)
-                    db.session.add(gene)
-                    db.session.commit()
+        #if len(geneids) == 1:
+        protein = db.session.query(cdb.Protein).filter_by(uniprot_acc=ACC).first()
+        if protein:
+            if geneids[0] != "":
+                protein.gene_id = geneids[0]
+                db.session.add(protein)
+                db.session.commit()
+            for genename in genenames:
+                #kdrew: do a little clean up
+                gname = genename.split(';')[0]
+                gene = cdb.get_or_create(db,cdb.Gene, genename=gname, protein_key = protein.id)
+                db.session.add(gene)
+                db.session.commit()
 
 
 
