@@ -289,7 +289,9 @@
         <img src="/static/images/complex_window_precision_distribution_plots/complex_window_precision_distribution_{{comp.humap_id}}-1.png" alt="ComplexPrecisionDistribution" width=45% height=50%> 
     </a>
         <br>
+	{% if comp.average_window_precision > 0 %}
         Complex {{ comp.humap_id }} has an average edge precision of {{ comp.average_window_precision|round(3) }} which is ranked {{ comp.average_window_precision_rank }} out of all 6965 complexes.
+	{% endif %}
         </div>
 	-->
 
