@@ -21,16 +21,30 @@ def main():
 
     db.create_all()
 
-    rank_df = pd.read_table(args.toprank_file)
+    rank_df = pd.read_csv(args.toprank_file)
+    rank_dict = dict()
     for _, row in rank_df.iterrows():
 
-        c = db.session.query(cdb.Complex).filter_by(complex_id=row.clust_id).first()
-        if c:
-            print "complex id: %s" % c.id
-            c.top_rank = row.top_rank
-            db.session.commit()
-        else:
-            print "Cannot find complex %s" % (complex_id)
+        rank_dict[frozenset(row.Uniprot_ACCs.split())] = row.Cluster_Num
+
+    for c in db.session.query(cdb.Complex).all():
+        print(c.complex_id)
+        print(len(c.proteins))
+        print(c.edges)
+        print(c.sorted_proteins())
+        pset = frozenset([p.uniprot_acc for p in c.proteins])
+        print(pset)
+        print(rank_dict[pset])
+        c.top_rank = rank_dict[pset]
+        db.session.commit()
+
+        #c = db.session.query(cdb.Complex).filter_by(complex_id=row.clust_id).first()
+        #if c:
+        #    print "complex id: %s" % c.id
+        #    c.top_rank = row.top_rank
+        #    db.session.commit()
+        #else:
+        #    print "Cannot find complex %s" % (complex_id)
 
 
 if __name__ == "__main__":
