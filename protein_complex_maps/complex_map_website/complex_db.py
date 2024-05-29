@@ -84,6 +84,13 @@ class Gene(db.Model):
     protein_key = db.Column(db.Integer, db.ForeignKey('protein.id'))
 
 
+class ProteinDiseaseAnnotation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    protein_key = db.Column(db.Integer, db.ForeignKey('protein.id'))
+    disease_database = db.Column(db.String(255))
+    disease_annotation = db.Column(db.Text)
+
+
 class Protein(db.Model):
     """A single protein"""
     id = db.Column(db.Integer, primary_key=True)
@@ -96,6 +103,7 @@ class Protein(db.Model):
     #kdrew: uses table name for ProteinComplexMapping class (annoying sqlalchemy magic)
     complexes = db.relationship('Complex', secondary='protein_complex_mapping',  back_populates='proteins')
     genenames = db.relationship('Gene')
+    disease_annotations = db.relationship('ProteinDiseaseAnnotation')
 
     def genename(self,):
         gnames = [g for g in self.genenames]

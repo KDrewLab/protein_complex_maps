@@ -116,14 +116,16 @@
             {% elif comp.top_rank == 3 %}
                 <a href="#" class="label label-info" data-toggle="tooltip" title="High">High</a> &nbsp 
             {% elif comp.top_rank == 4 %}
-                <a href="#" class="label label-warning" data-toggle="tooltip" title="Medium High">Medium High</a> &nbsp 
+                <a href="#" class="label label-warning" data-toggle="tooltip" title="Moderate High">Moderate High</a> &nbsp 
             {% elif comp.top_rank == 5 %}
+                <a href="#" class="label label-danger" data-toggle="tooltip" title="Medium Hight">Medium High</a> &nbsp 
+            {% elif comp.top_rank == 6 %}
                 <a href="#" class="label label-default" data-toggle="tooltip" title="Medium">Medium</a> &nbsp 
             {% endif %}
             <button class="btn btn-default btn-xs" onclick="complexConfidence()">?</button>
             <script>
                 function complexConfidence() {
-                                        alert("Complex Confidence\n\nComplexes are classified into confidence groups during clustering. Each group's performance is estimated by calculating precision (100*TP/(TP+FP)) from a training set as well as a leaveout set of literature curated protein interactions.\n\nGroup                  = Training precision        /       Leaveout precision\n\nExtremely High    =           99.7%           /               99.5%\n\nVery High            =             94.7%           /               90.5%\n\nHigh                     =             92.8%           /               90.7%\n\nMedium High      =             76.5%           /               78.6%\n\nMedium               =             69.3%           /               66.6%");
+                                        alert("Complex Confidence\n\nComplexes are classified into confidence groups during clustering. Each group's performance is estimated by calculating precision (100*TP/(TP+FP)) from a training set as well as a leaveout set of literature curated protein interactions.\n\n");
                                 }
             </script>  
 
@@ -139,6 +141,7 @@
                     <th>Complexes</th>
                     -->
                     <th>Protein Name</th>
+                    <th>Uniprot Annotation Score</th>
                     <th>Links</th>
                 </tr>
                 </thead>
@@ -155,6 +158,7 @@
                         </td>
                         -->
                         <td> {{prot.proteinname}}</td>
+                        <td> {{prot.annotation_score}}</td>
                         <td>{{ prot.uniprot_link()|safe }} &nbsp {{ prot.ncbi_link()|safe }}</td>
                     </tr>
                 {% else %}

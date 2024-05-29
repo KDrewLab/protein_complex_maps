@@ -26,7 +26,7 @@ def main():
 
         p = db.session.query(cdb.Protein).filter_by(uniprot_acc=row.Entry).first()
         if p:
-            print "complex id: %s" % p.id
+            print "protein id: %s" % p.id
             p.annotation_score = row.Annotation
             db.session.commit()
         else:
