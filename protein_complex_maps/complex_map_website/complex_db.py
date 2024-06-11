@@ -146,7 +146,7 @@ class Edge(db.Model):
         return prots
 
     def get_prothd_score(self,):
-        if len(self.prothd) > 1:
+        if len(self.prothd) > 0:
             return self.prothd[0].prothd_score
         else:
             return None
