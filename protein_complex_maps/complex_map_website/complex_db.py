@@ -146,7 +146,10 @@ class Edge(db.Model):
         return prots
 
     def get_prothd_score(self,):
-        return self.prothd[0].prothd_score
+        if len(self.prothd) > 1:
+            return self.prothd[0].prothd_score
+        else:
+            return None
 
 class Evidence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
