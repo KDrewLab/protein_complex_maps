@@ -146,7 +146,7 @@ class Edge(db.Model):
         return prots
 
     def get_prothd_score(self,):
-        return prothd[0].prothd_score
+        return self.prothd[0].prothd_score
 
 class Evidence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
