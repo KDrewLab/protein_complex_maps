@@ -137,6 +137,7 @@ class Edge(db.Model):
     window_precision = db.Column(db.Float)
 
     evidences = db.relationship('Evidence')
+    prothd_score = db.relationship('ProtHD')
 
     def get_proteins(self,):
         #prot1 = db.session.query(Protein).filter(Protein.id==self.protein_key).first()
@@ -149,6 +150,11 @@ class Evidence(db.Model):
     edge_key = db.Column(db.Integer, db.ForeignKey('edge.id'))
     evidence_type = db.Column(db.String(255))
     
+class ProtHD(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    edge_key = db.Column(db.Integer, db.ForeignKey('edge.id'))
+    prothd_score = db.Column(db.Float)
+
 class ProteinComplexMapping(db.Model):
     """A mapping between proteins and complexes"""
     __tablename__ = 'protein_complex_mapping'
