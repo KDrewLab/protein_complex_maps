@@ -137,13 +137,16 @@ class Edge(db.Model):
     window_precision = db.Column(db.Float)
 
     evidences = db.relationship('Evidence')
-    prothd_score = db.relationship('ProtHD')
+    prothd = db.relationship('ProtHD')
 
     def get_proteins(self,):
         #prot1 = db.session.query(Protein).filter(Protein.id==self.protein_key).first()
         #prot2 = db.session.query(Protein).filter(Protein.id==self.protein_key2).first()
         prots = db.session.query(Protein).filter(Protein.id.in_([self.protein_key,self.protein_key2])).all()
         return prots
+
+    def get_prothd_score(self,):
+        return prothd[0].prothd_score
 
 class Evidence(db.Model):
     id = db.Column(db.Integer, primary_key=True)

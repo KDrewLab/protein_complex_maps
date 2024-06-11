@@ -245,16 +245,16 @@
                         <td>&nbsp{{ edge.get_proteins()[1].genename() }}</td>
                         <td> {{ edge.score|round(3)|safe }}</td>
 
-                        {% if edge.prothd_score > 0.8 %}
-                            <td><span style="color:007c80;">{{ edge.prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% elif edge.prothd_score> 0.6 %}
-                            <td><span style="color:57C4AD;">{{ edge.prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% elif edge.prothd_score> 0.4 %}
-                            <td><span style="color:E1AD01;">{{ edge.prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% elif edge.prothd_score> 0.2 %}
-                            <td><span style="color:E98F20;">{{ edge.prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% if edge.get_prothd_score() > 0.8 %}
+                            <td><span style="color:007c80;">{{ edge.get_prothd_score()|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% elif edge.get_prothd_score()> 0.6 %}
+                            <td><span style="color:57C4AD;">{{ edge.get_prothd_score()|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% elif edge.get_prothd_score()> 0.4 %}
+                            <td><span style="color:E1AD01;">{{ edge.get_prothd_score()|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% elif edge.get_prothd_score()> 0.2 %}
+                            <td><span style="color:E98F20;">{{ edge.get_prothd_score()|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
                         {% else %}
-                            <td> <span style="color:DB4325;">{{ edge.prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                            <td> <span style="color:DB4325;">{{ edge.get_prothd_score()|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
                         {% endif %}
 
                         <td>
