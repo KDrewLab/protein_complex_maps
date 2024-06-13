@@ -26,10 +26,25 @@ def main():
     #kdrew: iterate through complexes
     for _, row in prothd_df.iterrows():
 
-        prot1 = db.session.query(cdb.Protein).filter_by(uniprot_acc=row.Protein_1).first()
-        prot2 = db.session.query(cdb.Protein).filter_by(uniprot_acc=row.Protein_2).first()
+        #kdrew: initialize protein instances as None
+        prot1, prot2 = None, None
+        #kdrew: iterate through all protein ids (; separated)
+        for acc in row.Protein_1.split(';'):
+            prot1 = db.session.query(cdb.Protein).filter_by(uniprot_acc=acc).first()
+            #kdrew: if did not find
+            if prot1 != None:
+                #kdrew: found a protein entry, break out of for loop
+                break
+        for acc in row.Protein_2.split(';'):
+            prot2 = db.session.query(cdb.Protein).filter_by(uniprot_acc=row.Protein_2).first()
+            if prot2 != None:
+                #kdrew: found a protein entry, break out of for loop
+                break 
+
+        #kdrew: if no proteins are found, continue through loop
         if prot1 == None or prot2 == None:
             continue
+
         if prot2.id < prot1.id:
             prot2, prot1 = prot1, prot2
 
