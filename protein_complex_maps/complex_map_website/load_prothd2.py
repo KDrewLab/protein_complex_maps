@@ -30,13 +30,16 @@ def main():
         prot1, prot2 = None, None
         #kdrew: iterate through all protein ids (; separated)
         for acc in row.Protein_1.split(';'):
+            print("acc1: %s" % acc)
             prot1 = db.session.query(cdb.Protein).filter_by(uniprot_acc=acc).first()
-            #kdrew: if did not find
+            print("prot1 id: %s" % prot1)
             if prot1 != None:
                 #kdrew: found a protein entry, break out of for loop
                 break
         for acc in row.Protein_2.split(';'):
-            prot2 = db.session.query(cdb.Protein).filter_by(uniprot_acc=row.Protein_2).first()
+            print("acc2: %s" % acc)
+            prot2 = db.session.query(cdb.Protein).filter_by(uniprot_acc=acc).first()
+            print("prot2 id: %s" % prot2)
             if prot2 != None:
                 #kdrew: found a protein entry, break out of for loop
                 break 
@@ -48,11 +51,14 @@ def main():
         if prot2.id < prot1.id:
             prot2, prot1 = prot1, prot2
 
+            print("Prior to edge look up: prot1: %s, prot2: %s " % (prot1.id, prot2.id))
             e = db.session.query(cdb.Edge).filter( and_(cdb.Edge.protein_key == prot1.id, cdb.Edge.protein_key2 == prot2.id) ).first()
+            print e
             if e != None:
                 print("prot1: %s, prot2: %s " % (prot1.id, prot2.id))
                 print("edge id: %s" % e.id)
                 print("score: %s" % row.RF_covariation_prob)
+                #kdrew: temp comment
                 ecm = cdb.get_or_create(db, cdb.ProtHD, edge_key=e.id, prothd_score=row.RF_covariation_prob)
                 db.session.add(ecm)
                 db.session.commit()
