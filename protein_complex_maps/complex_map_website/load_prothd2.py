@@ -51,17 +51,17 @@ def main():
         if prot2.id < prot1.id:
             prot2, prot1 = prot1, prot2
 
-            print("Prior to edge look up: prot1: %s, prot2: %s " % (prot1.id, prot2.id))
-            e = db.session.query(cdb.Edge).filter( and_(cdb.Edge.protein_key == prot1.id, cdb.Edge.protein_key2 == prot2.id) ).first()
-            print e
-            if e != None:
-                print("prot1: %s, prot2: %s " % (prot1.id, prot2.id))
-                print("edge id: %s" % e.id)
-                print("score: %s" % row.RF_covariation_prob)
-                #kdrew: temp comment
-                ecm = cdb.get_or_create(db, cdb.ProtHD, edge_key=e.id, prothd_score=row.RF_covariation_prob)
-                db.session.add(ecm)
-                db.session.commit()
+        print("Prior to edge look up: prot1: %s, prot2: %s " % (prot1.id, prot2.id))
+        e = db.session.query(cdb.Edge).filter( and_(cdb.Edge.protein_key == prot1.id, cdb.Edge.protein_key2 == prot2.id) ).first()
+        print e
+        if e != None:
+            print("prot1: %s, prot2: %s " % (prot1.id, prot2.id))
+            print("edge id: %s" % e.id)
+            print("score: %s" % row.RF_covariation_prob)
+            #kdrew: temp comment
+            ecm = cdb.get_or_create(db, cdb.ProtHD, edge_key=e.id, prothd_score=row.RF_covariation_prob)
+            db.session.add(ecm)
+            db.session.commit()
 
 
 if __name__ == "__main__":
