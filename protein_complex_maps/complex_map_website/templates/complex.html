@@ -265,7 +265,7 @@
                             <td> <span style="color:DB4325;">{{ prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
                         {% endif %}
 
-			    {% if len(edges) < EDGELIMIT %}
+			    {% if edges|length < EDGELIMIT %}
                         <td>
                             {% for evidence in edge.evidences %}
                                 {{ evidence.evidence_type|safe }} &nbsp &nbsp 
