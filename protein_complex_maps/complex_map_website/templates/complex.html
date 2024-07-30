@@ -261,8 +261,10 @@
                             <td><span style="color:E1AD01;">{{ prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
                         {% elif prothd_score> 0.2 %}
                             <td><span style="color:E98F20;">{{ prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% else %}
+                        {% elif prothd_score> 0.0 %}
                             <td> <span style="color:DB4325;">{{ prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% else %}
+                            <td> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
                         {% endif %}
 
 			    {% if edges|length < EDGELIMIT %}
