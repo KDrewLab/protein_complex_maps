@@ -209,6 +209,7 @@
         <a href="#Edges" class="btn btn-default" data-toggle="collapse">Edges</a>
         <div id="Edges" class="collapse">
 		{% block content %}
+		{% set edges = comp.all_edges() %}
             <table id="edges" class="table table-striped">
                 <thead>
                 <tr>
@@ -229,6 +230,10 @@
                             }
                         </script>                                                    
                     </th>
+
+		    {% set EDGELIMIT = 50 %}
+		    {% if len(edges) < EDGELIMIT %}
+
                     <th>Evidence <button class="btn btn-default btn-xs" onclick="evidenceFunction()">?</button>
                     <script>
                         function evidenceFunction() {
@@ -236,28 +241,31 @@
                         }
                     </script>                                                    
                     </th>
+			{% endif %}
 
                 </tr>
                 </thead>
                 <tbody>
-                {% for edge in comp.all_edges() %}
+                {% for edge in edges %}
                     <tr>
                         <td>&nbsp{{ edge.get_proteins()[0].genename() }}</td>
                         <td>&nbsp{{ edge.get_proteins()[1].genename() }}</td>
                         <td> {{ edge.score|round(3)|safe }}</td>
 
-                        {% if edge.get_prothd_score() > 0.8 %}
-                            <td><span style="color:007c80;">{{ edge.get_prothd_score()|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% elif edge.get_prothd_score()> 0.6 %}
-                            <td><span style="color:57C4AD;">{{ edge.get_prothd_score()|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% elif edge.get_prothd_score()> 0.4 %}
-                            <td><span style="color:E1AD01;">{{ edge.get_prothd_score()|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% elif edge.get_prothd_score()> 0.2 %}
-                            <td><span style="color:E98F20;">{{ edge.get_prothd_score()|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+			{% set prothd_score = edge.get_prothd_score() %}
+                        {% if prothd_score > 0.8 %}
+                            <td><span style="color:007c80;">{{ prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% elif prothd_score> 0.6 %}
+                            <td><span style="color:57C4AD;">{{ prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% elif prothd_score> 0.4 %}
+                            <td><span style="color:E1AD01;">{{ prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% elif prothd_score> 0.2 %}
+                            <td><span style="color:E98F20;">{{ prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
                         {% else %}
-                            <td> <span style="color:DB4325;">{{ edge.get_prothd_score()|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                            <td> <span style="color:DB4325;">{{ prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
                         {% endif %}
 
+			    {% if len(edges) < EDGELIMIT %}
                         <td>
                             {% for evidence in edge.evidences %}
                                 {{ evidence.evidence_type|safe }} &nbsp &nbsp 
@@ -265,6 +273,9 @@
                                 <em> No Evidences</em>
                             {% endfor %}
                         </td>
+
+			{% endif %}
+
                     </tr>
                 {% else %}
                     &nbsp    <em> No edges</em>
