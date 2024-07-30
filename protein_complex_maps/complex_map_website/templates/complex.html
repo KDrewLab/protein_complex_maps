@@ -360,7 +360,15 @@
 	{% block scripts %}
 	<script>
 		$(document).ready(function () {
-		$('#edges').DataTable();
+		$('#proteins').DataTable({
+			    ordering: true
+			} );
+		$('#enrichments').DataTable({
+			    ordering: true
+			} );
+		$('#edges').DataTable({
+			    ordering: true
+			} );
 		});
 	</script>
 	{% endblock %}
