@@ -73,7 +73,7 @@ class Complex(db.Model):
         #edges = [db.session.query(Edge).filter((and_(Edge.protein_key == prot1.id, Edge.protein_key2 == prot2.id) | and_(Edge.protein_key == prot2.id,Edge.protein_key2 == prot1.id))).first() for prot1, prot2 in it.combinations(self.proteins,2)]
         #es = [e for e in edges if e != None]
 
-        print("prior to self.edges")
+        #print("prior to self.edges")
         return sorted(list(set(self.edges)), key=lambda es: es.score, reverse=True)
 
         
