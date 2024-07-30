@@ -133,7 +133,7 @@
 
         <a href="#Proteins" class="btn btn-default" data-toggle="collapse">Proteins</a>
         <div id="Proteins" class="collapse in">
-            <table class="table table-striped">
+            <table id="proteins" class="table table-striped">
                 <thead>
                 <tr>
                     <th>Genename</th>
@@ -172,7 +172,7 @@
         <br>
         <a href="#Enrichments" class="btn btn-default" data-toggle="collapse">Enrichments</a>
         <div id="Enrichments" class="collapse">
-            <table class="table table-striped">
+            <table id="enrichments" class="table table-striped">
                 <thead>
                 <tr>
                     <th>Term ID</th>
@@ -208,7 +208,10 @@
         <br>
         <a href="#Edges" class="btn btn-default" data-toggle="collapse">Edges</a>
         <div id="Edges" class="collapse">
-            <table class="table table-striped">
+		{% extends "base.html" %}
+
+		{% block content %}
+            <table id="edges" class="table table-striped">
                 <thead>
                 <tr>
                     <th>Protein 1 </th>
@@ -270,6 +273,7 @@
                 {% endfor %}
                 </tbody>
             </table>
+	    {% endblock %}
         </div>
 
         <br>
@@ -342,6 +346,15 @@
     <script src="../static/js/docs.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../static/js/ie10-viewport-bug-workaround.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+	{% block scripts %}
+	<script>
+		$(document).ready(function () {
+		$('#edges').DataTable();
+		});
+	</script>
+	{% endblock %}
   </body>
 </html>
 
