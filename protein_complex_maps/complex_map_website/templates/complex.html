@@ -232,7 +232,7 @@
                     </th>
 
 		    {% set EDGELIMIT = 50 %}
-		    {% if len(edges) < EDGELIMIT %}
+		    {% if edges|length < EDGELIMIT %}
 
                     <th>Evidence <button class="btn btn-default btn-xs" onclick="evidenceFunction()">?</button>
                     <script>
