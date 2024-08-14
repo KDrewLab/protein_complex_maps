@@ -366,10 +366,12 @@
 			    ordering: true
 			} );
 		$('#enrichments').DataTable({
-			    ordering: true
+			    ordering: true,
+				order: [[1, 'asc']],
 			} );
 		$('#edges').DataTable({
-			    ordering: true
+			    ordering: true,
+				order: [[2, 'desc']],
 			} );
 		});
 	</script>
