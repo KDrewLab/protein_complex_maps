@@ -56,6 +56,10 @@ class Complex(db.Model):
 
     def sorted_proteins(self,):
         return sorted(self.proteins, key=lambda p: len([g for g in p.genenames]), reverse=True)
+
+    def sorted_enrichments(self,):
+        return sorted(self.enrichments, key=lambda e: e.p_value)
+
             
 
     #kdrew: a bit of a bottleneck when serving pages, has to generate all combinations of proteins in complex and then search for combination in edge table

@@ -183,7 +183,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for enrichment in comp.enrichments %}
+                {% for enrichment in comp.sorted_enrichments() %}
                     <tr>
                         <td>&nbsp {{ enrichment.native|safe }}</td>
                         <td> {{ enrichment.p_value|safe }}</td>
