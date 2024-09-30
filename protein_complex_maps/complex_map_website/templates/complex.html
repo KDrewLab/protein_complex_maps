@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../bootstrap-3.3.6/docs/favicon.ico">
 
-    <title>hu.MAP 3.1: Complex View</title>
+    <title>hu.MAP 3.0: Complex View</title>
 
     <link href="../static/styles/test.css" rel="stylesheet">
 
@@ -47,7 +47,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">hu.MAP 3.1</a>
+          <a class="navbar-brand" href="/">hu.MAP 3.0</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -77,7 +77,7 @@
 
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="theme">
-        <h1>hu.MAP 3.1: Complex View</h1>
+        <h1>hu.MAP 3.0: Complex View</h1>
         <p> 
             Human Protein Complex Map
         </p>
@@ -116,9 +116,9 @@
             {% elif comp.top_rank == 3 %}
                 <a href="#" class="label label-info" data-toggle="tooltip" title="High">High</a> &nbsp 
             {% elif comp.top_rank == 4 %}
-                <a href="#" class="label label-warning" data-toggle="tooltip" title="Moderate High">Moderate High</a> &nbsp 
+                <a href="#" class="label label-warning" data-toggle="tooltip" title="Moderate High" background-color=#9f5fa7;>Moderate High</a> &nbsp 
             {% elif comp.top_rank == 5 %}
-                <a href="#" class="label label-danger" data-toggle="tooltip" title="Medium Hight">Medium High</a> &nbsp 
+                <a href="#" class="label label-danger" data-toggle="tooltip" title="Medium High" background-color=#ffc110;>Medium High</a> &nbsp 
             {% elif comp.top_rank == 6 %}
                 <a href="#" class="label label-default" data-toggle="tooltip" title="Medium">Medium</a> &nbsp 
             {% endif %}

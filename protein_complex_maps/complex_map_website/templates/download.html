@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../bootstrap-3.3.6/docs/favicon.ico">
 
-    <title>hu.MAP 3.1: Download</title>
+    <title>hu.MAP 3.0: Download</title>
 
     <link href="../static/styles/test.css" rel="stylesheet">
 
@@ -48,7 +48,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">hu.MAP 3.1</a>
+          <a class="navbar-brand" href="/">hu.MAP 3.0</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -78,7 +78,7 @@
 
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron">
-        <h1>hu.MAP 3.1</h1>
+        <h1>hu.MAP 3.0</h1>
         <p> 
             Human Protein Complex Map
         </p>
@@ -90,19 +90,25 @@
       </div>
       <h4>Complex Map Files</h4>
       <ul>
-          <li><a href="/static/downloads/humap3/humap2_complexes_20200809.txt" target="_blank">Protein Complex Map</a>
+          <li><a href="/static/downloads/humap3/hu.MAP3.0_complexes_wConfidenceScores_total15326_wGenenames_20240922.csv" target="_blank">Protein Complex Map</a>
               <ul>
                   <li>Description: Complexes generated from two stage clustering of fully intergrated protein interaction network</li>
-                  <li>Format: HuMAP3_ID,Confidence,Uniprot_ACCs,genenames</li>
-                  <li>Confidence maps to complexes identified in 5 individual clusterings. 1=Extremely High, 2=Very High, 3=High, 4=Medium High, 5=Medium</li>
+                  <li>Format: HuMAP3_ID,ComplexConfidence,Uniprot_ACCs,genenames</li>
+                  <li>ComplexConfidence maps to complexes identified in 6 individual clusterings. 1=Extremely High, 2=Very High, 3=High, 4=Moderate High, 5=Medium High, 6=Medium</li>
               </ul>                                                                            
           </li>
           <br>
-          <li>Protein Interaction Network with probability scores <a href="/static/downloads/humap3/humap2_ppis_ACC_20200821.pairsWprob.gz" target="_blank">(Uniprot gzip)</a>,
-          <a href="/static/downloads/humap3/humap2_ppis_geneid_20200821.pairsWprob.gz" target="_blank">(geneid gzip)</a>,
-          <a href="/static/downloads/humap3/humap2_ppis_genename_20200821.pairsWprob.gz" target="_blank">(genename gzip)</a>
+          <li>Protein Interactions in Complexes with probability scores <a href="/static/downloads/humap3/humap3_complex_pairs_20240929.pairsWprob" target="_blank">(Uniprot)</a>,
+          <a href="/static/downloads/humap3/hu.MAP3.0_complex_pairs_genenames_20240930.pairsWprob" target="_blank">(genename)</a>
               <ul>
-                  <li>Description: All protein pair predictions with the corresponding svm probability score. </li>
+                  <li>Description: Protein pair predictions present in hu.MAP3.0 complexes with the corresponding ML probability score. </li>
+                  <li>Format: protein_id [tab] protein_id [tab] score</li>
+              </ul>
+          </li>
+          <br>
+          <li>Protein Interaction Network with probability scores <a href="/static/downloads/humap3/humap3_all_ppis_202305.pairsWprob.gz" target="_blank">(Uniprot gzip)</a>,
+              <ul>
+                  <li>Description: All protein pair predictions with the corresponding ML probability score. </li>
                   <li>Format: protein_id [tab] protein_id [tab] score</li>
               </ul>
           </li>
@@ -131,14 +137,14 @@
               </ul>
           </li>
       </ul>
-      -->
       <br>
       <h4>Cytoscape Network</h4>
       <ul>
+      -->
 	  <!--
           <li><a href="/static/downloads/humap3/humap2_protein_complex_map_20200821.cys" target="_blank">Cytoscape Network</a>
               <ul>
-                  <li>Description: Cytoscape network of hu.MAP 3.1</li>
+                  <li>Description: Cytoscape network of hu.MAP 3.0</li>
                   <li>Node colors represent complex confidence
                     <ul>
                         <li>Extremely High = Green</li>
@@ -158,43 +164,43 @@
                   </li>
               </ul>                                                                                                   
           </li>
-	  -->
       </ul>
       <br>
+	  -->
 
       <h4>Test and training data</h4>
       <ul>
-          <li>Train Complexes <a href="/static/downloads/humap3/intact_complex_merge_20230309.train.txt" target="_blank">(Uniprot)</a>
+          <li>Train Complexes <a href="/static/downloads/humap3/ComplexPortal_reduced_20230309.train.txt" target="_blank">(Uniprot)</a>
               <ul>
                   <li>Description: List of training complexes used in protein complex discovery pipeline</li>
                   <li>Format: protein_id, protein_id, protein_id ... (one complex per line)</li>
               </ul>
           </li>
-          <li>Test Complexes <a href="/static/downloads/humap3/intact_complex_merge_20230309.test.txt" target="_blank">(Uniprot)</a>
+          <li>Test Complexes <a href="/static/downloads/humap3/ComplexPortal_reduced_20230309.test.txt" target="_blank">(Uniprot)</a>
               <ul>
                   <li>Description: List of test complexes used in protein complex discovery pipeline</li>
                   <li>Format: protein_id, protein_id, protein_id ... (one complex per line)</li>
               </ul>
           </li>
-          <li>Train Positive PPIs <a href="/static/downloads/humap3/intact_complex_merge_20230309.train_ppis.txt" target="_blank">(Uniprot)</a>
+          <li>Train Positive PPIs <a href="/static/downloads/humap3/ComplexPortal_reduced_20230309.train_ppis.txt" target="_blank">(Uniprot)</a>
               <ul>
                   <li>Description: List of train postive ppis used in protein complex discovery pipeline</li>
                   <li>Format: protein_id, protein_id</li>
               </ul>
           </li>
-          <li>Train Negative PPIs <a href="/static/downloads/humap3/intact_complex_merge_20230309.neg_train_ppis.txt" target="_blank">(Uniprot)</a>
+          <li>Train Negative PPIs <a href="/static/downloads/humap3/ComplexPortal_reduced_20230309.neg_train_ppis.txt" target="_blank">(Uniprot)</a>
               <ul>
                   <li>Description: List of train negative ppis used in protein complex discovery pipeline</li>
                   <li>Format: protein_id, protein_id</li>
               </ul>
           </li>
-          <li>Test Positive PPIs <a href="/static/downloads/humap3/intact_complex_merge_20230309.test_ppis.txt" target="_blank">(Uniprot)</a>
+          <li>Test Positive PPIs <a href="/static/downloads/humap3/ComplexPortal_reduced_20230309.test_ppis.txt" target="_blank">(Uniprot)</a>
               <ul>
                   <li>Description: List of test positive ppis used in protein complex discovery pipeline</li>
                   <li>Format: protein_id, protein_id</li>
               </ul>
           </li>
-          <li>Test Negative PPIs <a href="/static/downloads/humap3/intact_complex_merge_20230309.neg_test_ppis.txt" target="_blank">(Uniprot)</a>
+          <li>Test Negative PPIs <a href="/static/downloads/humap3/ComplexPortal_reduced_20230309.neg_test_ppis.txt" target="_blank">(Uniprot)</a>
               <ul>
                   <li>Description: List of test negative ppis used in protein complex discovery pipeline</li>
                   <li>Format: protein_id, protein_id</li>
@@ -205,9 +211,9 @@
 
       <h4>Feature Matrix</h4>
       <ul>
-          <li><a href="/static/downloads/humap3/humap2_feature_matrix_20200820.featmat.gz" target="_blank">Feature Matrix (geneid gzip)</a>
+          <li><a href="/static/downloads/humap3/humap3_20220625.featmap.gz" target="_blank">Feature Matrix (Uniprot gzip)</a>
               <ul>
-                  <li>Description: Table of features from integrated datasets for pairs of proteins (geneids). Also includes Weighted Matrix Model features</li>
+                  <li>Description: Table of features from integrated datasets for pairs of proteins (Uniprot ACCs). Also includes Weighted Matrix Model features</li>
                   <li>Format: protein_id,protein_id,[features]</li>
               </ul>
           </li>
