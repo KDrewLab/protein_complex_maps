@@ -1,2 +1,0 @@
-humap3_20220625.featmap.gz filter=lfs diff=lfs merge=lfs -text
-humap3_all_ppis_202305.pairsWprob.gz filter=lfs diff=lfs merge=lfs -text
