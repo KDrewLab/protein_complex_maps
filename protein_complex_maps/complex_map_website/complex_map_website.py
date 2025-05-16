@@ -110,6 +110,10 @@ class SearchForm(Form):
 from flask import render_template
 from flask import url_for, redirect, request, jsonify
 
+#kdrew: frontpage.html is the main page for proteincomplexes.org that links to pages of other maps (i.e. humap2, rnaMAP, etc)
+@app.route("/frontpage")
+def frontPage():
+    return render_template('frontpage.html')
 
 @app.route("/")
 def root(complexes=[]):
