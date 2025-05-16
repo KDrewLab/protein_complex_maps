@@ -409,6 +409,11 @@ def displayDownload():
 def displayFrontPage():
     return render_template('frontpage.html')
 
+#kdrew: about_proteincomplexes.html is the main page for proteincomplexes.org that links to pages of other maps (i.e. humap2, rnaMAP, etc)
+@app.route("/about_proteincomplexes")
+def displayAboutProteinComplexes():
+    return render_template('about_proteincomplexes.html')
+
 
 if __name__ == "__main__":
     db.create_all()  # make our sqlalchemy tables
