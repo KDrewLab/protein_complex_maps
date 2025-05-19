@@ -110,14 +110,17 @@ class SearchForm(Form):
 from flask import render_template
 from flask import url_for, redirect, request, jsonify
 
-
 @app.route("/")
 def root(complexes=[]):
+    return render_template('frontpage.html')
+
+@app.route("/h3")
+def show_complexes(complexes=[]):
     print complexes
     #complexes = cdb.Complex.query.all()
     form = SearchForm()
-    return render_template('index.html', form=form, complexes=complexes)
-    #return render_template('index.html', form=form, complexes=complexes, prot_ids=[], pvalue_dict=dict(), error=error)
+    return render_template('show_complexes.html', form=form, complexes=complexes)
+    #return render_template('show_complexes.html', form=form, complexes=complexes, prot_ids=[], pvalue_dict=dict(), error=error)
 
 
 @app.route("/getComplexesCSV/")
@@ -271,7 +274,7 @@ def displayComplexesForListOfGeneNames():
     db.session.commit()
 
     #print [p.id for p in all_proteins]
-    return render_template('index.html', form=form, complexes=complexes, prot_ids=[p.id for p in all_proteins], pvalue_dict=pvalue_dict, error=error, genename_cannotfind_errors=genename_cannotfind_errors, genename_nocomplex_errors=genename_nocomplex_errors) 
+    return render_template('show_complexes.html', form=form, complexes=complexes, prot_ids=[p.id for p in all_proteins], pvalue_dict=pvalue_dict, error=error, genename_cannotfind_errors=genename_cannotfind_errors, genename_nocomplex_errors=genename_nocomplex_errors) 
 
 @app.route("/displayComplexesForEnrichment")
 def displayComplexesForEnrichment():
@@ -312,8 +315,8 @@ def displayComplexesForEnrichment():
     db.session.add(complex_csv_entry)
     db.session.commit()
 
-    #return render_template('index.html', form=form, complexes=complexes, error=error)
-    return render_template('index.html', form=form, complexes=complexes, prot_ids=[], pvalue_dict=None, error=error)
+    #return render_template('show_complexes.html', form=form, complexes=complexes, error=error)
+    return render_template('show_complexes.html', form=form, complexes=complexes, prot_ids=[], pvalue_dict=None, error=error)
 
 @app.route("/displayComplexesForProtein")
 def displayComplexesForProtein():
@@ -355,8 +358,8 @@ def displayComplexesForProtein():
     db.session.add(complex_csv_entry)
     db.session.commit()
 
-    #return render_template('index.html', form=form, complexes=complexes, error=error)
-    return render_template('index.html', form=form, complexes=complexes, prot_ids=[], pvalue_dict=None, error=error)
+    #return render_template('show_complexes.html', form=form, complexes=complexes, error=error)
+    return render_template('show_complexes.html', form=form, complexes=complexes, prot_ids=[], pvalue_dict=None, error=error)
 
 @app.route("/displayComplexes")
 def displayComplexes():
@@ -393,8 +396,8 @@ def searchComplexes():
 
 
     #kdrew: added hoping it would fix redirect problem on stale connections
-    #return render_template('index.html', form=form, complexes=complexes)
-    return render_template('index.html', form=form, complexes=complexes, prot_ids=[], pvalue_dict=None, error="")
+    #return render_template('show_complexes.html', form=form, complexes=complexes)
+    return render_template('show_complexes.html', form=form, complexes=complexes, prot_ids=[], pvalue_dict=None, error="")
 
 @app.route("/about")
 def displayAbout():
