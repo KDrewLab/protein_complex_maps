@@ -108,6 +108,7 @@
     {% if comp != None %}
         <ul>
         <h3>Complex: {{ comp.complex_link()|safe }}</h3>
+        <h4>Complex Portal: {{ comp.complexportal_link()|safe }}</h4>
         <h4>Confidence: 
             {% if comp.top_rank == 1 %}
                 <a href="#" class="label label-success" data-toggle="tooltip" title="Extremely High">Extremely High</a> &nbsp 
