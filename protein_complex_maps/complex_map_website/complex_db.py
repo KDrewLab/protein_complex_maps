@@ -56,7 +56,11 @@ class Complex(db.Model):
         return retstr
 
     def complexportal_link(self,):
-        retstr = "<a href=https://www.ebi.ac.uk/complexportal/complex/%s target='_blank'>%s</a>" % (self.complexportal_id, self.complexportal_id)
+        if self.complexportal_id == None:
+            retstr = None
+        else:
+            retstr = "<a href=https://www.ebi.ac.uk/complexportal/complex/%s target='_blank'>%s</a>" % (self.complexportal_id, self.complexportal_id)
+
         return retstr
 
     def sorted_proteins(self,):
