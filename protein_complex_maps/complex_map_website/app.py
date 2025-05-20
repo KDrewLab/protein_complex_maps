@@ -115,10 +115,6 @@ from flask import url_for, redirect, request, jsonify
 #    return render_template('frontpage.html')
 
 @app.route("/")
-def show_complexes(complexes=[]):
-    form = SearchForm()
-    return render_template('show_complexes.html', form=form, complexes=complexes)
-
 @app.route("/h3")
 def show_complexes(complexes=[]):
     print complexes
