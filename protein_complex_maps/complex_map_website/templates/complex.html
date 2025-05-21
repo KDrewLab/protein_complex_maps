@@ -281,7 +281,9 @@
 
 			<!-- Interface Overlap -->
 			{% set interface = edge.interface_mutex %}
-                        {% if 'mutually_exclusive' in interface %}
+                        {% if interface == None %}
+                            <td> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% elif 'mutually_exclusive' in interface %}
                             <td><span style="color:f36d21;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
                         {% elif 'structurally_consistent' in interface %}
                             <td><span style="color:2278b5;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
