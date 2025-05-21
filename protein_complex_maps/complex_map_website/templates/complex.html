@@ -280,7 +280,14 @@
                         {% endif %}
 
 			<!-- Interface Overlap -->
-                        <td>&nbsp{{ edge.interface_mutex|safe }}</td>
+			{% set interface = edge.interface_mutex %}
+                        {% if interface == 'mutually_exclusive' %}
+                            <td><span style="color:f36d21;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% elif interface == 'structurally_consistent' %}
+                            <td><span style="color:2278b5;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% else %}
+                            <td> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% endif %}
 
 			    {% if edges|length < EDGELIMIT %}
                         <td>
