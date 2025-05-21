@@ -281,26 +281,36 @@
 
 			<!-- Interface Overlap -->
 			{% set interface = edge.interface_mutex %}
-                        {% if interface == None %}
-                            <td> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% elif 'mutually_exclusive' in interface %}
-                            <td><span style="color:f36d21;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% elif 'structurally_consistent' in interface %}
-                            <td><span style="color:2278b5;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% elif 'mixed_interface' in interface %}
-                            <td><span style="color:858687;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% else %}
-                            <td> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% endif %}
+			<td>
+				{% if interface == None %}
+				    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+				{% else %}
+					{% for entry in interface.split('|') 
 
-			    {% if edges|length < EDGELIMIT %}
-                        <td>
-                            {% for evidence in edge.evidences %}
-                                {{ evidence.evidence_type|safe }} &nbsp &nbsp 
-                            {% else %}
-                                <em> No Evidences</em>
-                            {% endfor %}
-                        </td>
+						{% if 'mutually_exclusive' in entry %}
+							<span style="color:f36d21;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+							<br>
+						{% elif 'structurally_consistent' in interface %}
+							<span style="color:2278b5;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+							<br>
+						{% elif 'mixed_interface' in interface %}
+							<span style="color:858687;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+							<br>
+						{% else %}
+						    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+						{% endif %}
+					{% endfor %}
+				{% endif %}
+			</td>
+			{% if edges|length < EDGELIMIT %}
+
+				<td>
+				    {% for evidence in edge.evidences %}
+					{{ evidence.evidence_type|safe }} &nbsp &nbsp 
+				    {% else %}
+					<em> No Evidences</em>
+				    {% endfor %}
+				</td>
 
 			{% endif %}
 
