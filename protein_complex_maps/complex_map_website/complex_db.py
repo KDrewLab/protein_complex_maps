@@ -149,6 +149,7 @@ class Edge(db.Model):
     precision = db.Column(db.Float)
     #kdrew: window_precision should be calculated for a window surrounding the given edge's svm confidence score
     window_precision = db.Column(db.Float)
+    interface_mutex = db.Column(db.String(255))
 
     evidences = db.relationship('Evidence')
     prothd = db.relationship('ProtHD')
