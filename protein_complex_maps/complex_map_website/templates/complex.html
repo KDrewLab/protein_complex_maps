@@ -235,9 +235,9 @@
                             }
                         </script>                                                    
                     </th>
-                    <th>Interface Overlap<button class="btn btn-default btn-xs" onclick="interfaceeFunction()">?</button>
+                    <th>Interface Overlap<button class="btn btn-default btn-xs" onclick="interfaceFunction()">?</button>
                         <script>
-                            function interfaceeFunction() {
+                            function interfaceFunction() {
                                 alert("Interface Overlap represent whether the pair of proteins are mutually exclusive or structurally consisent based on AlphaFold modeling.");
                             }
                         </script>                                                    
@@ -281,10 +281,12 @@
 
 			<!-- Interface Overlap -->
 			{% set interface = edge.interface_mutex %}
-                        {% if interface == 'mutually_exclusive' %}
+                        {% if 'mutually_exclusive' in interface %}
                             <td><span style="color:f36d21;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
-                        {% elif interface == 'structurally_consistent' %}
+                        {% elif 'structurally_consistent' in interface %}
                             <td><span style="color:2278b5;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
+                        {% elif 'mixed_interface' in interface %}
+                            <td><span style="color:858687;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
                         {% else %}
                             <td> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
                         {% endif %}
