@@ -285,7 +285,7 @@
 				{% if interface == None %}
 				    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 				{% else %}
-					{% for entry in interface.split('|')  %}
+					{% for entry in interface|split('|')  %}
 
 						{% if 'mutually_exclusive' in entry %}
 							<span style="color:f36d21;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
