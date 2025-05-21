@@ -235,6 +235,13 @@
                             }
                         </script>                                                    
                     </th>
+                    <th>Interface Overlap<button class="btn btn-default btn-xs" onclick="interfaceeFunction()">?</button>
+                        <script>
+                            function interfaceeFunction() {
+                                alert("Interface Overlap represent whether the pair of proteins are mutually exclusive or structurally consisent based on AlphaFold modeling.");
+                            }
+                        </script>                                                    
+                    </th>
 
 		    {% set EDGELIMIT = 50 %}
 		    {% if edges|length < EDGELIMIT %}
@@ -271,6 +278,9 @@
                         {% else %}
                             <td> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
                         {% endif %}
+
+			<!-- Interface Overlap -->
+                        <td>&nbsp{{ edge.interface_mutex|safe }}</td>
 
 			    {% if edges|length < EDGELIMIT %}
                         <td>
