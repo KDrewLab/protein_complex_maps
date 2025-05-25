@@ -284,7 +284,7 @@
 				{% if edge.get_interface_mutex() == None %}
 				    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 				{% else %}
-					{% for entry in edge.get_interface_mutex().split('|')  %}
+					{% for entry in edge.get_interface_mutex()  %}
 
 						{% if 'mutually_exclusive' in entry %}
 							<span style="color:f36d21;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
