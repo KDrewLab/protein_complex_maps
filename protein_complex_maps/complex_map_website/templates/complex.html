@@ -287,13 +287,13 @@
 					{% for entry in edge.get_interface_mutex()  %}
 
 						{% if 'mutually_exclusive' in entry %}
-							<span style="color:f36d21;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+							<span style="color:f36d21;">{{ entry|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 							<br>
-						{% elif 'structurally_consistent' in interface %}
-							<span style="color:2278b5;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+						{% elif 'structurally_consistent' in entry %}
+							<span style="color:2278b5;">{{ entry|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 							<br>
-						{% elif 'mixed_interface' in interface %}
-							<span style="color:858687;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+						{% elif 'mixed_interface' in entry %}
+							<span style="color:858687;">{{ entry|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 							<br>
 						{% else %}
 						    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp

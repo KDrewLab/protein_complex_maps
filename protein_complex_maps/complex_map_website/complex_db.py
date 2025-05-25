@@ -169,7 +169,6 @@ class Edge(db.Model):
     def get_interface_mutex(self,):
         try:
             entries = self.interface_mutex.split("|")
-            print(entries)
             return entries
         except AttributeError:
             return None
