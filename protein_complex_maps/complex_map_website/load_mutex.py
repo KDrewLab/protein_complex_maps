@@ -23,7 +23,7 @@ def main():
     db.create_all()
 
     f = open(args.mutex_file)
-    #kdrew: iterate through complexes
+    #kdrew: iterate through file
     for line in f.readlines():
         tokens = line.split(',')
         acc1 = tokens[0]

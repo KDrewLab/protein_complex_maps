@@ -280,12 +280,11 @@
                         {% endif %}
 
 			<!-- Interface Overlap -->
-			{% set interface = edge.interface_mutex %}
 			<td>
-				{% if interface == None %}
+				{% if edge.get_interface_mutex() == None %}
 				    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
 				{% else %}
-					{% for entry in interface|split('|')  %}
+					{% for entry in edge.get_interface_mutex().split('|')  %}
 
 						{% if 'mutually_exclusive' in entry %}
 							<span style="color:f36d21;">{{ interface|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp

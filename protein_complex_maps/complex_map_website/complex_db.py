@@ -166,6 +166,12 @@ class Edge(db.Model):
         else:
             return None
 
+    def get_interface_mutex(self,):
+        try:
+            return self.interface_mutex.split("|")
+        except AttributeError:
+            return None
+
 class Evidence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     edge_key = db.Column(db.Integer, db.ForeignKey('edge.id'))
