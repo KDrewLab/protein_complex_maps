@@ -80,7 +80,12 @@ def main():
         #compare2goldstandard(cluster_filename, gold_standard_complexes, args.id_delimin)
 
     #kdrew: call compare2goldstandard with pool of processors
-    compare2goldstandard_results = p.map(compare2goldstandard, compare2goldstandard_input_list)
+    try:
+        compare2goldstandard_results = p.map(compare2goldstandard, compare2goldstandard_input_list)
+    except Exception as inst:
+        print(type(inst))    # the exception type
+        print(inst.args)     # arguments stored in .args
+        print(inst)
 
     pr_dict = dict()
     precision_dict = dict()
