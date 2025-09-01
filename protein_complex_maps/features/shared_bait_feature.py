@@ -16,10 +16,10 @@ from functools import partial
 import mpmath as mpm
 
 
-pd.set_option('display.height', 1000)
-pd.set_option('display.max_rows', 500)
-pd.set_option('display.max_columns', 500)
-pd.set_option('display.width', 1000)
+#pd.set_option('display.height', 1000)
+#pd.set_option('display.max_rows', 500)
+#pd.set_option('display.max_columns', 500)
+#pd.set_option('display.width', 1000)
 
 def pval(k,n,m,N):
     pv = 0.0
@@ -141,7 +141,7 @@ def main():
     print("Thresholding %s >= %s" % (args.abundance_column, args.abundance_threshold))
     feature_table = feature_table[feature_table[args.abundance_column] >= args.abundance_threshold]
     output_df = shared_bait_feature(feature_table, args.bait_id_column, args.id_column, args.abundance_column, args.bh_correct, args.use_abundance, numOfProcs=args.numOfProcs)
-    output_df = output_df.sort('neg_ln_pval', ascending=False)
+    output_df = output_df.sort_values('neg_ln_pval', ascending=False)
     output_df.to_csv(args.output_file, index=False, header=True)
 
 def shared_bait_feature(feature_table, bait_id_column, id_column, abundance_column='abundance', bh_correct=False, use_abundance=False, numOfProcs = 1):
@@ -233,9 +233,14 @@ def shared_bait_feature_helper(geneid, feature_table, id_column, use_abundance, 
     #print (feature_table_geneid)
 
     #kdrew: make ids into strings and generate tuples of pairs of genes
+    #kdrew: this should probably be frozensets
     feature_shared_bait_table_geneid['gene_id1_str'] = feature_shared_bait_table_geneid[id_column].apply(str)
     feature_shared_bait_table_geneid['gene_id2_str'] = feature_shared_bait_table_geneid[id_column+'_right'].apply(str)
-    feature_shared_bait_table_geneid['IDs'] = map(sorted, zip(feature_shared_bait_table_geneid['gene_id1_str'].values, feature_shared_bait_table_geneid['gene_id2_str'].values))
+
+    #feature_shared_bait_table_geneid['IDs'] = map(sorted, zip(feature_shared_bait_table_geneid['gene_id1_str'].values, feature_shared_bait_table_geneid['gene_id2_str'].values))
+    id_pairs = map(sorted, zip(feature_shared_bait_table_geneid['gene_id1_str'].values, feature_shared_bait_table_geneid['gene_id2_str'].values))
+    feature_shared_bait_table_geneid['IDs'] = [x for x in id_pairs]
+
     feature_shared_bait_table_geneid['IDs_tup'] = feature_shared_bait_table_geneid['IDs'].apply(tuple)
     print (feature_shared_bait_table_geneid)
     sys.stdout.flush()

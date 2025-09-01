@@ -28,7 +28,14 @@ class ComplexComparison(object):
         for x in gold_standard:
             self.gold_standard_proteins = self.gold_standard_proteins.union(x)
 
+        self.cluster_proteins = set()
         self.clusters = [set(x) for x in clusters]
+        for x in clusters:
+            self.cluster_proteins = self.cluster_proteins.union(x)
+
+        #kdrew: test if there are more than one protein shared between gold standard and predicted clusters
+        if len(self.cluster_proteins.intersection(self.gold_standard_proteins)) <= 1:
+            raise Gold_Standard_Overlap_Exception("ERROR: Gold Standard Overlap Warning: no pairs in clusters overlap with gold standard")
 
         if remove_non_gold_standard_proteins:
             self.remove_non_gold_standard_proteins()
@@ -73,6 +80,9 @@ class ComplexComparison(object):
     def get_clusters(self,):
         return self.clusters
 
+    def get_cluster_proteins(self,):
+        return self.cluster_proteins
+
     def get_na_table(self,):
         if self.na_table is None:
             self.generate_na_table()
@@ -94,22 +104,22 @@ class ComplexComparison(object):
 
     def precision_measure(self,topN=None):
         max_df = self.prediction_wise_max_matching_ratio_distribution(topN=topN)
-        #print max_df
+        print "precision_measure: %s" % max_df
         lengths = [len(x) for x in self.get_clusters()]
-        #print lengths
+        print "precision_measure: %s" % lengths
         sum_weighted_max = np.sum(lengths*max_df)
-        #print sum_weighted_max
+        print "precision_measure: %s" % sum_weighted_max
 
         precision_measure = sum_weighted_max / np.sum(lengths)
         return precision_measure
 
     def recall_measure(self,topN=None):
         max_df = self.max_matching_ratio_distribution(topN=topN)
-        #print max_df
+        print "recall_measure: %s" % max_df
         lengths = [len(x) for x in self.get_gold_standard()]
-        #print lengths
+        print "recall_measure: %s" % lengths
         sum_weighted_max = np.sum(lengths*max_df)
-        #print sum_weighted_max
+        print "recall_measure: %s" % sum_weighted_max
 
         recall_measure = sum_weighted_max / np.sum(lengths)
         return recall_measure
@@ -253,6 +263,20 @@ class ComplexComparison(object):
 
         return {'precision_mean':precision_mean,'recall_mean':recall_mean}
 
+    def clique_comparision_metric_weighted_precision(self, force=False):
+        result_dict = self.clique_comparison_metric(force=force)
+        total_weight = sum([result_dict[x]['numOfClusters'] for x in result_dict.keys()])
+        weighted_precision = 1.0*sum([result_dict[x]['precision'] * result_dict[x]['numOfClusters'] for x in result_dict.keys()]) / total_weight
+
+        return weighted_precision
+
+    def clique_comparision_metric_weighted_recall(self, force=False):
+        result_dict = self.clique_comparison_metric(force=force)
+
+        weighted_recall = 1.0*sum([result_dict[x]['recall']*result_dict[x]['numOfClusters'] for x in result_dict.keys()]) / sum([result_dict[x]['numOfClusters'] for x in result_dict.keys()])
+        return weighted_recall
+
+
     #kdrew: calculate precision, recall and f1score for all clique sizes up to largest cluster
     def clique_comparison_metric(self, force=False):
 
@@ -262,6 +286,8 @@ class ComplexComparison(object):
 
         #kdrew: only evaluate on proteins that are in gold standard set
         clusters = [clust & self.get_gold_standard_proteins() for clust in self.get_clusters()]
+        #print "clusters in gold standard"
+        #print clusters
         clust_max_len = np.max(map(len,clusters))
         gs_max_len = np.max(map(len,self.get_gold_standard()))
 
@@ -278,6 +304,10 @@ class ComplexComparison(object):
         else:
             #kdrew: if max_clique is set but the largest cluster is smaller, use the smaller value
             max_len = min(self.max_clique, clust_max_len)
+
+        #print "max_len: %s" % max_len
+        if max_len < 2:
+            raise Gold_Standard_Overlap_Exception("ERROR: Gold Standard Overlap Warning: no pairs in clusters overlap with gold standard")
 
         cumulative_gs_tp = 0.0
         cumulative_tp = 0.0
@@ -642,12 +672,14 @@ def main():
     clique_pr_mean = ccmm['precision_mean']
     clique_re_mean = ccmm['recall_mean']
     clique_f1grand = cplx_compare.clique_comparison_metric_grandf1score(mean_func=np.mean)
+    clique_weighted_precision = cplx_compare.clique_comparision_metric_weighted_precision()
+    clique_weighted_recall = cplx_compare.clique_comparision_metric_weighted_recall()
     wccmm = cplx_compare.clique_comparison_metric_mean(weighted=True)
     clique_weighted_pr_mean = wccmm['precision_mean']
     clique_weighted_re_mean = wccmm['recall_mean']
     clique_weighted_hmean = hmean([wccmm['precision_mean'],wccmm['recall_mean']])
-    print "Sensitivity\tPPV\tACC\tMMR\tPWMMR\tMMR_PWMMR_hmean\tPrecision measure\tRecall measure\tPrecision Recall product\tClique Precision Mean\tRecall Mean\tF-Grand K-Clique\tClique Weighted Precision Mean\tWeighted Recall Mean\tClique Weighted hmean (F-weighted K-Clique)\n"
-    print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (sensitivity, ppv, acc, mmr, pwmmr, pwmmr_hmean, precision_measure, recall_measure, precision_recall_product, clique_pr_mean, clique_re_mean, clique_f1grand, clique_weighted_pr_mean, clique_weighted_re_mean, clique_weighted_hmean) 
+    print "Sensitivity\tPPV\tACC\tMMR\tPWMMR\tMMR_PWMMR_hmean\tPrecision measure\tRecall measure\tPrecision Recall product\tClique Precision Mean\tRecall Mean\tF-Grand K-Clique\tClique Weighted Precision Mean\tWeighted Recall Mean\tClique Weighted hmean (F-weighted K-Clique), Clique Weighted Precision, Clique Weighted Recall\n"
+    print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (sensitivity, ppv, acc, mmr, pwmmr, pwmmr_hmean, precision_measure, recall_measure, precision_recall_product, clique_pr_mean, clique_re_mean, clique_f1grand, clique_weighted_pr_mean, clique_weighted_re_mean, clique_weighted_hmean, clique_weighted_precision, clique_weighted_recall) 
 
 
     if args.plot_filename != None:
@@ -661,6 +693,12 @@ def main():
         plt.savefig(args.plot_filename)
 
 class Exclusion_Complexes_Exception(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
+class Gold_Standard_Overlap_Exception(Exception):
     def __init__(self, value):
         self.value = value
     def __str__(self):

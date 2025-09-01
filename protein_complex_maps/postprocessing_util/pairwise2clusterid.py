@@ -23,25 +23,31 @@ def main():
                                     help="Output values for features in input_feature_matrix specified by --features")
     parser.add_argument("--id_columns", action="store", nargs='+', dest="id_columns", required=False, default=None,
                                     help="Names of columns for ids in input_feature_matrix")
+    parser.add_argument("--input_test_ppis", action="store", dest="test_ppis_file", required=False, default=None, 
+                                    help="Filename of test ppis")
+    parser.add_argument("--input_train_ppis", action="store", dest="train_ppis_file", required=False, default=None, 
+                                    help="Filename of train ppis")
     parser.add_argument("--output_filename", action="store", dest="out_filename", required=True,
                                     help="Output filename ")
     args = parser.parse_args()
 
+
+
     clusters = []
-    f = open(args.cluster_filename, "rb")
+    f = open(args.cluster_filename, "r")
     for line in f.readlines():
         clusters.append(line.split())
 
     pairwise_interactions = dict()
-    f2 = open(args.pairwise_filename, "rb")
+    f2 = open(args.pairwise_filename, "r")
     for line in f2.readlines():
         try:
             pairwise_interactions[frozenset([line.split()[0],line.split()[1]])] = line.split()[2]
         except IndexError:
             continue
 
-    print "read input files"
-    fout = open(args.out_filename,"wb")
+    print("read input files")
+    fout = open(args.out_filename,"w")
 
     if args.feature_matrix != None:
         #kdrew: read in feature matrix and set the id columns to be strings
@@ -49,9 +55,10 @@ def main():
         feature_table = feature_table.fillna(0.0)
         if 'frozenset_ids_str_order' not in feature_table.columns:
             #kdrew: create frozenset_ids_str_order column
-            feature_table['frozenset_ids'] = map(frozenset,feature_table[[args.id_columns[0],args.id_columns[1]]].values)
+            feature_table['frozenset_ids'] = [x for x in map(frozenset,feature_table[[args.id_columns[0],args.id_columns[1]]].values)]
             feature_table['frozenset_ids_str_order'] = feature_table['frozenset_ids'].apply(list).apply(sorted).apply(str)
             feature_table = feature_table.set_index(['frozenset_ids_str_order'])
+            print(feature_table)
 
         if args.header_names != None:
             fout.write("id1\tscore\t%s\n" % "\t".join(args.header_names))
@@ -60,8 +67,9 @@ def main():
     else:
         fout.write("id1\tscore\n")
 
-    print "Wrote Header"
+    print("Wrote Header")
 
+    cluster_entries = []
     for clustid, cluster in enumerate(clusters):
         for prot_pair in it.combinations(cluster,2):
             id1 = "%s_%s" % (clustid, prot_pair[0])
@@ -86,12 +94,9 @@ def main():
                         #out_list.append(str(feature_table[feature_table['frozenset_ids_str_order'] == ids_str_order][field].values[0] != 0.0))
                         out_list.append(str( feature_table.loc[ids_str_order][field] != 0.0))
 
-                fout.write("%s (pp) %s\t%s\t%s" % (id1, id2, score, "\t".join(out_list)))
+                fout.write("%s (pp) %s\t%s\t%s\n" % (id1, id2, score, "\t".join(out_list)))
             else:
-                fout.write("%s (pp) %s\t%s" % (id1, id2, score))
-            fout.write("\n")
-
-    fout.close()
+                fout.write("%s (pp) %s\t%s\n" % (id1, id2, score))
 
 if __name__ == "__main__":
     main()

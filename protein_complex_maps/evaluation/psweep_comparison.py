@@ -1,4 +1,5 @@
 
+import os
 import argparse
 import numpy as np
 import multiprocessing as mp
@@ -59,6 +60,9 @@ def main():
 
     for i, cluster_filename in enumerate(args.cluster_filenames):
 
+        if os.stat(cluster_filename).st_size == 0:
+            continue
+
         parameter_dict = dict()
         parameter_dict['cluster_filename'] = cluster_filename
         parameter_dict['gs_boot_iteration'] = 1
@@ -76,7 +80,12 @@ def main():
         #compare2goldstandard(cluster_filename, gold_standard_complexes, args.id_delimin)
 
     #kdrew: call compare2goldstandard with pool of processors
-    compare2goldstandard_results = p.map(compare2goldstandard, compare2goldstandard_input_list)
+    try:
+        compare2goldstandard_results = p.map(compare2goldstandard, compare2goldstandard_input_list)
+    except Exception as inst:
+        print(type(inst))    # the exception type
+        print(inst.args)     # arguments stored in .args
+        print(inst)
 
     pr_dict = dict()
     precision_dict = dict()
@@ -86,6 +95,12 @@ def main():
     cumulative_precision_dict = dict()
     cumulative_recall_dict = dict()
     numOfClusters_dict = dict()
+    weighted_clique_precision_dict = dict()
+    weighted_clique_recall_dict = dict()
+    precision_measure_dict = dict()
+    recall_measure_dict = dict()
+    totalClusters_dict = dict()
+    totalProteins_dict = dict()
     
     #kdrew: put the results into dictionaries
     for result in compare2goldstandard_results:
@@ -96,6 +111,12 @@ def main():
         cumulative_precision_dict[result['ii']] = result['cumulative_precision_list']
         cumulative_recall_dict[result['ii']] = result['cumulative_recall_list']
         numOfClusters_dict[result['ii']] = result['numOfClusters']
+        weighted_clique_precision_dict[result['ii']] = result['weighted_clique_precision']
+        weighted_clique_recall_dict[result['ii']] = result['weighted_clique_recall']
+        precision_measure_dict[result['ii']] = result['precision_measure']
+        recall_measure_dict[result['ii']] = result['recall_measure']
+        totalClusters_dict[result['ii']] = result['totalClusters']
+        totalProteins_dict[result['ii']] = result['totalProteins']
 
     #kdrew: store all dictionaries into a master dictionary
     pr_dict['precision'] = precision_dict
@@ -105,10 +126,16 @@ def main():
     pr_dict['cumulative_precision'] = cumulative_precision_dict
     pr_dict['cumulative_recall'] = cumulative_recall_dict
     pr_dict['numOfClusters'] = numOfClusters_dict
+    pr_dict['weighted_clique_precision'] = weighted_clique_precision_dict
+    pr_dict['weighted_clique_recall'] = weighted_clique_recall_dict
+    pr_dict['precision_measure'] = precision_measure_dict
+    pr_dict['recall_measure'] = recall_measure_dict
+    pr_dict['totalClusters'] = totalClusters_dict
+    pr_dict['totalProteins'] = totalProteins_dict
 
     #kdrew: output results 
     outfile = open(args.output_filename,"wb")
-    outfile.write("ii$precision_list$recall_list$f1score_list$grand_f1score$cumulative_precision$cumulative_recall$numOfClusters\n" )
+    outfile.write("ii$precision_list$recall_list$f1score_list$grand_f1score$cumulative_precision$cumulative_recall$numOfClusters$weighted_clique_precision$weighted_clique_recall$precision_measure$recall_measure$totalClusters$totalProteins\n" )
     for ii in pr_dict['precision'].keys():
         print ii
         precision_out = ",".join(map(str,pr_dict['precision'][ii]))
@@ -118,7 +145,13 @@ def main():
         cumulative_precision_out = ",".join(map(str,pr_dict['cumulative_precision'][ii]))
         cumulative_recall_out = ",".join(map(str,pr_dict['cumulative_recall'][ii]))
         numOfClusters_out = ",".join(map(str,pr_dict['numOfClusters'][ii]))
-        outfile.write("%s$%s$%s$%s$%s$%s$%s$%s\n" % (ii,precision_out, recall_out, f1score_out, grand_f1score_out, cumulative_precision_out, cumulative_recall_out, numOfClusters_out))
+        weighted_clique_precision_out = str(pr_dict['weighted_clique_precision'][ii])
+        weighted_clique_recall_out = str(pr_dict['weighted_clique_recall'][ii])
+        precision_measure_out = str(pr_dict['precision_measure'][ii])
+        recall_measure_out = str(pr_dict['recall_measure'][ii])
+        totalClusters_out = str(pr_dict['totalClusters'][ii])
+        totalProteins_out = str(pr_dict['totalProteins'][ii])
+        outfile.write("%s$%s$%s$%s$%s$%s$%s$%s$%s$%s$%s$%s$%s$%s\n" % (ii,precision_out, recall_out, f1score_out, grand_f1score_out, cumulative_precision_out, cumulative_recall_out, numOfClusters_out, weighted_clique_precision_out, weighted_clique_recall_out, precision_measure_out, recall_measure_out, totalClusters_out, totalProteins_out))
 
     outfile.close()
 
@@ -154,10 +187,17 @@ def compare2goldstandard(parameter_dict):
             if id_delimin in seg:
                 ii = seg.split(id_delimin)[1]
 
-    cplx_compare = cc.ComplexComparison(gs_complexes, predicted_clusters, exclusion_complexes=ex_complexes, samples=samples, exact=exact, max_clique=max_clique, pseudocount=pseudocount, normalize_by_combinations=normalize_by_combinations)
+    try:
+        cplx_compare = cc.ComplexComparison(gs_complexes, predicted_clusters, exclusion_complexes=ex_complexes, samples=samples, exact=exact, max_clique=max_clique, pseudocount=pseudocount, normalize_by_combinations=normalize_by_combinations)
+        result_dict = cplx_compare.clique_comparison_metric()
+    except (cc.Gold_Standard_Overlap_Exception, cc.Exclusion_Complexes_Exception) as e:
+        print "%s in ii:%s" % (e, ii)
+        #kdrew: think about whether these default error values are appropriate, maybe want to still calculate totalClusters and totalProteins, others?
+        return {'ii':ii, 'boot_iteration':boot_iteration, 'precision_list':[], 'recall_list':[], 'f1score_list':[], 'grand_f1score':None, 'cumulative_precision_list':[], 'cumulative_recall_list':[], 'numOfClusters':[], 'weighted_clique_precision':None, 'weighted_clique_recall':None, 'precision_measure':None, 'recall_measure':None, 'totalClusters':None, 'totalProteins':None}
     
-    result_dict = cplx_compare.clique_comparison_metric()
     #print result_dict
+    #kdrew: are these guaranteed ordered? doesn't look like it if ordered based on keys, probably get away with it because keys are integers
+    #kdrew: this should all be done with a pandas dataframe anyway
     precision_list = [result_dict[x]['precision'] for x in result_dict.keys()]
     recall_list = [result_dict[x]['recall'] for x in result_dict.keys()]
     f1score_list = [result_dict[x]['f1score'] for x in result_dict.keys()]
@@ -178,6 +218,15 @@ def compare2goldstandard(parameter_dict):
 
     #f1score_hmean_dict[ii] = cplx_compare.clique_comparison_metric_grandf1score()
     grand_f1score = cplx_compare.clique_comparison_metric_grandf1score()
+    weighted_clique_precision = cplx_compare.clique_comparision_metric_weighted_precision()
+    weighted_clique_recall = cplx_compare.clique_comparision_metric_weighted_recall()
+
+    precision_measure = cplx_compare.precision_measure()
+    recall_measure = cplx_compare.recall_measure()
+
+    totalClusters = len(cplx_compare.get_clusters())
+    totalProteins = len(cplx_compare.get_cluster_proteins())
+
     #print f1score_hmean_dict[ii]
 
 
@@ -188,7 +237,7 @@ def compare2goldstandard(parameter_dict):
     #
     #return return_dict
 
-    return {'ii':ii, 'boot_iteration':boot_iteration, 'precision_list':precision_list, 'recall_list':recall_list, 'f1score_list':f1score_list, 'grand_f1score':grand_f1score, 'cumulative_precision_list':cumulative_precision_list, 'cumulative_recall_list':cumulative_recall_list, 'numOfClusters':numOfClusters_list}
+    return {'ii':ii, 'boot_iteration':boot_iteration, 'precision_list':precision_list, 'recall_list':recall_list, 'f1score_list':f1score_list, 'grand_f1score':grand_f1score, 'cumulative_precision_list':cumulative_precision_list, 'cumulative_recall_list':cumulative_recall_list, 'numOfClusters':numOfClusters_list, 'weighted_clique_precision':weighted_clique_precision, 'weighted_clique_recall':weighted_clique_recall, 'precision_measure':precision_measure, 'recall_measure':recall_measure, 'totalClusters':totalClusters, 'totalProteins':totalProteins}
 
 #kdrew: reads in precision recall file and returns dictionary
 def read_pr_file(filename, names=None):
