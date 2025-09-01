@@ -23,36 +23,60 @@ class SharedBaitFeatureTest(unittest.TestCase):
 
     def testSharedBaitFeature(self, ):
         result_table = sbf.shared_bait_feature(self.feature_table, 'bait_geneid', 'gene_id')
-        print "result_table"
-        print result_table
+        print("result_table")
+        print(result_table)
 
         #print "result_table 2,3"
         #print result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')]
         #print "result_table 2,3 pair_count"
         #print result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')].pair_count
+        print("result_table A,2")
+        print(result_table[(result_table['gene_id1'] == 'A') & (result_table['gene_id2'] == '2')].pair_count)
         assert((result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')].pair_count == 3).all())
         np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')].neg_ln_pval.values[0], 2.302585, decimal=6 )
         np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == 'B')].neg_ln_pval.values[0], 0.510826, decimal=6 )
         np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '5') & (result_table['gene_id2'] == 'C')].neg_ln_pval.values[0], 1.609438, decimal=6 )
         np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '8') & (result_table['gene_id2'] == 'E')].pval.values[0], 0.4 )
-        np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == 'A') & (result_table['gene_id2'] == '2')].pair_count.values[0], 1 )
+        np.testing.assert_almost_equal(result_table[(result_table['gene_id2'] == 'A') & (result_table['gene_id1'] == '2')].pair_count.values[0], 1 )
 
         #print result_table.query("gene_id1 == '2' and gene_id2 == '3'")
         np.testing.assert_almost_equal( result_table.query("gene_id1 == '2' and gene_id2 == '3'").neg_ln_pval.values, 2.302585 )
 
+    def testSharedBaitFeature_bhcorrect(self, ):
+        result_table = sbf.shared_bait_feature(self.feature_table, 'bait_geneid', 'gene_id', bh_correct=True)
+        print("result_table")
+        print(result_table)
+
+        #print "result_table 2,3"
+        #print result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')]
+        #print "result_table 2,3 pair_count"
+        #print result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')].pair_count
+        print("result_table A,2")
+        print(result_table[(result_table['gene_id1'] == 'A') & (result_table['gene_id2'] == '2')].pair_count)
+        assert((result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')].pair_count == 3).all())
+        np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')].neg_ln_pval.values[0], 2.302585, decimal=6 )
+        np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == 'B')].neg_ln_pval.values[0], 0.510826, decimal=6 )
+        np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '5') & (result_table['gene_id2'] == 'C')].neg_ln_pval.values[0], 1.609438, decimal=6 )
+        np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '8') & (result_table['gene_id2'] == 'E')].pval.values[0], 0.4 )
+        np.testing.assert_almost_equal(result_table[(result_table['gene_id2'] == 'A') & (result_table['gene_id1'] == '2')].pair_count.values[0], 1 )
+
+        #print result_table.query("gene_id1 == '2' and gene_id2 == '3'")
+        np.testing.assert_almost_equal( result_table.query("gene_id1 == '2' and gene_id2 == '3'").neg_ln_pval.values, 2.302585 )
+
+
     def testSharedBaitFeatureUseAbundancePresent(self, ):
         #kdrew: tests the abundance code using a single count per experiment, this should result in the same p-values as using presence absence 
-        print "testSharedBaitFeatureUseAbundancePresent"
+        print("testSharedBaitFeatureUseAbundancePresent")
         result_table = sbf.shared_bait_feature(self.feature_table, 'bait_geneid', 'gene_id', 'abundance_present',use_abundance=True)
-        print "result_table"
-        print result_table
+        print("result_table")
+        print(result_table)
 
         assert((result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')].pair_count == 3).all())
         np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')].neg_ln_pval.values[0], 2.302585, decimal=6 )
         np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == 'B')].neg_ln_pval.values[0], 0.510826, decimal=6 )
         np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '5') & (result_table['gene_id2'] == 'C')].neg_ln_pval.values[0], 1.609438, decimal=6 )
         np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '8') & (result_table['gene_id2'] == 'E')].pval.values[0], 0.4 )
-        np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == 'A') & (result_table['gene_id2'] == '2')].pair_count.values[0], 1 )
+        np.testing.assert_almost_equal(result_table[(result_table['gene_id2'] == 'A') & (result_table['gene_id1'] == '2')].pair_count.values[0], 1 )
 
         #print result_table.query("gene_id1 == '2' and gene_id2 == '3'")
         np.testing.assert_almost_equal( result_table.query("gene_id1 == '2' and gene_id2 == '3'").neg_ln_pval.values, 2.302585 )
@@ -60,10 +84,10 @@ class SharedBaitFeatureTest(unittest.TestCase):
     def testSharedBaitFeatureUseAbundance(self, ):
         #kdrew: tests abundance code with pseudo real abundances, 
         #kdrew: should fail test currently
-        print "testSharedBaitFeatureUseAbundance"
+        print("testSharedBaitFeatureUseAbundance")
         result_table = sbf.shared_bait_feature(self.feature_table, 'bait_geneid', 'gene_id', 'abundance',use_abundance=True)
-        print "result_table"
-        print result_table
+        print("result_table")
+        print(result_table)
 
         assert((result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')].pair_count == 11).all())
         #np.testing.assert_almost_equal(result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')].pval.values[0], 0.11029411764705878, decimal=6 )
@@ -77,45 +101,45 @@ class SharedBaitFeatureTest(unittest.TestCase):
 
     def testSharedBaitFeatureBoundaryCaseOld(self, ):
 
-        print "OLD Boundary Case"
-        print "k=670,m=1196,n=813,N=5891"
+        print("OLD Boundary Case")
+        print("k=670,m=1196,n=813,N=5891")
         pval = sbf.pval_old(k=670,m=1196,n=813,N=5891, logchoose=True)
-        print "*****************"
-        print pval
+        print("*****************")
+        print(pval)
 
-        print "k=722,m=1088,n=1064,N=5891"
+        print("k=722,m=1088,n=1064,N=5891")
         pval = sbf.pval_old(k=722,m=1088,n=1064,N=5891, logchoose=True)
-        print pval
+        print(pval)
 
-        print "k=22,m=1088,n=1064,N=5891"
+        print("k=22,m=1088,n=1064,N=5891")
         pval = sbf.pval_old(k=22,m=1088,n=1064,N=5891, logchoose=True)
-        print pval
+        print(pval)
 
-        print "k=3,m=5,n=4,N=5891"
+        print("k=3,m=5,n=4,N=5891")
         pval = sbf.pval_old(k=3,m=5,n=4,N=5891, logchoose=True)
-        print pval
+        print(pval)
 
     def testSharedBaitFeatureBoundaryCase(self, ):
 
-        print "Boundary Case"
-        print "k=670,m=1196,n=813,N=5891"
+        print("Boundary Case")
+        print("k=670,m=1196,n=813,N=5891")
         pval = sbf.pval(k=670,m=1196,n=813,N=5891)
-        print "*****************"
-        print pval
+        print("*****************")
+        print(pval)
         #kdrew: integration test rather than unit test (hard to verify correct value without arbitrary machine precision
         np.testing.assert_almost_equal(pval, 1.56133062575003e-394)
 
-        print "k=722,m=1088,n=1064,N=5891"
+        print("k=722,m=1088,n=1064,N=5891")
         pval = sbf.pval(k=722,m=1088,n=1064,N=5891)
-        print pval
+        print(pval)
 
-        print "k=22,m=1088,n=1064,N=5891"
+        print("k=22,m=1088,n=1064,N=5891")
         pval = sbf.pval(k=22,m=1088,n=1064,N=5891)
-        print pval
+        print(pval)
 
-        print "k=3,m=5,n=4,N=5891"
+        print("k=3,m=5,n=4,N=5891")
         pval = sbf.pval(k=3,m=5,n=4,N=5891)
-        print pval
+        print(pval)
         np.testing.assert_almost_equal(pval, 1.17423417751186e-9)
 
     def testSharedBaitFeatureTransformPvalOld(self, ):

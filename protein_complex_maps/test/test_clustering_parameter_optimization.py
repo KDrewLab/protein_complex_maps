@@ -53,7 +53,7 @@ class ClusterTest(unittest.TestCase):
     def testClustering(self,):
 
         predicted_clusters, i  = cpo.cluster_helper(self.parameter_dict)
-        print predicted_clusters
+        print(predicted_clusters)
         #assert (Y[0][0] == 4)
         #assert (Y[0][1] == 7)
         #assert (Y[1][0] == 8)
@@ -63,7 +63,7 @@ class ClusterTest(unittest.TestCase):
 
         self.parameter_dict['twostep_combination'] = ['cfinder','agglomod']
         predicted_clusters, i  = cpo.cluster_helper(self.parameter_dict)
-        print predicted_clusters
+        print(predicted_clusters)
 
 
 if __name__ == "__main__":

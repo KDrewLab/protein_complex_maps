@@ -66,15 +66,15 @@ class ComplexComparisonTest(unittest.TestCase):
         np.testing.assert_almost_equal( ccobj.ppv(), 8.0/13.0)
         np.testing.assert_almost_equal( ccobj.acc(), 0.6793662204867574)
 
-        print ccobj.sensitivity()
-        print ccobj.ppv()
-        print ccobj.acc()
+        print(ccobj.sensitivity())
+        print(ccobj.ppv())
+        print(ccobj.acc())
 
     def testComplexComparison2(self, ):
         ccobj2 = cc.ComplexComparison(self.gold_standard2, self.clusters2)
-        print ccobj2.sensitivity()
-        print ccobj2.ppv()
-        print ccobj2.acc()
+        print(ccobj2.sensitivity())
+        print(ccobj2.ppv())
+        print(ccobj2.acc())
 
     def testComplexComparison3(self, ):
         ccobj = cc.ComplexComparison(self.gold_standard, self.clusters)
@@ -85,30 +85,30 @@ class ComplexComparisonTest(unittest.TestCase):
 
     def testComplexComparison5(self, ):
         ccobj5 = cc.ComplexComparison(self.gold_standard5, self.clusters5)
-        print "testComplexComparison5"
-        print "sum_complexes: %s" % (sum(map(len,self.gold_standard5)))
-        print ccobj5.sensitivity()
-        print ccobj5.ppv()
-        print ccobj5.acc()
+        print("testComplexComparison5")
+        print("sum_complexes: %s" % (sum(map(len,self.gold_standard5))))
+        print(ccobj5.sensitivity())
+        print(ccobj5.ppv())
+        print(ccobj5.acc())
         #kdrew: values reported in Brohee and van Helden 2006, table 4  
         np.testing.assert_almost_equal(ccobj5.sensitivity(), 0.69, 2)
         np.testing.assert_almost_equal(ccobj5.ppv(), 0.85, 2)
         np.testing.assert_almost_equal(ccobj5.acc(), 0.77, 2)
 
-        print "done testComplexComparison5"
+        print("done testComplexComparison5")
 
     def testComplexComparison6(self, ):
         ccobj6 = cc.ComplexComparison(self.gold_standard5, self.gold_standard5)
-        print "testComplexComparison6"
+        print("testComplexComparison6")
         #kdrew: tests gold_standard5 vs itself
-        print ccobj6.sensitivity()
-        print ccobj6.ppv()
-        print ccobj6.acc()
+        print(ccobj6.sensitivity())
+        print(ccobj6.ppv())
+        print(ccobj6.acc())
         #kdrew: oddly ppv does not equal 1.0
         np.testing.assert_almost_equal(ccobj6.sensitivity(), 1.0, 2)
         np.testing.assert_almost_equal(ccobj6.ppv(), 0.92, 2)
         np.testing.assert_almost_equal(ccobj6.acc(), 0.96, 2)
-        print "done testComplexComparison6"
+        print("done testComplexComparison6")
 
     def testComplexComparisonMMR(self, ):
         ccobj = cc.ComplexComparison(self.gold_standard, self.clusters)
@@ -119,12 +119,12 @@ class ComplexComparisonTest(unittest.TestCase):
         # maxNA(gs[3]) = 2**2 / 2*2 = 1.0
         # maxNA(gs[4]) = 0**2 / 2*2 = 0.0
         # MMR = 2.875 / 5 = 0.575
-        print ccobj.mmr()
+        print(ccobj.mmr())
         np.testing.assert_almost_equal( ccobj.mmr(), 0.575)
         self.clusters.append(['h','k'])
         self.clusters.append(['j','l'])
         ccobj = cc.ComplexComparison(self.gold_standard, self.clusters)
-        print ccobj.mmr()
+        print(ccobj.mmr())
         np.testing.assert_almost_equal( ccobj.mmr(), 0.575)
 
     def testComplexComparisonPWMMR(self, ):
@@ -135,7 +135,7 @@ class ComplexComparisonTest(unittest.TestCase):
         # maxNA(clusters[2]) = 2**2 / 2*2 = 1.0
         # maxNA(clusters[3]) = 0**2 / 2*2 = 0.0
         # PWMMR = 2.75 / 4 = 0.6875
-        print ccobj.pwmmr()
+        print(ccobj.pwmmr())
         np.testing.assert_almost_equal( ccobj.pwmmr(), 0.6875)
 
         self.clusters.append(['h','k'])
@@ -152,47 +152,59 @@ class ComplexComparisonTest(unittest.TestCase):
         ccobj.remove_non_gold_standard_proteins()
         # maxNA(clusters[6]) = 1**2 / 2*2 = 0.25
         # PWMMR = 3.25 / 4 = 8.125
-        print ccobj.pwmmr()
+        print(ccobj.pwmmr())
         np.testing.assert_almost_equal( ccobj.pwmmr(), 0.8125)
 
     def testComplexComparisonMMR_hmean(self, ):
         ccobj = cc.ComplexComparison(self.gold_standard, self.clusters)
-        print ccobj.mmr_pwmmr_hmean()
+        print(ccobj.mmr_pwmmr_hmean())
         np.testing.assert_almost_equal( ccobj.mmr_pwmmr_hmean(), 0.62623762376237624)
 
         self.clusters.append(['h','k'])
         self.clusters.append(['j','l'])
 
         ccobj = cc.ComplexComparison(self.gold_standard, self.clusters)
-        print ccobj.mmr_pwmmr_hmean()
+        print(ccobj.mmr_pwmmr_hmean())
         np.testing.assert_almost_equal( ccobj.mmr_pwmmr_hmean(), 0.51008064516129026)
 
     def testComplexComparison_PrecisionMeasure(self, ):
         ccobj = cc.ComplexComparison(self.gold_standard, self.clusters, remove_non_gold_standard_proteins=True)
-        print ccobj.precision_measure()
+        print(ccobj.precision_measure())
         np.testing.assert_almost_equal( ccobj.precision_measure(), 1.0)
 
         self.clusters.append(['a','d'])
         ccobj = cc.ComplexComparison(self.gold_standard, self.clusters, remove_non_gold_standard_proteins=True)
-        print ccobj.precision_measure()
+        print(ccobj.precision_measure())
         np.testing.assert_almost_equal( ccobj.precision_measure(), 0.85)
 
+    #kdrew: tests recall calculation of clusters on gold standard complexes
+    #kdrew: gold_standard complexes: [['a', 'b', 'c'], ['d', 'e', 'f'], ['f', 'g'], ['a', 'b'], ['g', 'i']]
+    #kdrew: clusters: [['a', 'b', 'c'], ['d', 'e', 'f', 'h'], ['a', 'b'], ['j', 'k']]
+    #kdrew: clusters with non_gold_standard_proteins removed: [['a', 'b', 'c'], ['d', 'e', 'f'], ['a', 'b']
+    #kdrew: recall is evaluated by Neighborhood Affinity (NA): |clst intersection complex| / (|clst| * |complex|), for each cluster complex pair
+    #kdrew: max matching ratio is the max of the NA values for each complex (i.e. use the highest matching clst to each complex) = (1.0, 1.0, 0.167, 1.0, 0.0)
+    #kdrew: perfect matches for 1st complex (cluster 1), 2nd complex (cluster 2), and 4th complex (cluster 1). partial match for 3rd complex (cluster 2 matched 'f', missed 'g'). Missed 5th complex completely ('g','i')
+    #kdrew: weight by lengths of complexes [3, 3, 2, 2, 2]
+    #kdrew: take weighted average of max matching ratio 3*1.0 + 3*1.0 + 2*0.167 + 2*1.0 + 2*0.0 = 8.334 / 12 = 0.6945
     def testComplexComparison_RecallMeasure(self, ):
+        print(self.gold_standard)
+        print(self.clusters)
         ccobj = cc.ComplexComparison(self.gold_standard, self.clusters, remove_non_gold_standard_proteins=True)
-        print ccobj.recall_measure()
-        np.testing.assert_almost_equal( ccobj.recall_measure(), 1.0)
+        print(ccobj.recall_measure())
+        np.testing.assert_almost_equal( ccobj.recall_measure(), 0.6944444)
 
+        #kdrew: adding clusters shouldn't do anything because of remove_non_gold_standard_proteins flag
         self.clusters.append(['a','d'])
         ccobj = cc.ComplexComparison(self.gold_standard, self.clusters, remove_non_gold_standard_proteins=True)
-        print ccobj.recall_measure()
-        np.testing.assert_almost_equal( ccobj.recall_measure(), 0.85)
+        print(ccobj.recall_measure())
+        np.testing.assert_almost_equal( ccobj.recall_measure(), 0.6944444)
 
 
     def testCliqueComparison(self, ):
         ccobj = cc.ComplexComparison(self.gold_standard3, self.clusters3, pseudocount=0)
 
         result_dict = ccobj.clique_comparison(clique_size=3)
-        print "testCliqueComparison: %s" % (result_dict,)
+        print("testCliqueComparison: %s" % (result_dict,))
         #kdrew: previous way of sampling, new way below removes redudancy
         #np.testing.assert_equal(result_dict['tp'],6696)
         #np.testing.assert_equal(result_dict['fp'],3304)
@@ -263,8 +275,8 @@ class ComplexComparisonTest(unittest.TestCase):
         #kdrew: estimated
         np.testing.assert_almost_equal( d[3]['recall'], 1.0 )
 
-        print "f1score 2: %s" % d[2]['f1score']
-        print "f1score 3: %s" % d[3]['f1score']
+        print("f1score 2: %s" % d[2]['f1score'])
+        print("f1score 3: %s" % d[3]['f1score'])
         #np.testing.assert_almost_equal( d[3]['f1score'], 0.80746526742591385 )
         #np.testing.assert_almost_equal( d[2]['f1score'], 0.80012243736467659 )
 
@@ -296,28 +308,28 @@ class ComplexComparisonTest(unittest.TestCase):
         np.testing.assert_allclose(grandf1score, 0.78873239436631382)
 
     def testCliqueComparisonMetricSampling(self, ):
-        print "Sampling test"
+        print("Sampling test")
         actual_precision = 8.0/11
         ccobj = cc.ComplexComparison(self.gold_standard3, self.clusters3, pseudocount=0, samples=10)
         d = ccobj.clique_comparison_metric()
-        print "10 precision: %s" % d[2]['precision']
-        print "10 diff: %s" % abs(d[2]['precision'] - actual_precision)
+        print("10 precision: %s" % d[2]['precision'])
+        print("10 diff: %s" % abs(d[2]['precision'] - actual_precision))
         ccobj = cc.ComplexComparison(self.gold_standard3, self.clusters3, pseudocount=0, samples=100)
         d = ccobj.clique_comparison_metric()
-        print "100 precision: %s" % d[2]['precision']
-        print "100 diff: %s" % abs(d[2]['precision'] - actual_precision)
+        print("100 precision: %s" % d[2]['precision'])
+        print("100 diff: %s" % abs(d[2]['precision'] - actual_precision))
         ccobj = cc.ComplexComparison(self.gold_standard3, self.clusters3, pseudocount=0, samples=1000)
         d = ccobj.clique_comparison_metric()
-        print "1k precision: %s" % d[2]['precision']
-        print "1k diff: %s" % abs(d[2]['precision'] - actual_precision)
+        print("1k precision: %s" % d[2]['precision'])
+        print("1k diff: %s" % abs(d[2]['precision'] - actual_precision))
         ccobj = cc.ComplexComparison(self.gold_standard3, self.clusters3, pseudocount=0, samples=10000)
         d = ccobj.clique_comparison_metric()
-        print "10k precision: %s" % d[2]['precision']
-        print "10k diff: %s" % abs(d[2]['precision'] - actual_precision)
+        print("10k precision: %s" % d[2]['precision'])
+        print("10k diff: %s" % abs(d[2]['precision'] - actual_precision))
         ccobj = cc.ComplexComparison(self.gold_standard3, self.clusters3, pseudocount=0, samples=100000)
         d = ccobj.clique_comparison_metric()
-        print "100k precision: %s" % d[2]['precision']
-        print "100k diff: %s" % abs(d[2]['precision'] - actual_precision)
+        print("100k precision: %s" % d[2]['precision'])
+        print("100k diff: %s" % abs(d[2]['precision'] - actual_precision))
         #ccobj = cc.ComplexComparison(self.gold_standard3, self.clusters3, pseudocount=0, samples=1000000)
         #d = ccobj.clique_comparison_metric()
         #print "1m precision: %s" % d[2]['precision']
@@ -328,32 +340,32 @@ class ComplexComparisonTest(unittest.TestCase):
         #print "10m diff: %s" % abs(d[2]['precision'] - actual_precision)
 
     def testCliqueComparisonMetricSampling2(self, ):
-        print "Sampling test 2"
+        print("Sampling test 2")
         ccobj = cc.ComplexComparison(self.gold_standard4, self.clusters4, pseudocount=0)
         d = ccobj.clique_comparison_metric()
-        print "precision 2: %s" % d[2]['precision']
-        print "precision 3: %s" % d[3]['precision']
-        print "precision 4: %s" % d[4]['precision']
-        print "precision 5: %s" % d[5]['precision']
-        print "precision 6: %s" % d[6]['precision']
+        print("precision 2: %s" % d[2]['precision'])
+        print("precision 3: %s" % d[3]['precision'])
+        print("precision 4: %s" % d[4]['precision'])
+        print("precision 5: %s" % d[5]['precision'])
+        print("precision 6: %s" % d[6]['precision'])
         #print "precision 7: %s" % d[7]['precision']
         #print "precision 8: %s" % d[8]['precision']
 
         ccobj = cc.ComplexComparison(self.gold_standard4, self.clusters4, pseudocount=0, exact=True)
         d_exact = ccobj.clique_comparison_metric()
-        print "precision exact 2: %s" % d_exact[2]['precision']
-        print "precision exact 3: %s" % d_exact[3]['precision']
-        print "precision exact 4: %s" % d_exact[4]['precision']
-        print "precision exact 5: %s" % d_exact[5]['precision']
-        print "precision exact 6: %s" % d_exact[6]['precision']
+        print("precision exact 2: %s" % d_exact[2]['precision'])
+        print("precision exact 3: %s" % d_exact[3]['precision'])
+        print("precision exact 4: %s" % d_exact[4]['precision'])
+        print("precision exact 5: %s" % d_exact[5]['precision'])
+        print("precision exact 6: %s" % d_exact[6]['precision'])
         #print "precision exact 7: %s" % d_exact[7]['precision']
         #print "precision exact 8: %s" % d_exact[8]['precision']
 
-        print "diff 2: %s" % abs(d[2]['precision'] - d_exact[2]['precision'])
-        print "diff 3: %s" % abs(d[3]['precision'] - d_exact[3]['precision'])
-        print "diff 4: %s" % abs(d[4]['precision'] - d_exact[4]['precision'])
-        print "diff 5: %s" % abs(d[5]['precision'] - d_exact[5]['precision'])
-        print "diff 6: %s" % abs(d[6]['precision'] - d_exact[6]['precision'])
+        print("diff 2: %s" % abs(d[2]['precision'] - d_exact[2]['precision']))
+        print("diff 3: %s" % abs(d[3]['precision'] - d_exact[3]['precision']))
+        print("diff 4: %s" % abs(d[4]['precision'] - d_exact[4]['precision']))
+        print("diff 5: %s" % abs(d[5]['precision'] - d_exact[5]['precision']))
+        print("diff 6: %s" % abs(d[6]['precision'] - d_exact[6]['precision']))
         #print "diff 7: %s" % abs(d[7]['precision'] - d_exact[7]['precision'])
         #print "diff 8: %s" % abs(d[8]['precision'] - d_exact[8]['precision'])
 
@@ -364,14 +376,14 @@ class ComplexComparisonTest(unittest.TestCase):
         assert abs(d[6]['precision'] - d_exact[6]['precision'])  == 0 
 
     def testCliqueComparisonMetricExclusion(self, ):
-        print "Exclusion test"
+        print("Exclusion test")
         ccobj = cc.ComplexComparison(self.gold_standard4, self.clusters4, self.exclude_complexes, pseudocount=0)
         d = ccobj.clique_comparison_metric()
-        print "precision 2: %s" % d[2]['precision']
-        print "precision 3: %s" % d[3]['precision']
-        print "precision 4: %s" % d[4]['precision']
-        print "precision 5: %s" % d[5]['precision']
-        print "precision 6: %s" % d[6]['precision']
+        print("precision 2: %s" % d[2]['precision'])
+        print("precision 3: %s" % d[3]['precision'])
+        print("precision 4: %s" % d[4]['precision'])
+        print("precision 5: %s" % d[5]['precision'])
+        print("precision 6: %s" % d[6]['precision'])
 
         #kdrew: (tp cluster1 + tp cluster2) / (tp_c1 + tp_c2 + fp_c3 - excluded_cliques)
         #kdrew: (15 + 15) / (15 + 15 + 15 - 4) = 0.7317073170731707
@@ -380,67 +392,67 @@ class ComplexComparisonTest(unittest.TestCase):
         np.testing.assert_almost_equal( d[3]['precision'], 0.6779661016949152)
 
     def testCliqueComparisonNormalizedByCombinations(self, ):
-        print "Normalize By Combinations test"
+        print("Normalize By Combinations test")
         ccobj = cc.ComplexComparison(self.gold_standard, self.gold_standard,  normalize_by_combinations=True, pseudocount=0.0000001)
         ccmm = ccobj.clique_comparison_metric_mean()
         #ccmm = ccobj.clique_comparison(2)
-        print ccmm
+        print(ccmm)
 
         #np.testing.assert_almost_equal( d[2]['precision'], 0.7317073170731707)
         #np.testing.assert_almost_equal( d[3]['precision'], 0.6779661016949152)
 
     def testCliqueComparisonNormalizedByCombinations2(self, ):
-        print "Normalize By Combinations test: 2"
+        print("Normalize By Combinations test: 2")
         ccobj = cc.ComplexComparison(self.gold_standard6, self.clusters6,  normalize_by_combinations=True, pseudocount=0)
         ccmm = ccobj.clique_comparison_metric_mean(weighted=True)
-        print ccmm
-        print "PM: %s" % ccobj.precision_measure()
-        print "RM: %s" % ccobj.recall_measure()
-        print "PRD: %s" % ccobj.precision_recall_product()
+        print(ccmm)
+        print("PM: %s" % ccobj.precision_measure())
+        print("RM: %s" % ccobj.recall_measure())
+        print("PRD: %s" % ccobj.precision_recall_product())
 
         ccobj = cc.ComplexComparison(self.gold_standard7, self.clusters7,  normalize_by_combinations=True, pseudocount=0)
         ccmm = ccobj.clique_comparison_metric_mean(weighted=True)
-        print ccmm
-        print "PM 7: %s" % ccobj.precision_measure()
-        print "RM 7: %s" % ccobj.recall_measure()
-        print "PRD 7: %s" % ccobj.precision_recall_product()
+        print(ccmm)
+        print("PM 7: %s" % ccobj.precision_measure())
+        print("RM 7: %s" % ccobj.recall_measure())
+        print("PRD 7: %s" % ccobj.precision_recall_product())
 
         ccobj = cc.ComplexComparison(self.gold_standard7, self.clusters7a,  normalize_by_combinations=True, pseudocount=0)
         ccmm = ccobj.clique_comparison_metric_mean(weighted=True)
-        print ccmm
-        print "PM 7a: %s" % ccobj.precision_measure()
-        print "RM 7a: %s" % ccobj.recall_measure()
-        print "PRD 7a: %s" % ccobj.precision_recall_product()
+        print(ccmm)
+        print("PM 7a: %s" % ccobj.precision_measure())
+        print("RM 7a: %s" % ccobj.recall_measure())
+        print("PRD 7a: %s" % ccobj.precision_recall_product())
         #np.testing.assert_almost_equal( d[2]['precision'], 0.7317073170731707)
         #np.testing.assert_almost_equal( d[3]['precision'], 0.6779661016949152)
 
         ccobj = cc.ComplexComparison(self.gold_standard8, self.clusters8,  normalize_by_combinations=True, pseudocount=0)
         ccmm = ccobj.clique_comparison_metric_mean(weighted=True)
-        print ccmm
-        print "PM 8: %s" % ccobj.precision_measure()
-        print "RM 8: %s" % ccobj.recall_measure()
-        print "PRD 8: %s" % ccobj.precision_recall_product()
+        print(ccmm)
+        print("PM 8: %s" % ccobj.precision_measure())
+        print("RM 8: %s" % ccobj.recall_measure())
+        print("PRD 8: %s" % ccobj.precision_recall_product())
 
         ccobj = cc.ComplexComparison(self.gold_standard8, self.clusters8a,  normalize_by_combinations=True, pseudocount=0)
         ccmm = ccobj.clique_comparison_metric_mean(weighted=True)
-        print ccmm
-        print "PM 8a: %s" % ccobj.precision_measure()
-        print "RM 8a: %s" % ccobj.recall_measure()
-        print "PRD 8a: %s" % ccobj.precision_recall_product()
+        print(ccmm)
+        print("PM 8a: %s" % ccobj.precision_measure())
+        print("RM 8a: %s" % ccobj.recall_measure())
+        print("PRD 8a: %s" % ccobj.precision_recall_product())
 
         ccobj = cc.ComplexComparison(self.gold_standard9, self.clusters9,  normalize_by_combinations=True, pseudocount=0)
         ccmm = ccobj.clique_comparison_metric_mean(weighted=True)
-        print ccmm
-        print "PM 9: %s" % ccobj.precision_measure()
-        print "RM 9: %s" % ccobj.recall_measure()
-        print "PRD 9: %s" % ccobj.precision_recall_product()
+        print(ccmm)
+        print("PM 9: %s" % ccobj.precision_measure())
+        print("RM 9: %s" % ccobj.recall_measure())
+        print("PRD 9: %s" % ccobj.precision_recall_product())
 
         ccobj = cc.ComplexComparison(self.gold_standard9, self.clusters9a,  normalize_by_combinations=True, pseudocount=0)
         ccmm = ccobj.clique_comparison_metric_mean(weighted=True)
-        print ccmm
-        print "PM 9a: %s" % ccobj.precision_measure()
-        print "RM 9a: %s" % ccobj.recall_measure()
-        print "PRD 9a: %s" % ccobj.precision_recall_product()
+        print(ccmm)
+        print("PM 9a: %s" % ccobj.precision_measure())
+        print("RM 9a: %s" % ccobj.recall_measure())
+        print("PRD 9a: %s" % ccobj.precision_recall_product())
 
 if __name__ == "__main__":
         unittest.main()
