@@ -10,9 +10,9 @@ import protein_complex_maps.complex_map_website.complex_db as cdb
 
 def main():
 
-    parser = argparse.ArgumentParser(description="Loads complex humap_id from input files")
-    parser.add_argument("--humap_id_file", action="store", dest="humap_id_file", required=True, 
-                                    help="Complex humap_id filename")
+    parser = argparse.ArgumentParser(description="Loads complex complexmap_id from input files")
+    parser.add_argument("--complexmap_id_file", action="store", dest="complexmap_id_file", required=True, 
+                                    help="Complex complexmap_id filename")
 
     args = parser.parse_args()
 
@@ -21,7 +21,7 @@ def main():
 
     db.create_all()
 
-    id_df = pd.read_csv(args.humap_id_file)
+    id_df = pd.read_csv(args.complexmap_id_file)
     id_dict = dict()
     for _, row in id_df.iterrows():
 
@@ -35,7 +35,7 @@ def main():
         pset = frozenset([p.uniprot_acc for p in c.proteins])
         print(pset)
         print(id_dict[pset])
-        c.humap_id = id_dict[pset]
+        c.complexmap_id = id_dict[pset]
         db.session.commit()
 
 if __name__ == "__main__":

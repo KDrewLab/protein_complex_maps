@@ -9,7 +9,7 @@ import datetime as dt
 import itertools as it
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/humap3v1.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/yeastmap1.db'
 
 app.config['SECRET_KEY'] = 'please, tell nobody'
 
@@ -37,7 +37,7 @@ class Complex(db.Model):
     """A single complex"""
     id = db.Column(db.Integer, primary_key=True)
     complex_id = db.Column(db.Integer, unique=True, index=True)
-    humap_id = db.Column(db.String(63), unique=True, index=True)
+    complexmap_id = db.Column(db.String(63), unique=True, index=True)
     complexportal_id = db.Column(db.String(63), unique=True, index=True)
     #kdrew: uses table name for ProteinComplexMapping class (annoying sqlalchemy magic)
     proteins = db.relationship('Protein', secondary='protein_complex_mapping', back_populates='complexes')
@@ -52,7 +52,7 @@ class Complex(db.Model):
 
     def complex_link(self,):
         #retstr = "<a href=displayComplexes?complex_key=%s>%s</a>" % (self.complex_id, self.complex_id)
-        retstr = "<a href=displayComplexes?complex_key=%s>%s</a>" % (self.humap_id, self.humap_id)
+        retstr = "<a href=displayComplexes?complex_key=%s>%s</a>" % (self.complexmap_id, self.complexmap_id)
         return retstr
 
     def complexportal_link(self,):

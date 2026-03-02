@@ -22,15 +22,15 @@ def main():
     db.create_all()
 
     fout = open(args.output_file,"w")
-    fout.write("HuMAP2_ID,Confidence,Uniprot_ACCs,genenames\n")
+    fout.write("complexMAP_ID,Confidence,Uniprot_ACCs,genenames\n")
     for c in db.session.query(cdb.Complex).all():
         if c:
-            print "complex id: %s" % c.humap_id
+            print "complex id: %s" % c.complexmap_id
             print "proteins: %s" % ' '.join([p.uniprot_acc for p in c.proteins])
             print "genenames: %s" % ' '.join([p.genename() for p in c.proteins])
             if len(c.proteins) == 0:
                 continue
-            fout.write("%s,%s,%s,%s\n" % (c.humap_id, c.top_rank, ' '.join([p.uniprot_acc for p in c.proteins]), ' '.join([p.genename() for p in c.proteins])))
+            fout.write("%s,%s,%s,%s\n" % (c.complexmap_id, c.top_rank, ' '.join([p.uniprot_acc for p in c.proteins]), ' '.join([p.genename() for p in c.proteins])))
         else:
             print "Cannot find complex %s" % (complex_id)
 
