@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../bootstrap-3.3.6/docs/favicon.ico">
 
-    <title>hu.MAP 3.0: Download</title>
+    <title>yeast.MAP: Download</title>
 
     <link href="../static/styles/test.css" rel="stylesheet">
 
@@ -39,7 +39,7 @@
   <body role="document">
 
     <!-- Fixed navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-yeast navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -48,7 +48,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/h3">hu.MAP 3.0</a>
+          <a class="navbar-brand" href="/h3">yeast.MAP</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
@@ -78,9 +78,9 @@
 
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron">
-        <h1>hu.MAP 3.0</h1>
+        <h1>yeast.MAP</h1>
         <p> 
-            Human Protein Complex Map
+            Yeast Protein Complex Map
         </p>
       </div>
 
@@ -90,23 +90,23 @@
       </div>
       <h4>Complex Map Files</h4>
       <ul>
-          <li><a href="/static/downloads/humap3/hu.MAP3.0_complexes_wConfidenceScores_total15326_wGenenames_20240922.csv" target="_blank">Protein Complex Map</a>
+          <li><a href="/static/downloads/yeast/yeast_complexes_wConfidenceScores_Genenames_20240922.csv" target="_blank">Protein Complex Map</a>
               <ul>
                   <li>Description: Complexes generated from two stage clustering of fully intergrated protein interaction network</li>
-                  <li>Format: HuMAP3_ID,ComplexConfidence,Uniprot_ACCs,genenames</li>
+                  <li>Format: YeastMAP_ID,ComplexConfidence,Uniprot_ACCs,genenames</li>
                   <li>ComplexConfidence maps to complexes identified in 6 individual clusterings. 1=Extremely High, 2=Very High, 3=High, 4=Moderate High, 5=Medium High, 6=Medium</li>
               </ul>                                                                            
           </li>
           <br>
           <li>Protein Interactions in Complexes with probability scores <a href="/static/downloads/humap3/humap3_complex_pairs_20240929.pairsWprob" target="_blank">(Uniprot)</a>,
-          <a href="/static/downloads/humap3/hu.MAP3.0_complex_pairs_genenames_20240930.pairsWprob" target="_blank">(genename)</a>
+          <a href="/static/downloads/yeast/yeast_complex_pairs_genenames_20240930.pairsWprob" target="_blank">(genename)</a>
               <ul>
-                  <li>Description: Protein pair predictions present in hu.MAP3.0 complexes with the corresponding ML probability score. </li>
+                  <li>Description: Protein pair predictions present in yeast.MAP complexes with the corresponding ML probability score. </li>
                   <li>Format: protein_id [tab] protein_id [tab] score</li>
               </ul>
           </li>
           <br>
-          <li>Protein Interaction Network with probability scores <a href="/static/downloads/humap3/humap3_all_ppis_202305.pairsWprob.gz" target="_blank">(Uniprot gzip)</a>,
+          <li>Protein Interaction Network with probability scores <a href="/static/downloads/yeast/yeast_all_ppis_202305.pairsWprob.gz" target="_blank">(Uniprot gzip)</a>,
               <ul>
                   <li>Description: All protein pair predictions with the corresponding ML probability score. </li>
                   <li>Format: protein_id [tab] protein_id [tab] score</li>
