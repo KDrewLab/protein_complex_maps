@@ -115,7 +115,7 @@ from flask import url_for, redirect, request, jsonify
 #    return render_template('frontpage.html')
 
 @app.route("/")
-@app.route("/h3")
+@app.route("/y1")
 def show_complexes(complexes=[]):
     print complexes
     #complexes = cdb.Complex.query.all()
