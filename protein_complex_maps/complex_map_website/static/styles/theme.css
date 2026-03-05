@@ -26,7 +26,7 @@ body {
 }
 
 .navbar-yeast{
-    background-color:#d2a400;
+    background-color:#f5cc5b;
     border-color:#080808
 }
 .navbar-yeast .navbar-brand{
@@ -48,7 +48,7 @@ body {
 }
 .navbar-yeast .navbar-nav>.active>a,.navbar-yeast .navbar-nav>.active>a:focus,.navbar-yeast .navbar-nav>.active>a:hover{
     color:#fff;
-    background-color:#d2a400
+    background-color:#f5cc5b
 }
 .navbar-yeast .navbar-nav>.disabled>a,.navbar-yeast .navbar-nav>.disabled>a:focus,.navbar-yeast .navbar-nav>.disabled>a:hover{
     color:#444;
