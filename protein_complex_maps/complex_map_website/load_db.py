@@ -27,19 +27,20 @@ def main():
     for line in csvreader:
         #kdrew: header: acc,clustid,clustid_key,genename,key,proteinname,uniprot_link
         #kdrew: if header do not parse
-        if 'clustid_key' in line:
+        if 'clustID_acc' in line:
             continue
         #print line
         acc = line[0]
         clustid = line[1]
         clustid_key = line[2]
         genename = line[3]
-        geneid = line[4]
-        proteinname = line[5].strip()
+        #geneid = line[4]
+        proteinname = line[4].strip()
+        annotation = line[5]
         uniprot_link = line[6]
 
         #p = cdb.get_or_create(db, cdb.Protein, gene_id = geneid, uniprot_acc=acc, genename=genename, proteinname=proteinname, uniprot_url=uniprot_link)
-        p = cdb.get_or_create(db, cdb.Protein, gene_id = geneid, uniprot_acc=acc, proteinname=proteinname, uniprot_url=uniprot_link)
+        p = cdb.get_or_create(db, cdb.Protein, uniprot_acc=acc, proteinname=proteinname, uniprot_url=uniprot_link, annotation_score=annotation)
         db.session.add(p)
 
         if clustid != '':
