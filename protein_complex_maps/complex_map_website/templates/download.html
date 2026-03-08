@@ -90,23 +90,23 @@
       </div>
       <h4>Complex Map Files</h4>
       <ul>
-          <li><a href="/static/downloads/yeast/yeast_complexes_wConfidenceScores_Genenames_20240922.csv" target="_blank">Protein Complex Map</a>
+          <li><a href="/static/downloads/yeast/yeast.MAP_complexes_wConfidenceScores_wGenenames_total779_20251214.csv" target="_blank">Protein Complex Map</a>
               <ul>
                   <li>Description: Complexes generated from two stage clustering of fully intergrated protein interaction network</li>
-                  <li>Format: YeastMAP_ID,ComplexConfidence,Uniprot_ACCs,genenames</li>
-                  <li>ComplexConfidence maps to complexes identified in 6 individual clusterings. 1=Extremely High, 2=Very High, 3=High, 4=Moderate High, 5=Medium High, 6=Medium</li>
+                  <li>Format: yeastMAP_ID,ComplexConfidence,UniProt_ACCs,Genenames</li>
+                  <li>ComplexConfidence maps to complexes identified in 2 individual clusterings. 1=Extremely High, 2=Very High</li>
               </ul>                                                                            
           </li>
           <br>
-          <li>Protein Interactions in Complexes with probability scores <a href="/static/downloads/humap3/humap3_complex_pairs_20240929.pairsWprob" target="_blank">(Uniprot)</a>,
-          <a href="/static/downloads/yeast/yeast_complex_pairs_genenames_20240930.pairsWprob" target="_blank">(genename)</a>
+          <li>Protein Interactions in Complexes with probability scores <a href="/static/downloads/yeast/yeastmapV3_complex_pairs_20260308.pairsWProb" target="_blank">(Uniprot)</a>,
+          <a href="/static/downloads/yeast/yeastmapV3_complex_pairs_genename_20260308.pairsWprob" target="_blank">(genename)</a>
               <ul>
                   <li>Description: Protein pair predictions present in yeast.MAP complexes with the corresponding ML probability score. </li>
                   <li>Format: protein_id [tab] protein_id [tab] score</li>
               </ul>
           </li>
           <br>
-          <li>Protein Interaction Network with probability scores <a href="/static/downloads/yeast/yeast_all_ppis_202305.pairsWprob.gz" target="_blank">(Uniprot gzip)</a>,
+          <li>Protein Interaction Network with probability scores <a href="/static/downloads/yeast/yeastmap_v3_all_predictions_incl_test_train_ppis_no_labels_20251111.pairsWprob.gz" target="_blank">(Uniprot gzip)</a>,
               <ul>
                   <li>Description: All protein pair predictions with the corresponding ML probability score. </li>
                   <li>Format: protein_id [tab] protein_id [tab] score</li>
@@ -170,37 +170,37 @@
 
       <h4>Test and training data</h4>
       <ul>
-          <li>Train Complexes <a href="/static/downloads/humap3/ComplexPortal_reduced_20230309.train.txt" target="_blank">(Uniprot)</a>
+          <li>Train Complexes <a href="/static/downloads/yeast/complex_portal_scerevisiae_559292_reduced_complexes_20251007.train.txt" target="_blank">(Uniprot)</a>
               <ul>
                   <li>Description: List of training complexes used in protein complex discovery pipeline</li>
                   <li>Format: protein_id, protein_id, protein_id ... (one complex per line)</li>
               </ul>
           </li>
-          <li>Test Complexes <a href="/static/downloads/humap3/ComplexPortal_reduced_20230309.test.txt" target="_blank">(Uniprot)</a>
+          <li>Test Complexes <a href="/static/downloads/yeast/complex_portal_scerevisiae_559292_reduced_complexes_20251007.test.txt" target="_blank">(Uniprot)</a>
               <ul>
                   <li>Description: List of test complexes used in protein complex discovery pipeline</li>
                   <li>Format: protein_id, protein_id, protein_id ... (one complex per line)</li>
               </ul>
           </li>
-          <li>Train Positive PPIs <a href="/static/downloads/humap3/ComplexPortal_reduced_20230309.train_ppis.txt" target="_blank">(Uniprot)</a>
+          <li>Train Positive PPIs <a href="/static/downloads/yeast/complex_portal_scerevisiae_559292_reduced_complexes_20251007.train_ppis.txt" target="_blank">(Uniprot)</a>
               <ul>
                   <li>Description: List of train postive ppis used in protein complex discovery pipeline</li>
                   <li>Format: protein_id, protein_id</li>
               </ul>
           </li>
-          <li>Train Negative PPIs <a href="/static/downloads/humap3/ComplexPortal_reduced_20230309.neg_train_ppis.txt" target="_blank">(Uniprot)</a>
+          <li>Train Negative PPIs <a href="/static/downloads/yeast/complex_portal_scerevisiae_559292_reduced_complexes_20251007.neg_train_ppis.txt" target="_blank">(Uniprot)</a>
               <ul>
                   <li>Description: List of train negative ppis used in protein complex discovery pipeline</li>
                   <li>Format: protein_id, protein_id</li>
               </ul>
           </li>
-          <li>Test Positive PPIs <a href="/static/downloads/humap3/ComplexPortal_reduced_20230309.test_ppis.txt" target="_blank">(Uniprot)</a>
+          <li>Test Positive PPIs <a href="/static/downloads/yeast/complex_portal_scerevisiae_559292_reduced_complexes_20251007.test_ppis.txt" target="_blank">(Uniprot)</a>
               <ul>
                   <li>Description: List of test positive ppis used in protein complex discovery pipeline</li>
                   <li>Format: protein_id, protein_id</li>
               </ul>
           </li>
-          <li>Test Negative PPIs <a href="/static/downloads/humap3/ComplexPortal_reduced_20230309.neg_test_ppis.txt" target="_blank">(Uniprot)</a>
+          <li>Test Negative PPIs <a href="/static/downloads/yeast/complex_portal_scerevisiae_559292_reduced_complexes_20251007.neg_test_ppis.txt" target="_blank">(Uniprot)</a>
               <ul>
                   <li>Description: List of test negative ppis used in protein complex discovery pipeline</li>
                   <li>Format: protein_id, protein_id</li>
@@ -211,7 +211,7 @@
 
       <h4>Feature Matrix</h4>
       <ul>
-          <li><a href="/static/downloads/humap3/humap3_20220625.featmap.gz" target="_blank">Feature Matrix (Uniprot gzip)</a>
+          <li><a href="/static/downloads/yeast/yeastmap_v3_full_featmat_20251014.featmap.gz" target="_blank">Feature Matrix (Uniprot gzip)</a>
               <ul>
                   <li>Description: Table of features from integrated datasets for pairs of proteins (Uniprot ACCs). Also includes Weighted Matrix Model features</li>
                   <li>Format: protein_id,protein_id,[features]</li>
