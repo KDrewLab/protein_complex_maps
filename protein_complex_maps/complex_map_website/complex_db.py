@@ -134,7 +134,7 @@ class Protein(db.Model):
         return retstr
 
     def ncbi_link(self,):
-        retstr = "<a href=https://www.ncbi.nlm.nih.gov/gene/%s target=\"_blank\">%s</a>" % (self.uniprot_acc, 'NCBI')
+        retstr = "<a href=https://www.ncbi.nlm.nih.gov/protein/%s target=\"_blank\">%s</a>" % (self.uniprot_acc, 'NCBI')
         return retstr
 
 class Edge(db.Model):

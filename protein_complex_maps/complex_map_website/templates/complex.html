@@ -228,6 +228,7 @@
                         </script> 
                     
                     </th>                                                   
+
 		    <!--
                     <th>ProteomeHD<button class="btn btn-default btn-xs" onclick="protHDFunction()">?</button>
                         <script>
@@ -265,9 +266,9 @@
                         <td>&nbsp{{ edge.get_proteins()[0].genename() }}</td>
                         <td>&nbsp{{ edge.get_proteins()[1].genename() }}</td>
 
-			<!--
                         <td> {{ edge.score|round(3)|safe }}</td>
 
+			<!--
 			{% set prothd_score = edge.get_prothd_score() %}
                         {% if prothd_score > 0.8 %}
                             <td><span style="color:007c80;">{{ prothd_score|safe }}</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
