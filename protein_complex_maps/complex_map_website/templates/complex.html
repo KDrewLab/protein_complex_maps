@@ -228,6 +228,7 @@
                         </script> 
                     
                     </th>                                                   
+		    <!--
                     <th>ProteomeHD<button class="btn btn-default btn-xs" onclick="protHDFunction()">?</button>
                         <script>
                             function protHDFunction() {
@@ -242,6 +243,7 @@
                             }
                         </script>                                                    
                     </th>
+		    -->
 
 		    {% set EDGELIMIT = 50 %}
 		    {% if edges|length < EDGELIMIT %}
@@ -262,6 +264,8 @@
                     <tr>
                         <td>&nbsp{{ edge.get_proteins()[0].genename() }}</td>
                         <td>&nbsp{{ edge.get_proteins()[1].genename() }}</td>
+
+			<!--
                         <td> {{ edge.score|round(3)|safe }}</td>
 
 			{% set prothd_score = edge.get_prothd_score() %}
@@ -278,8 +282,10 @@
                         {% else %}
                             <td> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>
                         {% endif %}
+			-->
 
 			<!-- Interface Overlap -->
+			<!--
 			<td>
 				{% if edge.get_interface_mutex() == None %}
 				    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
@@ -301,6 +307,7 @@
 					{% endfor %}
 				{% endif %}
 			</td>
+			-->
 			{% if edges|length < EDGELIMIT %}
 
 				<td>

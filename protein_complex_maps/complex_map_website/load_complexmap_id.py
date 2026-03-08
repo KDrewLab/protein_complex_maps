@@ -23,9 +23,11 @@ def main():
 
     id_df = pd.read_csv(args.complexmap_id_file)
     id_dict = dict()
+    conf_dict = dict()
     for _, row in id_df.iterrows():
 
-        id_dict[frozenset(row.uniprotACCs.split())] = row.clustID
+        id_dict[frozenset(row.UniProt_ACCs.split())] = row.yeastMAP_ID
+        conf_dict[frozenset(row.UniProt_ACCs.split())] = row.ComplexConfidence
 
     for c in db.session.query(cdb.Complex).all():
         print(c.complex_id)
@@ -35,7 +37,10 @@ def main():
         pset = frozenset([p.uniprot_acc for p in c.proteins])
         print(pset)
         print(id_dict[pset])
+        print(conf_dict[pset])
+        #kdrew: temporary comment for debugging
         c.complexmap_id = id_dict[pset]
+        c.top_rank = conf_dict[pset]
         db.session.commit()
 
 if __name__ == "__main__":
