@@ -266,7 +266,11 @@
                         <td>&nbsp{{ edge.get_proteins()[0].genename() }}</td>
                         <td>&nbsp{{ edge.get_proteins()[1].genename() }}</td>
 
-                        <td> {{ edge.score|round(3)|safe }}</td>
+			{% if edge.score > 0.0 %}
+				<td> {{ edge.score|round(3)|safe }}</td>
+                        {% else %}
+				<td> &nbsp </td>
+
 
 			<!--
 			{% set prothd_score = edge.get_prothd_score() %}
