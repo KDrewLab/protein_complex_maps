@@ -102,7 +102,7 @@ def complexes_to_csv(complexes, prot_ids=[], pvalue_dict=None, genename_cannotfi
 class SearchForm(Form):
     complex_id = StringField(u'Complex ID:')
     #genename = StringField(u'Gene Name (ex. OFD1):')
-    listOfGenenames = TextAreaField(u'List of Gene Names or Uniprot ACCs (ex. OFD1 PCM1 Q1MSJ5):')
+    listOfGenenames = TextAreaField(u'List of Gene Names or Uniprot ACCs (ex. ATP2 ATPA_YEAST P38077):')
     enrichment = StringField(u'Enrichment (ex. cilium):')
     protein = StringField(u'Protein (ex. Centrosomal protein):')
     submit = SubmitField(u'Search')
