@@ -103,8 +103,8 @@ class SearchForm(Form):
     complex_id = StringField(u'Complex ID:')
     #genename = StringField(u'Gene Name (ex. OFD1):')
     listOfGenenames = TextAreaField(u'List of Gene Names or Uniprot ACCs (ex. ATP2 ATPA_YEAST P38077):')
-    enrichment = StringField(u'Enrichment (ex. cilium):')
-    protein = StringField(u'Protein (ex. Centrosomal protein):')
+    enrichment = StringField(u'Enrichment (ex. Oxidative phosphorylation):')
+    protein = StringField(u'Protein (ex. V-type proton):')
     submit = SubmitField(u'Search')
 
 from flask import render_template
