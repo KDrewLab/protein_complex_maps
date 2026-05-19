@@ -9,7 +9,7 @@ import datetime as dt
 import itertools as it
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/yeastmap1.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/stemmap1.db'
 
 app.config['SECRET_KEY'] = 'please, tell nobody'
 
