@@ -36,12 +36,13 @@ def main():
         split_line = line.split(',')
         print split_line
 
-        #kdrew: example: 0_P25359,0_P38792,P25359,P38792,0_P25359 (pp) 0_P38792,P25359,P38792,0.7471802830696106,pp
+        #kdrew: example: 0_Q8C2Q3,0_O70133,Q8C2Q3,O70133,0_Q8C2Q3 (pp) 0_O70133,0.9870548248291016,pp
+
 
         prot1 = split_line[2]
         prot2 = split_line[3]
         try:
-            score = float(split_line[7])
+            score = float(split_line[5])
         except ValueError:
             score = np.nan
 
