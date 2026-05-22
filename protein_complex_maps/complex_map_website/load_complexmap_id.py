@@ -26,8 +26,8 @@ def main():
     conf_dict = dict()
     for _, row in id_df.iterrows():
 
-        id_dict[frozenset(row.UniProt_ACCs.split())] = row.yeastMAP_ID
-        conf_dict[frozenset(row.UniProt_ACCs.split())] = row.ComplexConfidence
+        id_dict[frozenset(row.UniProt_ACCs.split())] = row.stem_map_ID
+        conf_dict[frozenset(row.UniProt_ACCs.split())] = row.Complex_confidence
 
     for c in db.session.query(cdb.Complex).all():
         print(c.complex_id)
