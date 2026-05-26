@@ -102,9 +102,9 @@ def complexes_to_csv(complexes, prot_ids=[], pvalue_dict=None, genename_cannotfi
 class SearchForm(Form):
     complex_id = StringField(u'Complex ID:')
     #genename = StringField(u'Gene Name (ex. OFD1):')
-    listOfGenenames = TextAreaField(u'List of Gene Names or Uniprot ACCs (ex. ATP2 ATPA_YEAST P38077):')
-    enrichment = StringField(u'Enrichment (ex. Oxidative phosphorylation):')
-    protein = StringField(u'Protein (ex. V-type proton):')
+    listOfGenenames = TextAreaField(u'List of Gene Names or Uniprot ACCs (ex. Arid1a P97496 SMRD1_MOUSE):')
+    enrichment = StringField(u'Enrichment (ex. chromatin remodeling):')
+    protein = StringField(u'Protein (ex. stem cell):')
     submit = SubmitField(u'Search')
 
 from flask import render_template
