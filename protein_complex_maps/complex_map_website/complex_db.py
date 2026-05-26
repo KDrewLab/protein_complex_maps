@@ -145,6 +145,7 @@ class Edge(db.Model):
     #kdrew: uses table name for EdgeComplexMapping class (annoying sqlalchemy magic)
     complexes = db.relationship('Complex', secondary='edge_complex_mapping',  back_populates='edges')
     score = db.Column(db.Float)
+    humap3_score = db.Column(db.Float)
     #kdrew: precision should be calculated from sklearn precision_recall_curve
     precision = db.Column(db.Float)
     #kdrew: window_precision should be calculated for a window surrounding the given edge's svm confidence score
