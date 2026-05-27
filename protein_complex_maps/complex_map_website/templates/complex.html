@@ -229,6 +229,15 @@
                     
                     </th>                                                   
 
+                    <th>Prior <button class="btn btn-default btn-xs" onclick="scoreFunction()">?</button> 
+                        <script>
+                            function scoreFunction() {
+				    alert("Edge Prior is the hu.MAP3.0 confidence value used as a prior to generate stem.MAP. The value ranges from 0.0 to 1.0 and was calculated from 25k proteomics experiments integrated in Fischer et al. 2025.");
+                            }
+                        </script> 
+                    
+                    </th>                                                   
+
 		    <!--
                     <th>ProteomeHD<button class="btn btn-default btn-xs" onclick="protHDFunction()">?</button>
                         <script>
@@ -244,7 +253,6 @@
                             }
                         </script>                                                    
                     </th>
-		    -->
 
 		    {% set EDGELIMIT = 50 %}
 		    {% if edges|length < EDGELIMIT %}
@@ -257,6 +265,7 @@
                     </script>                                                    
                     </th>
 			{% endif %}
+		    -->
 
                 </tr>
                 </thead>
@@ -268,6 +277,12 @@
 
 			{% if edge.score > 0.0 %}
 				<td> {{ edge.score|round(3)|safe }}</td>
+                        {% else %}
+				<td> &nbsp </td>
+                        {% endif %}
+
+			{% if edge.humap3_score > 0.0 %}
+				<td> {{ edge.humap3_score|round(3)|safe }}</td>
                         {% else %}
 				<td> &nbsp </td>
                         {% endif %}
@@ -313,7 +328,7 @@
 					{% endfor %}
 				{% endif %}
 			</td>
-			-->
+
 			{% if edges|length < EDGELIMIT %}
 
 				<td>
@@ -325,6 +340,7 @@
 				</td>
 
 			{% endif %}
+			-->
 
                     </tr>
                 {% else %}
