@@ -24,9 +24,12 @@ def main():
 
     db.create_all()
 
+    BATCH_SIZE = 10000
+
     df = pd.read_csv(args.edge_file)
     priors_dict = {frozenset(x[0:2]):x[2] for x in df[['ID1','ID2','humap3_Prediction']].values }
 
+    updated = 0
     for e in db.session.query(cdb.Edge).all():
         prots = e.get_proteins()
         acc1 = prots[0].uniprot_acc
@@ -35,10 +38,20 @@ def main():
         try:
             #print(priors_dict[fset])
             e.humap3_score = priors_dict[fset]
-            db.session.commit()
+            #db.session.commit()
         except KeyError:
             print("no prior for %s" % fset)
             continue
+
+        updated += 1
+
+        # Periodic commit for huge tables
+        if updated % BATCH_SIZE == 0:
+            db.session.commit()
+            print("Committed %s updates" % updated)
+
+    # Final commit
+    db.session.commit()
 
 
 if __name__ == "__main__":
