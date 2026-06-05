@@ -29,6 +29,8 @@ def main():
                                             help="Correction method for multiple hypothesis testing {gSCS,fdr,bonferroni}, default = fdr")
     parser.add_argument("--resume_from_checkpoint", action="store_true", dest="resume_from_checkpoint", required=False, default=False, 
                                             help="Option to resume from checkpointed file: results_checkpoint.pkl, default = False")
+    parser.add_argument("--organism", action="store", dest="organism", required=False, default="hsapiens", 
+            help="Organism code for query proteome; default human ('hsapiens'); list of all codes: https://biit.cs.ut.ee/gprofiler/page/organism-list")
 
     args = parser.parse_args()
 
@@ -71,7 +73,7 @@ def main():
         r = requests.post(
                 url='https://biit.cs.ut.ee/gprofiler/api/gost/profile/',
                 json={
-                    'organism':'hsapiens',
+                    'organism':args.organism, #sfischer: option added to include other organisms
                     'query':complex_query_ids,
                     'no_iea':True,
                     'no_evidences':False,
