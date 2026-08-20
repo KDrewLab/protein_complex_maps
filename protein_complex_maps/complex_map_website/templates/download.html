@@ -176,15 +176,15 @@
       <br>
       <h4>Docker</h4>
       <ul>
-          <li><a href="/static/downloads/diffrac_docker.tar" target="_blank">Diffrac Docker image</a>
+          <li><a href="https://hub.docker.com/r/kdrew/diffrac" target="_blank">Diffrac Docker image (Docker Hub)</a>
           </li>
       </ul>
       <ol>
           <li>
-              Load docker image: <code>docker load --input diffrac_docker.tar</code>
+              Pull docker image: <code>docker pull kdrew/diffrac</code>
           </li>
           <li>
-              Run docker image: <code>docker run -it kdrew/diffrac_docker /bin/bash</code>
+              Run docker image: <code>docker run -it kdrew/diffrac /bin/bash</code>
           </li>
           <li>
               Run unit tests: <code>python test/test_diffrac.py</code>
