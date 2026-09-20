@@ -88,13 +88,16 @@ class Complex(db.Model):
         #es = [e for e in edges if e != None]
 
         #print("prior to self.edges")
-        #kdrew: self.edges lazy-loads prothd per edge (N+1 queries on
-        #complex.html's get_prothd_score() call in the per-edge loop) --
-        #re-querying by id with subqueryload batches all of that into one
-        #extra query total, instead of one per edge. On a complex with
-        #~4000 edges this took the page from ~50s to well under a second.
+        #kdrew: self.edges lazy-loads prothd AND evidences per edge --
+        #complex.html's get_prothd_score() call and its separate
+        #"for evidence in edge.evidences" loop each trigger their own
+        #per-edge query. Re-querying by id with subqueryload batches both
+        #into one extra query each, instead of one per edge. (The first
+        #pass at this fix only caught prothd and missed evidences --
+        #on a complex with ~4000 edges that's why it still took ~8s live
+        #instead of well under a second.)
         edge_ids = [e.id for e in self.edges]
-        es = db.session.query(Edge).filter(Edge.id.in_(edge_ids)).options(subqueryload(Edge.prothd)).all()
+        es = db.session.query(Edge).filter(Edge.id.in_(edge_ids)).options(subqueryload(Edge.prothd), subqueryload(Edge.evidences)).all()
         return sorted(set(es), key=lambda es: es.score, reverse=True)
 
         
