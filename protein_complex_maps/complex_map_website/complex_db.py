@@ -3,6 +3,7 @@ from flask import Flask
 #from flask.ext.sqlalchemy import SQLAlchemy
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, or_, and_
+from sqlalchemy.orm import subqueryload
 
 import datetime as dt
 
@@ -87,7 +88,13 @@ class Complex(db.Model):
         #es = [e for e in edges if e != None]
 
         #print("prior to self.edges")
-        return sorted(list(set(self.edges)), key=lambda es: es.score, reverse=True)
+        #kdrew: self.edges lazy-loads prothd and evidences per edge
+        #(complex.html's get_prothd_score() and its "for evidence in
+        #edge.evidences" loop) -- re-querying by id with subqueryload
+        #batches both into one extra query each, instead of one per edge.
+        edge_ids = [e.id for e in self.edges]
+        es = db.session.query(Edge).filter(Edge.id.in_(edge_ids)).options(subqueryload(Edge.prothd), subqueryload(Edge.evidences)).all()
+        return sorted(set(es), key=lambda es: es.score, reverse=True)
 
         
 class Gene(db.Model):
@@ -155,10 +162,15 @@ class Edge(db.Model):
     prothd = db.relationship('ProtHD')
 
     def get_proteins(self,):
-        #prot1 = db.session.query(Protein).filter(Protein.id==self.protein_key).first()
-        #prot2 = db.session.query(Protein).filter(Protein.id==self.protein_key2).first()
-        prots = db.session.query(Protein).filter(Protein.id.in_([self.protein_key,self.protein_key2])).all()
-        return prots
+        #kdrew: complex.html calls this twice per edge (once per protein
+        #column), and the old Protein.id.in_([...]) query always hit the
+        #DB fresh regardless -- .get() is identity-map-aware, so on pages
+        #where the complex's proteins were already loaded earlier in the
+        #same request (comp.sorted_proteins(), rendered above this table),
+        #these become free, in-memory lookups instead of new queries.
+        prot1 = db.session.query(Protein).get(self.protein_key)
+        prot2 = db.session.query(Protein).get(self.protein_key2)
+        return [prot1, prot2]
 
     def get_prothd_score(self,):
         if len(self.prothd) > 0:
