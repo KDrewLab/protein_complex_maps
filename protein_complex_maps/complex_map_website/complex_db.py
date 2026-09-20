@@ -3,6 +3,7 @@ from flask import Flask
 #from flask.ext.sqlalchemy import SQLAlchemy
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, or_, and_
+from sqlalchemy.orm import subqueryload
 
 import datetime as dt
 
@@ -73,7 +74,13 @@ class Complex(db.Model):
         #edges = [db.session.query(Edge).filter((and_(Edge.protein_key == prot1.id, Edge.protein_key2 == prot2.id) | and_(Edge.protein_key == prot2.id,Edge.protein_key2 == prot1.id))).first() for prot1, prot2 in it.combinations(self.proteins,2)]
         #es = [e for e in edges if e != None]
 
-        return sorted(list(set(self.edges)), key=lambda es: es.score, reverse=True)
+        #kdrew: self.edges lazy-loads evidences per edge (complex.html
+        #loops over edge.evidences for every edge) -- re-querying by id
+        #with subqueryload batches all of that into one extra query
+        #total, instead of one per edge.
+        edge_ids = [e.id for e in self.edges]
+        es = db.session.query(Edge).filter(Edge.id.in_(edge_ids)).options(subqueryload(Edge.evidences)).all()
+        return sorted(set(es), key=lambda es: es.score, reverse=True)
 
         
 class Gene(db.Model):
@@ -131,10 +138,19 @@ class Edge(db.Model):
     evidences = db.relationship('Evidence')
 
     def get_proteins(self,):
-        #prot1 = db.session.query(Protein).filter(Protein.id==self.protein_key).first()
-        #prot2 = db.session.query(Protein).filter(Protein.id==self.protein_key2).first()
-        prots = db.session.query(Protein).filter(Protein.id.in_([self.protein_key,self.protein_key2])).all()
-        return prots
+        #kdrew: complex.html calls this twice per edge (once per protein
+        #column), and the old Protein.id.in_([...]) query always hit the
+        #DB fresh regardless -- .get() is identity-map-aware, so on pages
+        #where the complex's proteins were already loaded earlier in the
+        #same request (comp.sorted_proteins(), rendered above this table),
+        #these become free, in-memory lookups instead of new queries.
+        #Same fix as humap3v1_website (its largest complex, ~4500 edges,
+        #went from ~60s+/timing out to ~2.6s from this alone plus a
+        #matching all_edges()/subqueryload fix that doesn't apply here --
+        #this schema has no prothd relationship to eager-load).
+        prot1 = db.session.query(Protein).get(self.protein_key)
+        prot2 = db.session.query(Protein).get(self.protein_key2)
+        return [prot1, prot2]
 
 class Evidence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
