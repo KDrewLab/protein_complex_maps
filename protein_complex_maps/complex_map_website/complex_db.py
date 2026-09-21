@@ -8,8 +8,7 @@ from sqlalchemy.orm import subqueryload
 import itertools as it
 
 app = Flask(__name__)
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/test.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/humap1.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db/test.db'
 
 app.config['SECRET_KEY'] = 'please, tell nobody'
 
@@ -88,7 +87,6 @@ class Protein(db.Model):
     #kdrew: uses table name for ProteinComplexMapping class (annoying sqlalchemy magic)
     complexes = db.relationship('Complex', secondary='protein_complex_mapping',  back_populates='proteins')
     genenames = db.relationship('Gene')
-    annotation_score = db.Column(db.Integer)
 
     def genename(self,):
         gnames = [g for g in self.genenames]
