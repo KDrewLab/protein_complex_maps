@@ -3,6 +3,7 @@ from flask import Flask
 #from flask.ext.sqlalchemy import SQLAlchemy
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, or_, and_
+from sqlalchemy.orm import subqueryload
 
 import itertools as it
 
@@ -45,22 +46,27 @@ class Complex(db.Model):
         retstr = "<a href=displayComplexes?complex_key=%s>%s</a>" % (self.complex_id, self.complex_id)
         return retstr
 
-    #kdrew: a bit of a bottleneck when serving pages, has to generate all combinations of proteins in complex and then search for combination in edge table
-    #kdrew: seems like there should be a better way of doing this, either 1) combining protein keys as a single index or 2) storing mapping between complex and edges directly
+    #kdrew: this used to generate every pairwise combination of the
+    #complex's proteins and query the edge table once per pair (O(n^2)
+    #queries just to find which pairs happen to have an edge) -- for a
+    #150-protein complex that's ~11,000 individual queries before even
+    #getting to get_proteins()/evidences per edge. This schema has no
+    #direct complex->edge mapping table (unlike humap2/humap3v1, which
+    #already moved to one), so instead this fetches every edge touching
+    #ANY of the complex's proteins in one query (indexed on protein_key/
+    #protein_key2), then filters in Python for edges where BOTH ends are
+    #complex members -- one query total instead of one per candidate
+    #pair, plus subqueryload to batch-load evidences instead of one
+    #query per edge in complex.html's "for evidence in edge.evidences".
     def edges(self,):
-        es = []
-        for prot1, prot2 in it.combinations(self.proteins,2):
-            #kdrew: edge table enforces order
-            if prot2.id < prot1.id:
-                prot2, prot1 = prot1, prot2
-            edge = db.session.query(Edge).filter( and_(Edge.protein_key == prot1.id, Edge.protein_key2 == prot2.id) ).first()
-            if edge != None:
-                es.append(edge)
+        protein_ids = [p.id for p in self.proteins]
+        id_set = set(protein_ids)
+        candidates = db.session.query(Edge).filter(
+            or_(Edge.protein_key.in_(protein_ids), Edge.protein_key2.in_(protein_ids))
+        ).options(subqueryload(Edge.evidences)).all()
+        es = [e for e in candidates if e.protein_key in id_set and e.protein_key2 in id_set]
 
-        #edges = [db.session.query(Edge).filter((and_(Edge.protein_key == prot1.id, Edge.protein_key2 == prot2.id) | and_(Edge.protein_key == prot2.id,Edge.protein_key2 == prot1.id))).first() for prot1, prot2 in it.combinations(self.proteins,2)]
-        #es = [e for e in edges if e != None]
-
-        return sorted(list(set(es)), key=lambda es: es.score, reverse=True)
+        return sorted(set(es), key=lambda es: es.score, reverse=True)
 
         
 class Gene(db.Model):
@@ -112,10 +118,15 @@ class Edge(db.Model):
     evidences = db.relationship('Evidence')
 
     def get_proteins(self,):
-        #prot1 = db.session.query(Protein).filter(Protein.id==self.protein_key).first()
-        #prot2 = db.session.query(Protein).filter(Protein.id==self.protein_key2).first()
-        prots = db.session.query(Protein).filter(Protein.id.in_([self.protein_key,self.protein_key2])).all()
-        return prots
+        #kdrew: complex.html calls this twice per edge (once per protein
+        #column), and the old Protein.id.in_([...]) query always hit the
+        #DB fresh regardless -- .get() is identity-map-aware, so on pages
+        #where the complex's proteins were already loaded earlier in the
+        #same request (comp.proteins, rendered above this table), these
+        #become free, in-memory lookups instead of new queries.
+        prot1 = db.session.query(Protein).get(self.protein_key)
+        prot2 = db.session.query(Protein).get(self.protein_key2)
+        return [prot1, prot2]
 
 class Evidence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
