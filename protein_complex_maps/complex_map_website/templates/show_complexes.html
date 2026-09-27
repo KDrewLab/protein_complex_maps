@@ -190,7 +190,7 @@
                 <th>Genename</th>
                 <!-- <th>Complexes</th> -->
                 <th>Protein Name</th>
-                <th>Uniprot Annotation Score</th>
+                <!-- <th>Uniprot Annotation Score</th> -->
                 <th>Links</th>
             </tr>
         </thead>
@@ -212,7 +212,7 @@
                         </td>
                         -->
                         <td> {{prot.proteinname}}</td>
-                        <td> {{prot.annotation_score}}</td>
+                        <!-- <td> {{prot.annotation_score}}</td> -->
                         <td>{{ prot.uniprot_link()|safe }} &nbsp {{ prot.ncbi_link()|safe }}</td>
                     </tr>
                 {% endif %}
@@ -236,7 +236,7 @@
                         </td>
                         -->
                         <td> {{prot.proteinname}}</td>
-                        <td> {{prot.annotation_score}}</td>
+                        <!-- <td> {{prot.annotation_score}}</td> -->
                         <td>{{ prot.uniprot_link()|safe }} &nbsp {{ prot.ncbi_link()|safe }}</td>
                     </tr>
                 {% endif %}
