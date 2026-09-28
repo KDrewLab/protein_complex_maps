@@ -99,7 +99,7 @@
           <li><a href="/static/downloads/genename_clusters.txt" target="_blank">Protein Complex Map (genenames)</a>
               <ul>
                   <li>Description: Complexes generated from two stage clustering of fully intergrated protein interaction network</li>
-                  <li>Format: genename genename genename ... (one complex per line)</li>
+                  <li>Format: genename [tab] genename [tab] genename ... (one complex per line)</li>
                   <li>Note: ids that did not map properly have original geneid or ensembl id</li>
               </ul>                                                                            
           </li>
@@ -129,7 +129,7 @@
           <li><a href="/static/downloads/enrichment.txt" target="_blank">Enrichment Table</a>
               <ul>
                   <li>Description: Output from gprofiler for each complex, FDR-corrected hypergeometric p <= 0.05 (updated 2017-05-01)</li>
-                  <li>Format: complex_id, corr_pval, t_count, q_count, qandt_count, qandt_by_q, qandt_by_t, term_id, t_type, t_group, t_name, depth_in_group, qandt_list</li>
+                  <li>Format: complex_id [tab] corr_pval [tab] t_count [tab] q_count [tab] qandt_count [tab] qandt_by_q [tab] qandt_by_t [tab] term_id [tab] t_type [tab] t_group [tab] t_name [tab] depth_in_group [tab] qandt_list</li>
               </ul>
           </li>
           <li><a href="/static/downloads/edges.txt" target="_blank">Edge Table</a>
@@ -174,7 +174,7 @@
           <li><a href="/static/downloads/test_ppis.txt" target="_blank">Test Positive PPIs</a>
               <ul>
                   <li>Description: List of test positive ppis used in protein complex discovery pipeline</li>
-                  <li>Format: geneid geneid </li>
+                  <li>Format: geneid [tab] geneid</li>
               </ul>
           </li>
           <li><a href="/static/downloads/test_neg_ppis.txt" target="_blank">Test Negative PPIs</a>
