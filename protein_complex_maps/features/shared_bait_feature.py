@@ -9,8 +9,7 @@ import scipy
 import math
 import logging 
 import multiprocessing as mp
-from rpy2.robjects.packages import importr
-from rpy2.robjects.vectors import FloatVector
+from statsmodels.stats.multitest import multipletests
 from functools import partial
 
 import mpmath as mpm
@@ -202,9 +201,8 @@ def shared_bait_feature(feature_table, bait_id_column, id_column, abundance_colu
         output_dict2['pval'] = output_dict2['pval'] + gene_id_result['pval']
 
     if bh_correct:
-        #kdrew: use Benjamini Hochberg from R to correct for multiple hypothesis testing
-        stats = importr('stats')
-        p_adjust = stats.p_adjust(FloatVector(output_dict2['pval']), method = 'BH')
+        #kdrew (modified by claude): use Benjamini Hochberg to correct for multiple hypothesis testing (equivalent to R p.adjust(method='BH'))
+        p_adjust = multipletests(output_dict2['pval'], method='fdr_bh')[1]
         output_dict2['pval_corr'] = p_adjust
         output_dict2['neg_ln_pval_corr'] = []
         #kdrew: original code without error handling [-1.0*math.log(p) for p in p_adjust]

@@ -2,6 +2,8 @@
 
 # Unit tests for new clustering analysis functionality
 
+import os
+import tempfile
 import unittest
 import protein_complex_maps.clustering.clustering_parameter_optimization as cpo
 
@@ -28,11 +30,12 @@ class ClusterTest(unittest.TestCase):
     
 
         args = Object()
-        args.cfinder_license = '/home/kdrew/programs/CFinder-2.0.6--1448/licence.txt'
-        args.cfinder_exe = '/home/kdrew/programs/CFinder-2.0.6--1448/CFinder_commandline64'
-        args.temp_dir = '/tmp/'
-        args.mcl_bin = 'mcl'
-        args.clustone_jar = '/home/kdrew/programs/clusterone/cluster_one-1.0.jar'
+        #claude: external tool locations can be overridden with environment variables
+        args.cfinder_license = os.environ.get('CFINDER_LICENSE', '/home/kdrew/programs/CFinder-2.0.6--1448/licence.txt')
+        args.cfinder_exe = os.environ.get('CFINDER_EXE', '/home/kdrew/programs/CFinder-2.0.6--1448/CFinder_commandline64')
+        args.temp_dir = os.environ.get('CLUSTER_TEMP_DIR', tempfile.gettempdir() + '/')
+        args.mcl_bin = os.environ.get('MCL_BIN', '/home/kdrew/local/bin/mcl')
+        args.clustone_jar = os.environ.get('CLUSTERONE_JAR', '/home/kdrew/programs/cluster_one-1.0.jar')
 
         self.parameter_dict = dict()
         self.parameter_dict['network_list'] = network_list

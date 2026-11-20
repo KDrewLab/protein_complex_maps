@@ -7,8 +7,7 @@ import scipy.misc as misc
 import math
 import logging 
 import random
-from rpy2.robjects.packages import importr
-from rpy2.robjects.vectors import FloatVector
+from statsmodels.stats.multitest import multipletests
 from multiprocessing import Pool
 
 
@@ -166,8 +165,8 @@ def shared_bait_feature(feature_table, bait_id_column='Fraction', id_column='ID'
     return output_dict 
 
     if bh_correct:
-        stats = importr('stats')
-        p_adjust = stats.p_adjust(FloatVector(output_dict['pval']), method = 'BH')
+        #claude: Benjamini Hochberg correction (equivalent to R p.adjust(method='BH'))
+        p_adjust = multipletests(output_dict['pval'], method='fdr_bh')[1]
         output_dict['pval_corr'] = p_adjust
         output_dict['neg_ln_pval_corr'] = [-1.0*math.log(p) for p in p_adjust]
 
