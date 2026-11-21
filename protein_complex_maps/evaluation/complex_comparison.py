@@ -576,10 +576,15 @@ def chunks(l,n):
     return [l[i:i + n] for i in range(0, len(l), n) if i+n< len(l)]
 
 #kdrew: generator to return m number of random combinations of size n from list l
+#claude: WARNING - not used anywhere in the repo and does not work as advertised; check before using.
+#claude: It does not yield exactly m combinations: it yields every chunk of every shuffle, so it can yield more than m
+#claude: (rand_combinations(range(10), 3, 1) yields 3), and chunks() drops the last chunk even when full, so it can yield
+#claude: fewer (rand_combinations(range(4), 2, 5) yields 3). The bare except also silently swallows any errors.
 def rand_combinations(l,n,m):
     #kdrew: determine the number of shuffling needed
     try:
-        i = int(np.ceil(1.0*m/(len(l)/n)))
+        #claude: // keeps python2 integer division (whole chunks per shuffle); with / python3 could under-count shuffles
+        i = int(np.ceil(1.0*m/(len(l)//n)))
         for ii in range(i):
             shuffled_l = rand.permutation(l)
             for ch in chunks(shuffled_l,n):

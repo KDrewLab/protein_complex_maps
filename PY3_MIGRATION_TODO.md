@@ -91,7 +91,8 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 - [x] `preprocessing_util/complexes/split_complexes.py:269` same, in `remove_intersection_random` — **[UNTESTED]**
 - [x] `util/protein_util.py:66` `range(len(ids)/ACC_QUERY_LENGTH + 1)` → `//` — **[TESTED]**
 - [x] `util/protein_util.py` same, in `get_from_uniprot_by_genename` — **[UNTESTED]**
-- [ ] `evaluation/complex_comparison.py:578` `len(l)/n` in `rand_combinations` (function appears unused — consider deleting) — **[UNTESTED]**
+- [x] `evaluation/complex_comparison.py:582` `len(l)/n` → `len(l)//n` in `rand_combinations` (unused in the repo; kept). Verified over 140 (len, n, m) cases with a fixed numpy seed: new code on Py3 yields exactly the same groups as the original on Py2 (original on Py3 differed in 37 cases, mostly fewer groups). Not covered by unit tests — **[UNTESTED]** by the suite
+  - [ ] **Pre-existing quirk** (same on Py2/Py3): `chunks()` uses `i+n < len(l)`, so it also drops the last chunk when it is full (e.g. 4 items, n=2 → 1 chunk, not 2), and `rand_combinations` can yield fewer than `m` groups (it can also yield more — it never truncates to `m`). Should be `<=` if full chunks are intended. Warning comment added above `rand_combinations`
 - [ ] `features/ExtractFeatures/Features.py:212` `self.df + (1/len(self.df))` — Py2 added 0, Py3 adds a real pseudocount. **Decide intended behaviour — results will change** — **[UNTESTED]** (test only covers `sum_difference`, `pearsonR`)
 - [ ] Grep remaining `/` between ints in non-`1.0*` expressions and confirm intent
 
