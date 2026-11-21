@@ -512,6 +512,9 @@ def cluster_helper(parameter_dict):
             pass
         else:
             os.remove(fileTemp.name)
+            #claude: dirTemp (only written to by CFinder) was never removed, leaking one directory per call;
+            #claude: ignore_errors so cleanup can't mask an exception raised in the try block
+            shutil.rmtree(dirTemp, ignore_errors=True)
 
 
     print("finished clustering phase1")
