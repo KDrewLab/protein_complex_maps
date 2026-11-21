@@ -14,11 +14,11 @@ External tools: ClusterONE `/home/kdrew/programs/cluster_one-1.0.jar`, MCL `/hom
 
 | Test module | Python 2 (baseline) | Python 3 (today) | Notes |
 |---|---|---|---|
-| `test_complex_comparison` | ✅ 18/18 | ❌ import fails | print statements in `evaluation/complex_comparison.py` |
-| `test_split_complexes` | ✅ 3/3 | ❌ import fails | print statements in `split_complexes.py` |
-| `test_merge_complexes` | ✅ 1/1 | ❌ import fails | print statements in `complex_merge.py` |
+| `test_complex_comparison` | ✅ 18/18 | ❌ 6/18 | prints converted; now fails on `map()` iterators (lines 194, 202, 291-292) and `xrange` (line 446) — Section 2 |
+| `test_split_complexes` | ✅ 3/3 | ⚠️ 1/3 | prints converted; `split_complexes.py:96` `len(complexes)/2` slice index (Section 2) |
+| `test_merge_complexes` | ✅ 1/1 | ✅ 1/1 | prints converted |
 | `test_features` | ✅ 2/2 | ✅ 2/2 | — |
-| `test_clustering_parameter_optimization` | ✅ `testClustering` (ClusterONE→MCL); `testClustering2` out of scope | ❌ import fails | Run with networkx/agglomcluster stubbed (see below). `testClustering2` is CFinder→agglomod (out of scope; errors since CFinder isn't installed). Py3 blocked by prints in `complex_comparison.py` |
+| `test_clustering_parameter_optimization` | ✅ `testClustering` (ClusterONE→MCL); `testClustering2` out of scope | ❌ `testClustering` | Now imports on Py3; fails on `Popen` bytes vs str (`clust_out.split('\n')`, Section 2). `testClustering2` is CFinder→agglomod (out of scope) |
 | `test_shared_bait_feature` | ✅ 9/9 | ✅ 9/9 | rpy2 removed (FDR now statsmodels); order-dependent pair lookups fixed (stable across hash seeds 0-9); `scipy.misc.comb` → `scipy.special.comb` |
 | `test_protein_util` | ❌ import fails | ❌ import fails | **Code bug**: `protein_util.py` is half-converted (`import urllib.request` breaks Py2; `Bio.Alphabet` breaks Py3). No baseline exists |
 
@@ -55,6 +55,7 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 
 - [ ] Run `2to3 -w -n` (or `python-modernize`) on everything outside `plant_map_website/`; review the diff
 - [ ] `print x` / `print >> f, x` → `print(...)` (~44 files)
+  - [x] `evaluation/complex_comparison.py` (8), `preprocessing_util/complexes/complex_merge.py` (4), `preprocessing_util/complexes/split_complexes.py` (5) — all single-argument, so Py2-compatible without `__future__`; commented-out prints left as-is
   - **[TESTED]** in `complex_comparison.py`, `complex_merge.py`, `split_complexes.py`, `clustering_parameter_optimization.py`
   - **[UNTESTED]** everywhere else
 - [ ] Implicit relative imports → absolute `protein_complex_maps.…` or `from . import …` (notably `complex_map_website/` → `complex_db`) — **[UNTESTED]**
@@ -72,6 +73,10 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 - [ ] Review every `map/filter/zip` result that is indexed or reused (~38 lines / 15 files)
   - **[TESTED]** for occurrences in `complex_comparison.py` (31 2to3 changes), `split_complexes.py`, `complex_merge.py`, `clustering_parameter_optimization.py`
   - **[UNTESTED]** elsewhere
+
+- [ ] **Silent bug** `evaluation/complex_comparison.py:377, 394, 469, 475, 517` — `np.max(map(...))` returns the `map` object itself on Py3 (always truthy), so these checks silently become always-True instead of erroring. Use `any(...)` / `np.max(list(map(...)))` — **[TESTED]** (clique tests, once lines 291-292 are fixed)
+- [ ] `evaluation/complex_comparison.py:194, 202, 291, 292` — `map(len, ...)` passed to `df.divide` / `np.max` → `list(map(...))` — **[TESTED]**
+- [ ] `evaluation/complex_comparison.py:446` — `xrange` → `range` — **[TESTED]**
 
 ### Integer division (`/` now returns float)
 - [ ] `preprocessing_util/complexes/split_complexes.py:96` `split_id = len(complexes)/2` → `//` (slice index → TypeError) — **[TESTED]** (`testSplitComplexes*`)

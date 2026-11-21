@@ -104,22 +104,22 @@ class ComplexComparison(object):
 
     def precision_measure(self,topN=None):
         max_df = self.prediction_wise_max_matching_ratio_distribution(topN=topN)
-        print "precision_measure: %s" % max_df
+        print("precision_measure: %s" % max_df)
         lengths = [len(x) for x in self.get_clusters()]
-        print "precision_measure: %s" % lengths
+        print("precision_measure: %s" % lengths)
         sum_weighted_max = np.sum(lengths*max_df)
-        print "precision_measure: %s" % sum_weighted_max
+        print("precision_measure: %s" % sum_weighted_max)
 
         precision_measure = sum_weighted_max / np.sum(lengths)
         return precision_measure
 
     def recall_measure(self,topN=None):
         max_df = self.max_matching_ratio_distribution(topN=topN)
-        print "recall_measure: %s" % max_df
+        print("recall_measure: %s" % max_df)
         lengths = [len(x) for x in self.get_gold_standard()]
-        print "recall_measure: %s" % lengths
+        print("recall_measure: %s" % lengths)
         sum_weighted_max = np.sum(lengths*max_df)
-        print "recall_measure: %s" % sum_weighted_max
+        print("recall_measure: %s" % sum_weighted_max)
 
         recall_measure = sum_weighted_max / np.sum(lengths)
         return recall_measure
@@ -678,8 +678,8 @@ def main():
     clique_weighted_pr_mean = wccmm['precision_mean']
     clique_weighted_re_mean = wccmm['recall_mean']
     clique_weighted_hmean = hmean([wccmm['precision_mean'],wccmm['recall_mean']])
-    print "Sensitivity\tPPV\tACC\tMMR\tPWMMR\tMMR_PWMMR_hmean\tPrecision measure\tRecall measure\tPrecision Recall product\tClique Precision Mean\tRecall Mean\tF-Grand K-Clique\tClique Weighted Precision Mean\tWeighted Recall Mean\tClique Weighted hmean (F-weighted K-Clique), Clique Weighted Precision, Clique Weighted Recall\n"
-    print "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (sensitivity, ppv, acc, mmr, pwmmr, pwmmr_hmean, precision_measure, recall_measure, precision_recall_product, clique_pr_mean, clique_re_mean, clique_f1grand, clique_weighted_pr_mean, clique_weighted_re_mean, clique_weighted_hmean, clique_weighted_precision, clique_weighted_recall) 
+    print("Sensitivity\tPPV\tACC\tMMR\tPWMMR\tMMR_PWMMR_hmean\tPrecision measure\tRecall measure\tPrecision Recall product\tClique Precision Mean\tRecall Mean\tF-Grand K-Clique\tClique Weighted Precision Mean\tWeighted Recall Mean\tClique Weighted hmean (F-weighted K-Clique), Clique Weighted Precision, Clique Weighted Recall\n")
+    print("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (sensitivity, ppv, acc, mmr, pwmmr, pwmmr_hmean, precision_measure, recall_measure, precision_recall_product, clique_pr_mean, clique_re_mean, clique_f1grand, clique_weighted_pr_mean, clique_weighted_re_mean, clique_weighted_hmean, clique_weighted_precision, clique_weighted_recall)) 
 
 
     if args.plot_filename != None:
