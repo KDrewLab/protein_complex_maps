@@ -18,7 +18,7 @@ External tools: ClusterONE `/home/kdrew/programs/cluster_one-1.0.jar`, MCL `/hom
 | `test_split_complexes` | ✅ 3/3 | ✅ 3/3 | prints converted; `len(...)/2` → `//` (stable across hash seeds 0-4) |
 | `test_merge_complexes` | ✅ 1/1 | ✅ 1/1 | prints converted |
 | `test_features` | ✅ 2/2 | ✅ 2/2 | — |
-| `test_clustering_parameter_optimization` | ✅ `testClustering` (ClusterONE→MCL); `testClustering2` out of scope | ❌ `testClustering` | Now imports on Py3; fails on `Popen` bytes vs str (`clust_out.split('\n')`, Section 2). `testClustering2` is CFinder→agglomod (out of scope) |
+| `test_clustering_parameter_optimization` | ✅ `testClustering` (ClusterONE→MCL); `testClustering2` out of scope | ✅ `testClustering` | Text-mode temp files + `universal_newlines=True`; Py3 output identical to Py2 baseline `[['A','B','C'],['D','E','F']]`. `testClustering2` is CFinder→agglomod (out of scope) |
 | `test_shared_bait_feature` | ✅ 9/9 | ✅ 9/9 | rpy2 removed (FDR now statsmodels); order-dependent pair lookups fixed (stable across hash seeds 0-9); `scipy.misc.comb` → `scipy.special.comb` |
 | `test_protein_util` | ❌ import fails | ❌ import fails | **Code bug**: `protein_util.py` is half-converted (`import urllib.request` breaks Py2; `Bio.Alphabet` breaks Py3). No baseline exists |
 
@@ -88,8 +88,13 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 - [ ] Grep remaining `/` between ints in non-`1.0*` expressions and confirm intent
 
 ### Bytes vs str
-- [ ] `clustering/clustering_parameter_optimization.py:470` (ClusterONE) and MCL call ~546 — `clust_out.split('\n')` on `Popen.communicate()` bytes → add `universal_newlines=True` (works on Py2-era code and 3.x; `text=True` needs 3.7+) — **[TESTED]** by `testClustering` with local ClusterONE + MCL
-- [ ] (out of scope — CliXO) `clustering/clustering_parameter_optimization.py:503` — same fix — **[UNTESTED]**
+- [x] `clustering/clustering_parameter_optimization.py` `cluster_helper` ClusterONE + MCL path — **[TESTED]** by `testClustering`, Py3 output identical to Py2:
+  - input temp files (lines 447, 528) `NamedTemporaryFile(mode='w')` (default binary mode rejects str on Py3)
+  - ClusterONE `Popen(..., universal_newlines=True)` so `communicate()` returns str (`text=True` needs 3.7+; this also works on Py2)
+  - MCL output file read with `"r"` instead of `"rb"` (MCL stdout isn't parsed, so its `Popen` is unchanged)
+- [ ] `clustering/clustering_parameter_optimization.py:119` `main()` opens gold standard with `"rb"` → `"r"` — **[UNTESTED]**
+- [ ] `clustering/clustering_parameter_optimization.py:448` (pre-existing leak) `dirTemp = tf.mkdtemp()` is created on every `cluster_helper` call but never removed; add `shutil.rmtree(dirTemp)` to the `finally` (respecting `nodelete`) — **[UNTESTED]**
+- [ ] (out of scope — CFinder/CliXO) `clustering/clustering_parameter_optimization.py:479-507` CFinder `open(..., 'rb')` (487) and CliXO `communicate()` (498, 503) — same fix — **[UNTESTED]**
 - [ ] `clustering/network_clustering.py:258` (ClusterONE) and MCL ~332 — same fix — **[UNTESTED]** (line 291 is CliXO — out of scope)
 - [ ] `postprocessing_util/complex_enrichment.py:44,48` — CSV opened `'rb'` → `'r', newline=''` — **[UNTESTED]**
 - [ ] `postprocessing_util/complex_enrichment.py:103` — drop `.encode('utf-8')` (yields `b'...'` in output) — **[UNTESTED]**

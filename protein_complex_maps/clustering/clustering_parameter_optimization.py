@@ -443,8 +443,8 @@ def cluster_helper(parameter_dict):
     #kdrew: make temp directory if does not exist
     if not os.path.exists(args.temp_dir) and args.temp_dir != None:
         os.makedirs(args.temp_dir)
-    #kdrew: create temp file for bootstrapped input network, clusterone requires a file input
-    fileTemp = tf.NamedTemporaryFile(delete=False, dir=args.temp_dir)
+    #kdrew (modified by claude): create temp file (text mode for python3) for bootstrapped input network, clusterone requires a file input
+    fileTemp = tf.NamedTemporaryFile(mode='w', delete=False, dir=args.temp_dir)
     dirTemp = tf.mkdtemp(dir=args.temp_dir)
     try:
         #kdrew: write input_network or bootstrapped input network to temp file
@@ -458,7 +458,8 @@ def cluster_helper(parameter_dict):
             #sys.stdout.flush()
 
             #kdrew: run clustering
-            proc = sp.Popen(['java', '-jar', args.clustone_jar, fileTemp.name, '-s', size, '-d', density, '--max-overlap', overlap, '--seed-method', seed_method], stdout=sp.PIPE, stderr=sp.PIPE)
+            #claude: universal_newlines=True returns str (not bytes) from communicate() on python3
+            proc = sp.Popen(['java', '-jar', args.clustone_jar, fileTemp.name, '-s', size, '-d', density, '--max-overlap', overlap, '--seed-method', seed_method], stdout=sp.PIPE, stderr=sp.PIPE, universal_newlines=True)
             clust_out, err = proc.communicate()
             #print clust_out
 
@@ -525,7 +526,7 @@ def cluster_helper(parameter_dict):
                 #kdrew: for each predicted cluster, recluster using MCL
                 for clust in predicted_clusters:
                     #kdrew: for every pair in cluster find edge weight in input_network_list(?)
-                    fileTemp = tf.NamedTemporaryFile(delete=False, dir=args.temp_dir)
+                    fileTemp = tf.NamedTemporaryFile(mode='w', delete=False, dir=args.temp_dir)
                     outTemp = tf.NamedTemporaryFile(delete=False, dir=args.temp_dir)
                     #print fileTemp.name
                     #print outTemp.name
@@ -551,7 +552,7 @@ def cluster_helper(parameter_dict):
                         #print mcl_out
                         #print err
 
-                        outfile = open(outTemp.name,"rb")
+                        outfile = open(outTemp.name,"r")
                         for line in outfile.readlines():
                         #    print line
                             mcl_clusters.append(line.split())
