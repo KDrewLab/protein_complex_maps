@@ -17,7 +17,7 @@ def main():
 
     #kdrew: error checking
     if not args.filename:
-        print "\nError: Specify --filename \n"
+        print("\nError: Specify --filename \n")
         parser.print_help()
         return
 

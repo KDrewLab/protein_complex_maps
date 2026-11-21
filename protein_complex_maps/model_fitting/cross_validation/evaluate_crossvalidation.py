@@ -86,7 +86,7 @@ def main():
 
             cg_results[cg_pair] = calc_metric_files(results_wprob_filenames, positives_filenames, negatives_filenames)
 
-        for item in sorted(cg_results.items(), key=operator.itemgetter(1)):
+        for item in sorted(list(cg_results.items()), key=operator.itemgetter(1)):
             k = item[0]
             outfile.write("cg: %s mean pr auc: %s\n" % (k, cg_results[k]) )
     else:
@@ -98,7 +98,7 @@ def main():
 def plot_heatmap(cg_results, output_file):
     c_vals = set()
     g_vals = set()
-    for cg in cg_results.keys():
+    for cg in list(cg_results.keys()):
         #kdrew: ugly parsing to remove 'c' or 'g' of keys and turn into floats
         c_vals.add(float(cg[0][1:]))
         g_vals.add(float(cg[1][1:]))
@@ -138,7 +138,7 @@ def calc_metric_files(results_wprob_filenames, positives_filenames, negatives_fi
                 ppi_str = str(sorted(list(frozenset([id1,id2]))))
                 results_dict[ppi_str] = float(line.split()[2])
             else:
-                print "WARNING: did not read line: %s" % (line,)
+                print("WARNING: did not read line: %s" % (line,))
 
         #print "results size: %s" % (len(results_dict))
         results_dict_list.append(results_dict)
@@ -189,7 +189,7 @@ def calc_mean_pr_auc(results_dict_list, ppi_list, neg_ppi_list):
         prob_array = []
         true_length = 0
         neg_length = 0
-        for result_pair in results_dict.keys():
+        for result_pair in list(results_dict.keys()):
             if result_pair in ppi_list[i]:
                 true_array.append(1)
                 prob_array.append(results_dict[result_pair])

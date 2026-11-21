@@ -44,7 +44,7 @@ def main():
         except IndexError:
             continue
 
-    print "read input files"
+    print("read input files")
     fout = open(args.out_filename,"wb")
 
     feature_table = None
@@ -54,7 +54,7 @@ def main():
         feature_table = feature_table.fillna(0.0)
         if 'frozenset_ids_str_order' not in feature_table.columns:
             #kdrew: create frozenset_ids_str_order column
-            feature_table['frozenset_ids'] = map(frozenset,feature_table[[args.id_columns[0],args.id_columns[1]]].values)
+            feature_table['frozenset_ids'] = list(map(frozenset,feature_table[[args.id_columns[0],args.id_columns[1]]].values))
             feature_table['frozenset_ids_str_order'] = feature_table['frozenset_ids'].apply(list).apply(sorted).apply(str)
             feature_table = feature_table.set_index(['frozenset_ids_str_order'])
 
@@ -65,7 +65,7 @@ def main():
     else:
         fout.write("id1\tscore\n")
 
-    print "Wrote Header"
+    print("Wrote Header")
 
     #mgr = Manager()
     #ns = mgr.Namespace()

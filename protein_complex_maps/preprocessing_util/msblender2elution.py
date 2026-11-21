@@ -33,7 +33,7 @@ def main():
     elution_profile_df = pd.DataFrame() 
     
     for i, filename in enumerate(args.prot_count_files):
-        print "Reading {}".format(filename)
+        print("Reading {}".format(filename))
         df = pd.read_table(filename, index_col=0)
         
         ## BJL: Useful code if we want to eventually parse other MSBlender outfiles besided .group
@@ -68,12 +68,12 @@ def main():
         elution_profile_df.index = uniprots
 
     if args.msblender_format:
-        print "WARNING: --msblender_format has been deprecated to put Blake's scripts on an iron lung"
+        print("WARNING: --msblender_format has been deprecated to put Blake's scripts on an iron lung")
         total_count = pd.DataFrame(elution_profile_df.sum(axis=1))
         total_count.columns = ['TotalCount']
         elution_profile_df = pd.concat([total_count, elution_profile_df], axis=1)
         elution_profile_df.index.name='#ProtID'
-        print elution_profile_df.index.name
+        print(elution_profile_df.index.name)
 
     #print elution_profile_df.index.name # Debugging
     elution_profile_df.to_csv(args.output_filename, sep='\t')

@@ -16,16 +16,16 @@ def divide_file(input_df, n, seed, label="label"):
     neg_rand_ids = df_neg.sample(frac=1, random_state=seed).index
 
     #kdrew: split indices into separate partitions
-    pos_rand_id_splits = [ pos_rand_ids[i::n] for i in xrange(n) ]
-    neg_rand_id_splits = [ neg_rand_ids[i::n] for i in xrange(n) ]
+    pos_rand_id_splits = [ pos_rand_ids[i::n] for i in range(n) ]
+    neg_rand_id_splits = [ neg_rand_ids[i::n] for i in range(n) ]
 
     #kdrew: combine indices of all other sets, leaving out current set
     pos_combined_splits = []
     neg_combined_splits = []
-    for i in xrange(n):
+    for i in range(n):
         pos_combined = []
         neg_combined = []
-        for j in xrange(n):
+        for j in range(n):
             if i != j:
                 pos_combined = pos_rand_id_splits[j].union(pos_combined)
                 neg_combined = neg_rand_id_splits[j].union(neg_combined)
@@ -33,10 +33,10 @@ def divide_file(input_df, n, seed, label="label"):
         neg_combined_splits.append(neg_combined)
     
     #kdrew: store split dataframes
-    df_pos_training = [df_pos.ix[pos_combined_splits[i]] for i in xrange(n)]
-    df_neg_training = [df_neg.ix[neg_combined_splits[i]] for i in xrange(n)]
-    df_pos_leaveout = [df_pos.ix[pos_rand_id_splits[i]] for i in xrange(n)]
-    df_neg_leaveout = [df_neg.ix[neg_rand_id_splits[i]] for i in xrange(n)]
+    df_pos_training = [df_pos.ix[pos_combined_splits[i]] for i in range(n)]
+    df_neg_training = [df_neg.ix[neg_combined_splits[i]] for i in range(n)]
+    df_pos_leaveout = [df_pos.ix[pos_rand_id_splits[i]] for i in range(n)]
+    df_neg_leaveout = [df_neg.ix[neg_rand_id_splits[i]] for i in range(n)]
 
     return_dict = dict()
     return_dict['pos_train'] = df_pos_training
@@ -67,7 +67,7 @@ def main():
     divided_file_dict = divide_file(input_df, args.n, args.seed)
 
     #kdrew: output each training and leaveout set for both postives and negatives
-    for i in xrange(args.n):
+    for i in range(args.n):
         #kdrew: output concatenated positive and negative training
         df_pos = divided_file_dict['pos_train'][i]
         df_neg = divided_file_dict['neg_train'][i]

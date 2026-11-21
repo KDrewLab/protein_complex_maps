@@ -19,7 +19,7 @@ def main():
 
     #kdrew: error checking
     if not args.filename:
-        print "\nError: Specify --filename \n"
+        print("\nError: Specify --filename \n")
         parser.print_help()
         return
 
@@ -38,7 +38,7 @@ def main():
     input_ids = list(set([x for cluster in clusters for x in cluster]))
     #results = pu.get_from_uniprot(input_ids, attributes.keys(), return_as_string=True)
     results = pu.get_from_uniprot(input_ids, 'genes')
-    print results
+    print(results)
 
     for clustid, cluster in enumerate(clusters):
         for protid in cluster:
@@ -48,7 +48,7 @@ def main():
                 attributes['genes'][protid] = results[protid]
 
     #kdrew: write header
-    fout.write("protid\t%s\n" % ('\t'.join(attributes.keys())))
+    fout.write("protid\t%s\n" % ('\t'.join(list(attributes.keys()))))
     for protid in attributes['genes']:
         fout.write("%s\t%s" % (protid, attributes['genes'][protid]))
         fout.write("\n")

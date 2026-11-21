@@ -65,7 +65,7 @@ def main():
     else:
         outfile = open(args.output_script_name,"wb")
 
-    for i in xrange(len(args.train_files)):
+    for i in range(len(args.train_files)):
         train_file = args.train_files[i]
         leaveout_file = args.leaveout_files[i]
 

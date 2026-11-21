@@ -1,7 +1,7 @@
 # Python 3 / Google Colab migration — TODO
 
 Scope: everything under `protein_complex_maps/` **except `plant_map_website/`** (handled on another branch).
-Baseline (Python 3.8): 30 of 77 in-scope `.py` files fail to compile; 54 in-scope files have 2to3 changes.
+Baseline (Python 3.8): 30 of 77 in-scope `.py` files failed to compile at start; **now 0** (after 2to3 pass, Section 1).
 
 Test coverage tags on each item:
 - **[TESTED]** — exercised by an existing unit test in `protein_complex_maps/test/`
@@ -59,26 +59,28 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 
 ## 1. Mechanical syntax fixes (2to3 / pyupgrade)
 
-- [ ] Run `2to3 -w -n` (or `python-modernize`) on everything outside `plant_map_website/`; review the diff
-- [ ] `print x` / `print >> f, x` → `print(...)` (~44 files)
-  - [x] `evaluation/complex_comparison.py` (8), `preprocessing_util/complexes/complex_merge.py` (4), `preprocessing_util/complexes/split_complexes.py` (5) — all single-argument, so Py2-compatible without `__future__`; commented-out prints left as-is
-  - **[TESTED]** in `complex_comparison.py`, `complex_merge.py`, `split_complexes.py`, `clustering_parameter_optimization.py`
-  - **[UNTESTED]** everywhere else
-- [ ] Implicit relative imports → absolute `protein_complex_maps.…` or `from . import …` (notably `complex_map_website/` → `complex_db`) — **[UNTESTED]**
-- [ ] `xrange` → `range` (incl. `model_fitting/cross_validation/train_leaveout_divide.py`) — **[UNTESTED]**
-- [ ] `except E, e:` → `except E as e:` (2 sites) — **[UNTESTED]**
-- [ ] `.iteritems()` → `.items()` (`features/ExtractFeatures/canned_scripts/print_elution_info.py:11`) — **[UNTESTED]**
-- [ ] `.next()` → `next(...)`, `itertools.izip` → `zip`, `cPickle` → `pickle` — **[UNTESTED]**
+- [x] Ran 2to3 on all 77 in-scope files (38 changed). **All 77 now compile on Python 3** (was 47/77). Method:
+  - 50 files that already parsed as Py3 → `2to3 -w -n -p -x future` (`-p` so existing `print(a, b)` isn't turned into a tuple; `-x future` keeps `from __future__ import print_function`)
+  - 27 Py2-only files → `2to3 -w -n`
+  - reviewed dry-run diffs before writing
+- [x] `print` statements → `print()` everywhere; 6 redundant `print((x))` from 2to3 tidied to `print(x)` (`evaluation/psweep_comparison.py`, `evaluation/plots/prcurve.py`)
+- [x] `xrange` → `range`, `.iteritems()` → `.items()`, `except E, e` → `except E as e`, `cPickle` → `pickle`, `itertools.izip` → `zip`, `u''` prefixes dropped, `.next()` → `__next__`
+- [x] **Real Py3 bugs fixed by 2to3's `list(...)` wrapping** — `df['col'] = map(...)` / `zip(...)` would store a single map object instead of a column: `features/combine_feature_matrices.py`, `features/shared_bait_feature.py`, `features/shared_bait_feature_wsampling.py`, `util/label_interaction_scores.py`, `postprocessing_util/pairwise2clusterid_multi.py`; `map(protid_set.add, ...)` used for side effects would silently do nothing: `postprocessing_util/cluster2node_table.py`, `util/cluster2node_table_cdm_mod.py`; `map(float, ...)` lists in `evaluation/psweep_comparison.py`
+- [x] Tabs/spaces mix (TabError on Py3) in `clustering/network_clustering.py` and `preprocessing_util/ms1quant2elution.py` → leading tabs expanded at width 8 (Python 2's rule; verified identical Py2 AST before/after)
+- [x] **Pre-existing bug** `model_fitting/svm_utils/svm_results2pairs.py:16` `except ValueError, TypeError:` caught only `ValueError` (binding it to the name `TypeError`) → `except (ValueError, TypeError):`
+- [x] `evaluation/complex_comparison.py` `WeightedRandomGenerator`: 2to3 renamed `next` → `__next__`; added `next = __next__` alias so Py2 baseline tests still run — **[TESTED]**
+- [ ] Noise from 2to3 (harmless, optional cleanup): `list(d.keys())` / `list(range(...))` wrapping in loops/comprehensions where a view/range is fine
+- [ ] Implicit relative imports in `complex_map_website/` (`import complex_db`): 2to3 left them, works when run as a script from that directory; convert to absolute `protein_complex_maps.…` if imported as a package — **[UNTESTED]**
 - [ ] Update shebangs `#!/usr/bin/python` / `#!/usr/bin/env python` → `python3` (incl. test files and `features/ExtractFeatures/*`)
-- [ ] Remove now-redundant `from __future__ import print_function` (optional, cosmetic)
+- [ ] Remove now-redundant `from __future__ import print_function` (optional, cosmetic — kept for now so Py2 baseline comparisons still work)
+- **Untested**: apart from the 7 tested modules, the 2to3 changes are only verified to compile, not to run
 
 ## 2. Semantic changes (review by hand)
 
 ### Dict views and lazy map/filter/zip
-- [ ] Review every `.keys()/.values()/.items()` that is indexed, `len()`'d, iterated twice, or mutated during iteration (~51 lines / 18 files) — 2to3 wraps in `list()` conservatively
-- [ ] Review every `map/filter/zip` result that is indexed or reused (~38 lines / 15 files)
-  - **[TESTED]** for occurrences in `complex_comparison.py` (31 2to3 changes), `split_complexes.py`, `complex_merge.py`, `clustering_parameter_optimization.py`
-  - **[UNTESTED]** elsewhere
+- [x] `.keys()/.values()/.items()` — 2to3 wrapped every non-loop use in `list()`
+- [x] `map/filter/zip` — 2to3 wrapped every non-iteration use in `list()`; remaining unwrapped calls checked by hand: all are `multiprocessing` `Pool.map` (returns a list) or SQLAlchemy `.filter()` (unrelated)
+  - **[TESTED]** in the 7 tested modules; **[UNTESTED]** (compile-only) elsewhere
 
 - [x] **Silent bug** `evaluation/complex_comparison.py:377, 394, 469, 475, 517` — `np.max(map(...))` (always truthy on Py3) → `any(...)`. Same results; short-circuits (faster). Only difference: empty input returns False instead of raising — **[TESTED]**
 - [x] `evaluation/complex_comparison.py:194, 202, 291, 292` — `map(len, ...)` → list comprehensions (line 202 would also have silently divided by 0 as the iterator was consumed twice) — **[TESTED]**

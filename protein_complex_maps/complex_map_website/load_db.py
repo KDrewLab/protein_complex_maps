@@ -46,8 +46,8 @@ def main():
             db.session.add(c)
             db.session.commit()
 
-            print "complex id: %s" % c.id
-            print "protein id: %s" % p.id
+            print("complex id: %s" % c.id)
+            print("protein id: %s" % p.id)
             pcm = cdb.get_or_create(db, cdb.ProteinComplexMapping, protein_key=p.id, complex_key=c.id)
             db.session.add(pcm)
             db.session.commit()

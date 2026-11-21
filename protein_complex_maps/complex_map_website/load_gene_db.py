@@ -36,11 +36,11 @@ def main():
 
     #kdrew: retreive from uniprot all accs
     inputID2ACC_map = pu.map_protein_ids(list(protid_set), "P_ENTREZGENEID", "ACC", reviewed=True)
-    flatten_list = [item for sublist in inputID2ACC_map.values() for item in sublist]
+    flatten_list = [item for sublist in list(inputID2ACC_map.values()) for item in sublist]
     #kdrew: retreive from uniprot all genenames
     #kdrew: added return_list=True so all genenames are returned rather than just the first
     genename_map = pu.get_from_uniprot(flatten_list, 'genes', return_list=True)
-    print genename_map
+    print(genename_map)
 
     #kdrew: for each geneid in database
     for prot_id in protid_set:
@@ -51,13 +51,13 @@ def main():
             #kdrew: add all genenames to Gene table and link to protein instance
             for acc in inputID2ACC_map[prot_id]:
                 for genename in genename_map[acc]:
-                    print genename
+                    print(genename)
                     if genename != None:
                         gene = cdb.get_or_create(db,cdb.Gene, gene_id = prot_id, genename=genename, protein_key = p1.id)
                         db.session.add(gene)
                         db.session.commit()
         else:
-            print "Cannot find proteins %s" % (prot_id)
+            print("Cannot find proteins %s" % (prot_id))
 
 
 if __name__ == "__main__":

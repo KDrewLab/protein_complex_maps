@@ -33,9 +33,9 @@ def main():
         if 'signf' in line:
             continue
 
-        print line
+        print(line)
         split_line = line.split('\t')
-        print split_line
+        print(split_line)
 
         corr_pval = split_line[2]
         t_count = split_line[3] 
@@ -52,7 +52,7 @@ def main():
 
         c = db.session.query(cdb.Complex).filter_by(complex_id=complex_id).first()
         if c:
-            print "complex id: %s" % c.id
+            print("complex id: %s" % c.id)
             ce = cdb.get_or_create(db, cdb.ComplexEnrichment, 
                                         complex_key=c.id, 
                                         corr_pval=corr_pval, 
@@ -70,7 +70,7 @@ def main():
             db.session.add(ce)
             db.session.commit()
         else:
-            print "Cannot find complex %s" % (complex_id)
+            print("Cannot find complex %s" % (complex_id))
 
 
 if __name__ == "__main__":

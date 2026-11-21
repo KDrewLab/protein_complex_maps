@@ -136,8 +136,8 @@ def main():
     #kdrew: output results 
     outfile = open(args.output_filename,"wb")
     outfile.write("ii$precision_list$recall_list$f1score_list$grand_f1score$cumulative_precision$cumulative_recall$numOfClusters$weighted_clique_precision$weighted_clique_recall$precision_measure$recall_measure$totalClusters$totalProteins\n" )
-    for ii in pr_dict['precision'].keys():
-        print ii
+    for ii in list(pr_dict['precision'].keys()):
+        print(ii)
         precision_out = ",".join(map(str,pr_dict['precision'][ii]))
         recall_out = ",".join(map(str,pr_dict['recall'][ii]))
         f1score_out = ",".join(map(str,pr_dict['f1score'][ii]))
@@ -191,26 +191,26 @@ def compare2goldstandard(parameter_dict):
         cplx_compare = cc.ComplexComparison(gs_complexes, predicted_clusters, exclusion_complexes=ex_complexes, samples=samples, exact=exact, max_clique=max_clique, pseudocount=pseudocount, normalize_by_combinations=normalize_by_combinations)
         result_dict = cplx_compare.clique_comparison_metric()
     except (cc.Gold_Standard_Overlap_Exception, cc.Exclusion_Complexes_Exception) as e:
-        print "%s in ii:%s" % (e, ii)
+        print("%s in ii:%s" % (e, ii))
         #kdrew: think about whether these default error values are appropriate, maybe want to still calculate totalClusters and totalProteins, others?
         return {'ii':ii, 'boot_iteration':boot_iteration, 'precision_list':[], 'recall_list':[], 'f1score_list':[], 'grand_f1score':None, 'cumulative_precision_list':[], 'cumulative_recall_list':[], 'numOfClusters':[], 'weighted_clique_precision':None, 'weighted_clique_recall':None, 'precision_measure':None, 'recall_measure':None, 'totalClusters':None, 'totalProteins':None}
     
     #print result_dict
     #kdrew: are these guaranteed ordered? doesn't look like it if ordered based on keys, probably get away with it because keys are integers
     #kdrew: this should all be done with a pandas dataframe anyway
-    precision_list = [result_dict[x]['precision'] for x in result_dict.keys()]
-    recall_list = [result_dict[x]['recall'] for x in result_dict.keys()]
-    f1score_list = [result_dict[x]['f1score'] for x in result_dict.keys()]
-    cumulative_precision_list = [result_dict[x]['cumulative_precision'] for x in result_dict.keys()]
-    cumulative_recall_list = [result_dict[x]['cumulative_recall'] for x in result_dict.keys()]
-    numOfClusters_list = [result_dict[x]['numOfClusters'] for x in result_dict.keys()]
+    precision_list = [result_dict[x]['precision'] for x in list(result_dict.keys())]
+    recall_list = [result_dict[x]['recall'] for x in list(result_dict.keys())]
+    f1score_list = [result_dict[x]['f1score'] for x in list(result_dict.keys())]
+    cumulative_precision_list = [result_dict[x]['cumulative_precision'] for x in list(result_dict.keys())]
+    cumulative_recall_list = [result_dict[x]['cumulative_recall'] for x in list(result_dict.keys())]
+    numOfClusters_list = [result_dict[x]['numOfClusters'] for x in list(result_dict.keys())]
 
-    print precision_list
-    print recall_list
-    print f1score_list
-    print cumulative_precision_list
-    print cumulative_recall_list
-    print numOfClusters_list
+    print(precision_list)
+    print(recall_list)
+    print(f1score_list)
+    print(cumulative_precision_list)
+    print(cumulative_recall_list)
+    print(numOfClusters_list)
     
     #precision_dict[ii] = precision_list
     #recall_dict[ii] = recall_list
@@ -250,7 +250,7 @@ def read_pr_file(filename, names=None):
     pr_dict1['cumulative_recall'] = dict()
     pr_dict1['numOfClusters'] = dict()
 
-    print names
+    print(names)
 
     pr_file = open(filename,"rb")
     for j, line in enumerate(pr_file.readlines()):
@@ -262,13 +262,13 @@ def read_pr_file(filename, names=None):
         else:
             ii = line.split('$')[0]
         #kdrew: fields are '$' deliminited and precision and recall lists are ',' deliminited
-        precision_list = map(float,line.split('$')[1].split(','))
-        recall_list = map(float,line.split('$')[2].split(','))
-        f1score_list = map(float,line.split('$')[3].split(','))
+        precision_list = list(map(float,line.split('$')[1].split(',')))
+        recall_list = list(map(float,line.split('$')[2].split(',')))
+        f1score_list = list(map(float,line.split('$')[3].split(',')))
         grand_f1score = float(line.split('$')[4])
-        cumulative_precision_list = map(float,line.split('$')[5].split(','))
-        cumulative_recall_list = map(float,line.split('$')[6].split(','))
-        numOfClusters_list = map(float,line.split('$')[7].split(','))
+        cumulative_precision_list = list(map(float,line.split('$')[5].split(',')))
+        cumulative_recall_list = list(map(float,line.split('$')[6].split(',')))
+        numOfClusters_list = list(map(float,line.split('$')[7].split(',')))
         pr_dict1['precision'][ii] = precision_list
         pr_dict1['recall'][ii] = recall_list
         pr_dict1['f1score'][ii] = f1score_list

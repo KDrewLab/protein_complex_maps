@@ -68,12 +68,12 @@ def main():
         except IndexError:
             continue
 
-    print "read input files"
+    print("read input files")
     fout = open(args.out_filename,"wb")
 
     fout.write("id1\tgoldstandard\n")
 
-    print "Wrote Header"
+    print("Wrote Header")
 
     for clustid, cluster in enumerate(clusters):
         for prot_pair in it.combinations(cluster,2):

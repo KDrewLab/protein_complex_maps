@@ -12,12 +12,12 @@ from wtforms.fields import StringField, SubmitField, TextAreaField
 
 
 class SearchForm(Form):
-    complex_id = StringField(u'Complex ID:')
-    genename = StringField(u'Gene Name (ex. OFD1):')
-    listOfGenenames = TextAreaField(u'List of Gene Names (ex. OFD1 PCM1 CSPP1):')
-    enrichment = StringField(u'Enrichment (ex. cilium):')
-    protein = StringField(u'Protein (ex. Centrosomal protein):')
-    submit = SubmitField(u'Search')
+    complex_id = StringField('Complex ID:')
+    genename = StringField('Gene Name (ex. OFD1):')
+    listOfGenenames = TextAreaField('List of Gene Names (ex. OFD1 PCM1 CSPP1):')
+    enrichment = StringField('Enrichment (ex. cilium):')
+    protein = StringField('Protein (ex. Centrosomal protein):')
+    submit = SubmitField('Search')
 
 from flask import render_template
 from flask import url_for, redirect, request, jsonify
@@ -25,7 +25,7 @@ from flask import url_for, redirect, request, jsonify
 
 @app.route("/")
 def root(complexes=[]):
-    print complexes
+    print(complexes)
     #complexes = cdb.Complex.query.all()
     form = SearchForm()
     return render_template('index.html', form=form, complexes=complexes)
@@ -180,7 +180,7 @@ def displayComplexesForProtein():
     try:
         proteins = db.session.query(cdb.Protein).filter(cdb.Protein.proteinname.like('%'+protein_search+'%')).all()
         for protein in proteins:
-            print protein
+            print(protein)
             complexes = complexes + protein.complexes
 
         #kdrew: remove redudant complexes
@@ -211,7 +211,7 @@ def displayComplexes():
     return render_template('complex.html', form=form, comp=comp, error=error)
 
 
-@app.route(u'/search', methods=[u'POST'])
+@app.route('/search', methods=['POST'])
 def searchComplexes():
     form = SearchForm()
     complexes = []

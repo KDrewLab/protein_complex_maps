@@ -39,7 +39,7 @@ def main():
 
 
     combined_melt_sparse.to_csv(args.out_filename)
-    print combined_melt_sparse
+    print(combined_melt_sparse)
 
     
 

@@ -34,8 +34,8 @@ def main():
     for line in hein_bait_prey_file.readlines():
         hein_bait_preys.add(tuple([x.strip() for x in line.split(',')]))
 
-    print bioplex_bait_preys
-    print hein_bait_preys
+    print(bioplex_bait_preys)
+    print(hein_bait_preys)
 
     edge_table_file = open(args.edge_file,"rb")
     for line in edge_table_file.readlines():
@@ -45,9 +45,9 @@ def main():
         if 'score' in line:
             continue
 
-        print line
+        print(line)
         split_line = line.split('\t')
-        print split_line
+        print(split_line)
 
         #kdrew: id1 example: 0_153129 (pp) 0_10670 
         id1 = split_line[0]
@@ -84,8 +84,8 @@ def main():
             #kdrew: enforce order on protein ids
             if p2.id < p1.id:
                 p2, p1 = p1, p2
-            print "protein id1: %s" % p1.id
-            print "protein id2: %s" % p2.id
+            print("protein id1: %s" % p1.id)
+            print("protein id2: %s" % p2.id)
             edge = cdb.get_or_create(db, cdb.Edge, 
                                         protein_key = p1.id,
                                         protein_key2 = p2.id,
@@ -109,7 +109,7 @@ def main():
                     db.session.commit()
 
         else:
-            print "Cannot find proteins %s" % (id1)
+            print("Cannot find proteins %s" % (id1))
 
 
 if __name__ == "__main__":

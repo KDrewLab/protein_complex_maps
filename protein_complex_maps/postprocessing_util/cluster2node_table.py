@@ -27,15 +27,15 @@ def main():
     f = open(args.cluster_filename, "rb")
     for line in f.readlines():
         clusters.append(line.split())
-        map( protid_set.add, line.split() )
+        list(map( protid_set.add, line.split() ))
 
-    print "cluster2node_table: convert to ACC"
+    print("cluster2node_table: convert to ACC")
     inputID2ACC_map = pu.map_protein_ids(list(protid_set), args.from_id, "ACC", args.contact_email, reviewed=args.reviewed)
-    print "flatten_list"
-    flatten_list = [item for sublist in inputID2ACC_map.values() for item in sublist]
-    print "cluster2node_table: get genenames"
+    print("flatten_list")
+    flatten_list = [item for sublist in list(inputID2ACC_map.values()) for item in sublist]
+    print("cluster2node_table: get genenames")
     genename_map = pu.get_from_uniprot(flatten_list, 'genes')
-    print "cluster2node_table: get protein names"
+    print("cluster2node_table: get protein names")
     proteinname_map = pu.get_from_uniprot(flatten_list, 'protein+names')
 
     d = dict()

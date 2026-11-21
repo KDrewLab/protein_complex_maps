@@ -234,7 +234,7 @@ class ComplexComparison(object):
     #kdrew: harmonic mean of f1-scores across clique sizes, single score for comparison of cluster predictions to gold standard complexes
     def clique_comparison_metric_grandf1score(self,mean_func = hmean):
         result_dict = self.clique_comparison_metric()
-        f1score_list = [result_dict[x]['f1score'] for x in result_dict.keys()]
+        f1score_list = [result_dict[x]['f1score'] for x in list(result_dict.keys())]
 
         grand_f1score = 0.0
         if 0.0 not in f1score_list:
@@ -244,8 +244,8 @@ class ComplexComparison(object):
 
     def clique_comparison_metric_mean(self, weighted=False):
         result_dict = self.clique_comparison_metric()
-        precision_list = [result_dict[x]['precision'] for x in result_dict.keys()]
-        recall_list = [result_dict[x]['recall'] for x in result_dict.keys()]
+        precision_list = [result_dict[x]['precision'] for x in list(result_dict.keys())]
+        recall_list = [result_dict[x]['recall'] for x in list(result_dict.keys())]
 
         #print precision_list
         #print recall_list
@@ -253,8 +253,8 @@ class ComplexComparison(object):
         #print "mean precision %s mean recall %s" % (np.mean(precision_list), np.mean(recall_list))
 
         if weighted:
-            sum_complexes = sum([result_dict[x]['numOfClusters'] for x in result_dict.keys()])
-            weights_list = [1.0*result_dict[x]['numOfClusters']/sum_complexes for x in result_dict.keys()]
+            sum_complexes = sum([result_dict[x]['numOfClusters'] for x in list(result_dict.keys())])
+            weights_list = [1.0*result_dict[x]['numOfClusters']/sum_complexes for x in list(result_dict.keys())]
             precision_mean = np.average(precision_list, weights=weights_list)
             recall_mean = np.average(recall_list, weights=weights_list)
         else:
@@ -265,15 +265,15 @@ class ComplexComparison(object):
 
     def clique_comparision_metric_weighted_precision(self, force=False):
         result_dict = self.clique_comparison_metric(force=force)
-        total_weight = sum([result_dict[x]['numOfClusters'] for x in result_dict.keys()])
-        weighted_precision = 1.0*sum([result_dict[x]['precision'] * result_dict[x]['numOfClusters'] for x in result_dict.keys()]) / total_weight
+        total_weight = sum([result_dict[x]['numOfClusters'] for x in list(result_dict.keys())])
+        weighted_precision = 1.0*sum([result_dict[x]['precision'] * result_dict[x]['numOfClusters'] for x in list(result_dict.keys())]) / total_weight
 
         return weighted_precision
 
     def clique_comparision_metric_weighted_recall(self, force=False):
         result_dict = self.clique_comparison_metric(force=force)
 
-        weighted_recall = 1.0*sum([result_dict[x]['recall']*result_dict[x]['numOfClusters'] for x in result_dict.keys()]) / sum([result_dict[x]['numOfClusters'] for x in result_dict.keys()])
+        weighted_recall = 1.0*sum([result_dict[x]['recall']*result_dict[x]['numOfClusters'] for x in list(result_dict.keys())]) / sum([result_dict[x]['numOfClusters'] for x in list(result_dict.keys())])
         return weighted_recall
 
 
@@ -594,12 +594,15 @@ class WeightedRandomGenerator(object):
             running_total += w
             self.totals.append(running_total)
 
-    def next(self):
+    def __next__(self):
         rnd = random.random() * self.totals[-1]
         return bisect.bisect_right(self.totals, rnd)
 
+    #claude: python2's next() looks for .next(); alias keeps python2 working alongside python3's __next__
+    next = __next__
+
     def __call__(self):
-        return self.next()
+        return next(self)
 
 
 

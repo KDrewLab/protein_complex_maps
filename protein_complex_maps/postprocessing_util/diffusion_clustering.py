@@ -1,5 +1,5 @@
 import argparse
-from itertools import izip
+
 from igraph import Graph
 import pandas as pd
 import rpy2.robjects.packages as rpackages

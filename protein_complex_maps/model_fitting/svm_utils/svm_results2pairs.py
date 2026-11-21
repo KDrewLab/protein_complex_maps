@@ -13,9 +13,10 @@ def tryconvertInt(value):
     try:
         ret = int(float(value))
         #print "no Error"
-    except ValueError, TypeError:
-        print "%s %s" % (value, type(value))
-        print "Error"
+    #claude: was 'except ValueError, TypeError:' which in python2 caught only ValueError (binding it to the name TypeError); catch both as intended
+    except (ValueError, TypeError):
+        print("%s %s" % (value, type(value)))
+        print("Error")
         #return None
     return ret
 
@@ -46,13 +47,13 @@ def main():
     results = pd.read_csv(args.input_results,sep=' ') 
     results.columns = ['svm_predicted_label','svm_pos_prob','svm_neg_prob']
 
-    print results
-    print " "
+    print(results)
+    print(" ")
 
     features = pd.read_csv(args.feature_matrix,sep=args.sep, converters={x:str for x in args.id_columns})
     #features = pd.read_csv(args.feature_matrix,sep=args.sep)
-    print features
-    print " "
+    print(features)
+    print(" ")
     if args.nofilter_label:
         only_features = features
     else:
@@ -60,39 +61,39 @@ def main():
             only_features = features[features['label'] != 0]
         else:
             only_features = features[features['label'] == 0]
-    only_features.index = range(len(only_features))
-    print only_features
-    print " "
+    only_features.index = list(range(len(only_features)))
+    print(only_features)
+    print(" ")
 
-    print len(results)
-    print len(only_features)
+    print(len(results))
+    print(len(only_features))
     assert len(results) == len(only_features), "features and results are not same length"
     #kdrew: put the results and the features together
     only_features_results = pd.concat([results,only_features],axis=1)
-    print only_features_results
-    print " "
+    print(only_features_results)
+    print(" ")
 
     #kdrew: cleaning up space
     del results
     del only_features
 
     only_features_results = only_features_results.astype('object')
-    print only_features_results
-    print " "
+    print(only_features_results)
+    print(" ")
 
     only_features_results_sorted = only_features_results.sort_values(by='svm_pos_prob',ascending=False)
-    print only_features_results_sorted
-    print " "
+    print(only_features_results_sorted)
+    print(" ")
     del only_features_results
 
     if args.int_convert:
         #only_features_results_sorted_key2int = only_features_results_sorted[['key1','key2']].apply(lambda row: map(tryconvertInt,row))
-        only_features_results_sorted_keys = only_features_results_sorted[args.id_columns].apply(lambda row: map(tryconvertInt,row))
+        only_features_results_sorted_keys = only_features_results_sorted[args.id_columns].apply(lambda row: list(map(tryconvertInt,row)))
     else:
         only_features_results_sorted_keys = only_features_results_sorted[args.id_columns]
 
-    print only_features_results_sorted_keys
-    print " "
+    print(only_features_results_sorted_keys)
+    print(" ")
 
     #only_features_results_sorted_key2int = only_features_results_sorted_key2int.dropna().astype(object)
     only_features_results_sorted_keys_noself = only_features_results_sorted_keys[only_features_results_sorted_keys[args.id_columns[0]] != only_features_results_sorted_keys[args.id_columns[1]]]
@@ -116,18 +117,18 @@ def main():
 
             #kdrew: remove duplicate rows where the keys are the same
             keys_nodups = keys_wprob.drop_duplicates(['key1_int','key2_int'])
-            print keys_nodups
-            print " "
+            print(keys_nodups)
+            print(" ")
             #kdrew: remove NAs
             keys_nodups = keys_nodups.dropna()
-            print keys_nodups
-            print " "
+            print(keys_nodups)
+            print(" ")
             #kdrew: convert type to int
             if args.int_convert:
                 keys_nodups['key1_int'] = keys_nodups['key1_int'].astype(int)
                 keys_nodups['key2_int'] = keys_nodups['key2_int'].astype(int)
-            print keys_nodups
-            print " "
+            print(keys_nodups)
+            print(" ")
 
         else:
             keys_and_prob = only_features_results_sorted[args.id_columns+['svm_pos_prob']]
@@ -142,19 +143,19 @@ def main():
         keys_only = only_features_results_sorted_keys_noself[args.id_columns]
         #kdrew: remove duplicates
         keys_nodups = keys_only.drop_duplicates()
-        print keys_nodups
-        print " "
+        print(keys_nodups)
+        print(" ")
         #kdrew: remove NAs
         keys_nodups = keys_nodups.dropna()
-        print keys_nodups
-        print " "
+        print(keys_nodups)
+        print(" ")
         #kdrew: convert type to int
         if args.int_convert:
             keys_nodups[args.id_columns[0]] = keys_nodups[args.id_columns[0]].astype(int)
             #keys_nodups['key2_int'] = keys_nodups['key2_int'].astype(int)
             keys_nodups[args.id_columns[1]] = keys_nodups[args.id_columns[1]].astype(int)
-        print keys_nodups
-        print " "
+        print(keys_nodups)
+        print(" ")
 
     keys_nodups.to_csv(args.output_file,sep="\t",index=False,header=False)
 

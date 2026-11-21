@@ -8,7 +8,7 @@ parser.add_argument("infiles", nargs="+",help='Elution profile csv file. Optiona
 args = parser.parse_args()
 
 def pretty_dict(D,indent_width=0):
-    for key,val in D.iteritems():
+    for key,val in D.items():
         if type(val) is dict:
             print(' '*indent_width + key)
             pretty_dict(val,indent_width*2)
@@ -22,5 +22,5 @@ if __name__ == '__main__':
         print(f)
         pretty_dict(e.info,4)
         if len(args.infiles) > 1:
-            print
+            print()
     

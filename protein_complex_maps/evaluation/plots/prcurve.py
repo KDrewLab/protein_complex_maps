@@ -89,9 +89,9 @@ def main():
                 ppi_str = str(sorted(list(frozenset([id1,id2]))))
                 results_dict[ppi_str] = float(line.split()[2])
             else:
-                print "WARNING: did not read line: %s" % (line,)
+                print("WARNING: did not read line: %s" % (line,))
 
-        print "results size: %s" % (len(results_dict))
+        print("results size: %s" % (len(results_dict)))
         results_dict_list.append(results_dict)
 
     positive_file = open(args.positives,"rb")
@@ -139,7 +139,7 @@ def main():
             label = args.labels[i]
         print("label: %s" % label)
 
-        for result_pair in results_dict.keys():
+        for result_pair in list(results_dict.keys()):
             #kdrew: add a tiny bit of noise to scores so that predictions with all of the same scores are separated, should fix straight line at end of pr plots
             if args.add_tiny_noise:
                 tiny_noise = np.random.random()/1000000
@@ -157,7 +157,7 @@ def main():
 
         if args.complete_benchmark:
             for ppi in set(ppis) - set(results_dict.keys()):
-                print "complete_benchmark pos: %s" % ppi
+                print("complete_benchmark pos: %s" % ppi)
                 true_array.append(1)
                 if args.add_tiny_noise:
                     tiny_noise = np.random.random()/1000000
@@ -175,17 +175,17 @@ def main():
 
         sorted_neg_list = sorted(neg_list, key=lambda k: k[1])
         sorted_pos_list = sorted(pos_list, key=lambda k: k[1])
-        print "#ofNegs: %s" % (len(sorted_neg_list))
-        print "#ofPos: %s" % (len(sorted_pos_list))
-        print "FDR: %s" % (1.0*len(sorted_neg_list)/(len(sorted_pos_list)+len(sorted_neg_list)))
+        print("#ofNegs: %s" % (len(sorted_neg_list)))
+        print("#ofPos: %s" % (len(sorted_pos_list)))
+        print("FDR: %s" % (1.0*len(sorted_neg_list)/(len(sorted_pos_list)+len(sorted_neg_list))))
 
-        print "#ofNegs: %s, #ofPos: %s, FDR: %s" % (len(sorted_neg_list),len(sorted_pos_list),1.0*len(sorted_neg_list)/(len(sorted_pos_list)+len(sorted_neg_list)))
+        print("#ofNegs: %s, #ofPos: %s, FDR: %s" % (len(sorted_neg_list),len(sorted_pos_list),1.0*len(sorted_neg_list)/(len(sorted_pos_list)+len(sorted_neg_list))))
         for k in sorted_neg_list[-100:]:
-            print "neg: %s:%s" % (k[0], k[1])
+            print("neg: %s:%s" % (k[0], k[1]))
         for k in sorted_pos_list[-100:]:
-            print "pos: %s:%s" % (k[0], k[1])
-        print len(true_array)
-        print len(prob_array)
+            print("pos: %s:%s" % (k[0], k[1]))
+        print(len(true_array))
+        print(len(prob_array))
 
         
         if args.weight_positives != None:
@@ -199,20 +199,20 @@ def main():
 
         #print "precision: %s" % (list(precision),)
         #print "recall: %s" % (list(recall),)
-        print len(precision)
-        print len(recall)
-        print len(thresholds)
+        print(len(precision))
+        print(len(recall))
+        print(len(thresholds))
         print("area_under_curve: %s" % area_under_curve)
 
         #kdrew: from https://www.geeksforgeeks.org/python-find-closest-number-to-k-in-given-list/ 
 
         for x in args.precision_markers:
-            closest_prec = precision[min(range(len(precision)), key = lambda i: abs(precision[i]-float(x)))]
+            closest_prec = precision[min(list(range(len(precision))), key = lambda i: abs(precision[i]-float(x)))]
             index_of_prec = list(precision).index(closest_prec)
             try:
-                print "precision: %s, closest_precision: %s, recall: %s, threshold: %s" % (x, closest_prec, recall[index_of_prec], thresholds[index_of_prec])
-            except IndexError, e:
-                print e
+                print("precision: %s, closest_precision: %s, recall: %s, threshold: %s" % (x, closest_prec, recall[index_of_prec], thresholds[index_of_prec]))
+            except IndexError as e:
+                print(e)
                 continue
 
 
@@ -235,9 +235,9 @@ def main():
                 threshold_recalls.append(recall[threshold_indices[threshold_marker]])
                 threshold_labels.append(threshold_marker)
 
-                print "threshold %s" % threshold_marker
-                print "precision: %s" % precision[threshold_indices[threshold_marker]]
-                print "recall: %s" % recall[threshold_indices[threshold_marker]]
+                print("threshold %s" % threshold_marker)
+                print("precision: %s" % precision[threshold_indices[threshold_marker]])
+                print("recall: %s" % recall[threshold_indices[threshold_marker]])
 
 
         line, = plt.plot(recall, precision, label=label)

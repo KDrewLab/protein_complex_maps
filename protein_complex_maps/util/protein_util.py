@@ -217,13 +217,13 @@ def map_protein_ids( id_list, from_id, to_id, contact_email, reviewed=False ):
 
 
     for i in id_list:
-        if i not in return_dict.keys():
+        if i not in list(return_dict.keys()):
             print("No id match for %s, adding empty list" % i)
             return_dict[i] = []
 
     if reviewed:
         #kdrew: flatten ids into set
-        ret_id_list = list(set([item for sublist in return_dict.values() for item in sublist]))
+        ret_id_list = list(set([item for sublist in list(return_dict.values()) for item in sublist]))
         #print ret_id_list
         is_reviewed_list = get_from_uniprot(ret_id_list, 'reviewed')
         #print is_reviewed_list

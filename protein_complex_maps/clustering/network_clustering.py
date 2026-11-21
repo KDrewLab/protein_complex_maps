@@ -117,9 +117,9 @@ def main():
         if not os.path.isfile(args.clixo_bin):
             raise IOError("File not found: %s" % args.clixo_bin)
         if args.clixo_alpha == None:
-            print "WARNING: --clixo_alpha not set"
+            print("WARNING: --clixo_alpha not set")
         if args.clixo_beta == None:
-            print "WARNING: --clixo_beta not set"
+            print("WARNING: --clixo_beta not set")
 
     #kdrew: original commandline for clusterone
     #java -jar ~/programs/clusterone/cluster_one-1.0.jar blake_bioplex_merge_wkeys_deduped_corum_train_labeled.libsvm0.scaleByTrain.resultWprob_pairs_noself_nodups_wprob.txt > blake_bioplex_merge_wkeys_deduped_corum_train_labeled.libsvm0.scaleByTrain.resultWprob_pairs_noself_nodups_wprob.txt.clusterone
@@ -248,10 +248,10 @@ def cluster_helper(parameter_dict):
             #kdrew: run clustering
             proc = sp.Popen(['java', '-jar', args.clustone_jar, fileTemp.name, '-s', size, '-d', density, '--max-overlap', overlap, '--seed-method', seed_method], stdout=sp.PIPE, stderr=sp.PIPE)
             clust_out, err = proc.communicate()
-            print clust_out
+            print(clust_out)
 
             #kdrew: probably should do some error checking 
-            print err
+            print(err)
 
             #kdrew: take output of cluster one (predicted clusters) and store them into list
             predicted_clusters = []
@@ -267,7 +267,7 @@ def cluster_helper(parameter_dict):
             clust_out, err = proc.communicate()
             #print clust_out
             #print err
-            print dirTemp
+            print(dirTemp)
 
             predicted_clusters = []
 
@@ -279,7 +279,7 @@ def cluster_helper(parameter_dict):
                         predicted_clusters.append(line.split(':')[1].split())
 
             except (IOError, OSError) as e:
-                print e
+                print(e)
 
         elif twostep_combination[0] == 'clixo':
             proc = sp.Popen([args.clixo_bin, fileTemp.name, clixo_alpha, clixo_beta], stdout=sp.PIPE, stderr=sp.PIPE)
@@ -295,18 +295,18 @@ def cluster_helper(parameter_dict):
                     predicted_clusters.append(gene_list.split(','))
 
     finally:
-	if nodelete:
+        if nodelete:
             pass
-	else:
+        else:
             os.remove(fileTemp.name)
 
 
-    print "finished clustering phase1"
+    print("finished clustering phase1")
     sys.stdout.flush()
 
     if len(twostep_combination) >= 2:
         if twostep_combination[1] == 'mcl':
-            print "MCL"
+            print("MCL")
             mcl_clusters = []
             #kdrew: for each predicted cluster, recluster using MCL
             for clust in predicted_clusters:
@@ -357,7 +357,7 @@ def cluster_helper(parameter_dict):
             predicted_clusters = mcl_clusters
 
         elif twostep_combination[1] == 'agglomod':
-            print "AGGLOMOD"
+            print("AGGLOMOD")
             sys.stdout.flush()
 
             agglomod_clusters = []
@@ -428,7 +428,7 @@ def trim_clusters2threshold(predicted_clusters, threshold_score, ppi_scores):
                     except KeyError:
                         continue
             if prot1_max_score < threshold_score:
-                print "removing prot1: %s max score: %s" % (prot1, prot1_max_score)
+                print("removing prot1: %s max score: %s" % (prot1, prot1_max_score))
             else:
                 trimed_clust.append(prot1)
         if len(trimed_clust) >  1:

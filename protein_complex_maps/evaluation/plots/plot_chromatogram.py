@@ -79,9 +79,9 @@ def main():
         fraction_mins = np.arange(args.start_collecting, args.stop_collecting, args.collection_period)
         ax3 = ax.twiny()
         #ax3.plot(fraction_mins, visible=False)
-        ax3.plot(range(int(df['Time (min)'].values[0]),int(df['Time (min)'].values[-1])), visible=False)
+        ax3.plot(list(range(int(df['Time (min)'].values[0]),int(df['Time (min)'].values[-1]))), visible=False)
         ax3.set_xticks(fraction_mins[::10])
-        ax3.set_xticklabels(range(len(fraction_mins))[::10])
+        ax3.set_xticklabels(list(range(len(fraction_mins)))[::10])
         ax3.set_xlabel("Fractions")
 
 
@@ -90,14 +90,14 @@ def main():
         ax.axvline(x, color="black", ls='dashed', alpha=0.5, linewidth=0.5)
         ax.annotate(args.standard_mass[i], xy=(x, 1.12), xycoords='data', xytext=(-2.5, 0.0), textcoords='offset points', ha="center", rotation=90, fontsize=6,)
 
-    print fraction_mins
-    print std_times
+    print(fraction_mins)
+    print(std_times)
     std_fractions = []
     for st in std_times:
         std_fractions.append(next(i for i,v in enumerate(fraction_mins) if v > st))
 
-    print "standard_fractions"
-    print ' '.join([str(x) for x in std_fractions])
+    print("standard_fractions")
+    print(' '.join([str(x) for x in std_fractions]))
 
     if args.normalize:
         plt.ylim(-0.1,1.18)

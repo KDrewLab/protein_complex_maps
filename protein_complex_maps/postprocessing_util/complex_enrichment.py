@@ -9,7 +9,7 @@ import subprocess as sp
 import pandas as pd
 
 try:
-   import cPickle as pickle
+   import pickle as pickle
 except:
    import pickle
 
@@ -59,11 +59,11 @@ def main():
 
     for i, complex_line in enumerate(complex_file.readlines()):
 
-        print "complex: %s" % (i,)
+        print("complex: %s" % (i,))
         #kdrew: skip complexes if already from checkpoint
         if args.resume_from_checkpoint:
             if i <= checkpoint_complex_id:
-                print "skipping: resuming from checkpoint file"
+                print("skipping: resuming from checkpoint file")
                 continue
         
         if len(complex_line.split()) == 0:
@@ -82,14 +82,14 @@ def main():
                     }
                 )
         #kdrew: does not return list in same order as input
-        query_ids = r.json()['meta']['genes_metadata']['query']['query_1']['mapping'].keys()
-        print query_ids
+        query_ids = list(r.json()['meta']['genes_metadata']['query']['query_1']['mapping'].keys())
+        print(query_ids)
         ordered_query_ids = [x for x in complex_query_ids if x in query_ids]
         for res in r.json()['result']:
             res['index'] = index_count
             index_count += 1
             res['complex_id'] = i
-            print res
+            print(res)
             #kdrew: this field makes converting to a dataframe difficult
             #res['intersections'] = ' '.join(res['intersections'])
             #kdrew: convert so that we know which genes are annotated
@@ -113,7 +113,7 @@ def main():
             results_pickle.close()
 
     results_df = results_df.set_index("index")
-    print results_df
+    print(results_df)
     #kdrew: pickle just in case pandas fails again
     results_pickle = open('results.pkl', 'wb')
     pickle.dump(results_df, results_pickle)

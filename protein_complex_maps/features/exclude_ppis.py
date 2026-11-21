@@ -34,7 +34,7 @@ def main():
             ppis.add(frozenset([id1,id2]))
 
     is_ppis = feature_table[args.id_columns].apply(set,axis=1).isin(ppis)
-    print is_ppis
+    print(is_ppis)
 
     feature_table = feature_table.drop(feature_table[is_ppis].index)
 

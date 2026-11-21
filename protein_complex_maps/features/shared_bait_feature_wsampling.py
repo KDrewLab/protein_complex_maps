@@ -36,7 +36,7 @@ def choose(n, k):
     if 0 <= k <= n:
         ntok = 1
         ktok = 1
-        for t in xrange(1, min(k, n - k) + 1):
+        for t in range(1, min(k, n - k) + 1):
             ntok *= n
             ktok *= t
             n -= 1
@@ -88,7 +88,7 @@ def shared_bait_feature(feature_table, bait_id_column='Fraction', id_column='ID'
     feature_shared_bait_table['gene_id2_str'] = feature_shared_bait_table[id_column+'_right'].apply(str)
 
 
-    feature_shared_bait_table['IDs'] = map(sorted, zip(feature_shared_bait_table['gene_id1_str'].values, feature_shared_bait_table['gene_id2_str'].values))
+    feature_shared_bait_table['IDs'] = list(map(sorted, list(zip(feature_shared_bait_table['gene_id1_str'].values, feature_shared_bait_table['gene_id2_str'].values))))
 
 
     print(feature_shared_bait_table)

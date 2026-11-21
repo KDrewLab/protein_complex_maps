@@ -57,7 +57,7 @@ if __name__ == '__main__':
     ## So the best bet is to keep missing_penalization_factor low, maybe .2 or so.
     if args.missing_penalization_factor:
         n_to_add = int( args.missing_penalization_factor * len(merged.columns) )
-        for i in xrange(n_to_add):
+        for i in range(n_to_add):
             merged["dummy{}".format(i)] = 0
         
     avgFuncD = {"mean": functools.partial( merged.mean ),

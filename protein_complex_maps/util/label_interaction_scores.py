@@ -27,7 +27,7 @@ def main():
 
     scores_df.columns = ['ID1', 'ID2', 'svmscores']
 
-    scores_df['ID'] = map(sorted, zip(scores_df['ID1'].values, scores_df['ID2'].values))
+    scores_df['ID'] = list(map(sorted, list(zip(scores_df['ID1'].values, scores_df['ID2'].values))))
 
     scores_df = scores_df.drop(['ID1', 'ID2'], axis=1)
 

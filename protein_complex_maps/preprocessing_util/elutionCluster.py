@@ -31,7 +31,7 @@ def main():
     joined_elutions = pd.DataFrame()
     psm_sum_df = pd.DataFrame()
     for f in args.input_elutions:
-        print "Reading in {}".format(f)
+        print("Reading in {}".format(f))
         df = pd.read_csv(f,index_col=0, sep=args.sep)
         if "TotalCount" in df.columns:
             df.drop("TotalCount",inplace=True,axis=1)
@@ -42,12 +42,12 @@ def main():
         
         ## Normalize, if flagged
         if args.normalize:
-            print "Normalize by {}".format(", ".join(args.normalize))
+            print("Normalize by {}".format(", ".join(args.normalize)))
             if 'column' in args.normalize:
                 df = df/df.sum()
             if 'row_sum' in args.normalize:
                 if "row_max" in args.normalize:
-                    print "Warning: It's kinda weird to normalize both row_sum and row_max"
+                    print("Warning: It's kinda weird to normalize both row_sum and row_max")
                 df = df.div(df.sum(axis=1), axis=0)
             if 'row_max' in args.normalize:
                 df = df.div(df.max(axis=1), axis=0)
@@ -63,22 +63,22 @@ def main():
     
    # Thresholding
     if args.threshold:
-        print "Removing rows with fewer than {} PSMs".format(args.threshold)
+        print("Removing rows with fewer than {} PSMs".format(args.threshold))
         ## Add a temporary column for thresholding, then drop it so we don't cluster on it
         joined_elutions["tmp_rowSum"] = rowSums
         before = len(joined_elutions)
         joined_elutions = joined_elutions[joined_elutions.tmp_rowSum >= args.threshold]
         after = len(joined_elutions)
-        print "Removed {} rows".format(before - after)
+        print("Removed {} rows".format(before - after))
         rowSums = joined_elutions.pop("tmp_rowSum")
             
-    labels_index = pd.Series(joined_elutions.index,index=range(len(joined_elutions))) # Create indexer to manage scipy output
+    labels_index = pd.Series(joined_elutions.index,index=list(range(len(joined_elutions)))) # Create indexer to manage scipy output
     row_orderings = [] # DataFrames indexed on ids that hold the clustered orders.
     clustered_names = [] # Used during column re-ordering
     
     for method in args.hclust_method:
         for metric in args.hclust_metric:
-            print "Clustering method={}, metric={}".format(method, metric)
+            print("Clustering method={}, metric={}".format(method, metric))
 
             if metric == "pearson":
                 corr_mat = np.around( np.corrcoef(joined_elutions), decimals = 4)
@@ -100,7 +100,7 @@ def main():
         
             cluster_name = "_".join(["order",metric,method])
             clustered_names.append(cluster_name)
-            row_order = pd.DataFrame({cluster_name: range(len(ordered_index))}, index=ordered_index)
+            row_order = pd.DataFrame({cluster_name: list(range(len(ordered_index)))}, index=ordered_index)
             assert len(row_order) == len(joined_elutions)
             row_orderings.append(row_order)
 
@@ -115,7 +115,7 @@ def main():
     
     #kdrew: create empty annotation dataframe in case no annotations are read in
     if args.path_to_annotations != None:
-        print "Adding annotations"
+        print("Adding annotations")
         annots = pd.read_table(args.path_to_annotations,index_col=0)
         #print "length of annotation df: {}".format(len(annots)) # Debugging
         joined_elutions = annots.join(joined_elutions,how='right')
@@ -127,7 +127,7 @@ def main():
     # add column sum row
     outdf = reordered_df.append(colSums) # BJL: Must add annots, then row sum, the cluster order, then col sums -- in that order
     
-    print "Writing excel file"
+    print("Writing excel file")
     outdf.to_excel(args.outfile)
     
 if __name__ == '__main__':

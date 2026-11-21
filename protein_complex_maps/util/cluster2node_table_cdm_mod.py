@@ -34,7 +34,7 @@ def main():
     f = open(args.cluster_filename, "rb")
     for line in f.readlines():
         clusters.append(line.split())
-        map( protid_set.add, line.split() )
+        list(map( protid_set.add, line.split() ))
 
     #print "cluster2node_table: convert to ACC"
     #inputID2ACC_map = pu.map_protein_ids(list(protid_set), args.from_id, "ACC", reviewed=args.reviewed)
@@ -105,7 +105,7 @@ def main():
 
     
     final_annot = full_table.join(split_table, how="left")
-    print final_annot
+    print(final_annot)
     final_annot = final_annot[['AllMembers', 1]]
     final_annot.columns= ['AllMembers', 'Entry']
 #    final_annot = final_annot.set_index(["ID"])
@@ -114,7 +114,7 @@ def main():
   #  print df
 
     annot1 = df.join(final_annot, how="left")
-    print annot1
+    print(annot1)
     egg=pd.read_csv(args.egg_filename, index_col=False, sep=",")
  
 
@@ -131,7 +131,7 @@ def main():
 
     annot3 = annot2.join(arath, how="left")
 
-    print annot3
+    print(annot3)
     #annot2.reset_index()
 #    egg= egg[['ID', 'AllMembers']]
 #

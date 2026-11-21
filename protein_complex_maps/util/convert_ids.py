@@ -35,7 +35,7 @@ def main():
 
     #kdrew: error checking
     if not args.filename:
-        print "\nError: Specify --filename \n"
+        print("\nError: Specify --filename \n")
         parser.print_help()
         return
 
@@ -64,7 +64,7 @@ def main():
 
     input_ids = list(set([x for cluster in clusters for x in cluster]))
     inputID2ACC_map = pu.map_protein_ids(input_ids, args.from_id, "ACC", args.contact_email, reviewed=args.reviewed)
-    flatten_list = [item for sublist in inputID2ACC_map.values() for item in sublist]
+    flatten_list = [item for sublist in list(inputID2ACC_map.values()) for item in sublist]
     ACC2outputID_map = pu.map_protein_ids(flatten_list, "ACC", args.to_id, args.contact_email, reviewed=args.reviewed)
 
     if not args.pairwise:

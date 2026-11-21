@@ -57,9 +57,9 @@ def main():
                 ppi_str = str(sorted(list(frozenset([id1,id2]))))
                 results_dict[ppi_str] = float(line.split()[2])
             else:
-                print "WARNING: did not read line: %s" % (line,)
+                print("WARNING: did not read line: %s" % (line,))
 
-        print "results size: %s" % (len(results_dict))
+        print("results size: %s" % (len(results_dict)))
         results_dict_list.append(results_dict)
 
     positive_file = open(args.positives,"rb")
@@ -101,7 +101,7 @@ def main():
         prob_array = []
         neg_list = []
         pos_list = []
-        for result_pair in results_dict.keys():
+        for result_pair in list(results_dict.keys()):
             #kdrew: add a tiny bit of noise to scores so that predictions with all of the same scores are separated, should fix straight line at end of pr plots
             if args.add_tiny_noise:
                 tiny_noise = np.random.random()/1000000
@@ -136,31 +136,31 @@ def main():
 
         sorted_neg_list = sorted(neg_list, key=lambda k: k[1])
         sorted_pos_list = sorted(pos_list, key=lambda k: k[1])
-        print "#ofNegs: %s" % (len(sorted_neg_list))
-        print "#ofPos: %s" % (len(sorted_pos_list))
-        print "FDR: %s" % (1.0*len(sorted_neg_list)/(len(sorted_pos_list)+len(sorted_neg_list)))
+        print("#ofNegs: %s" % (len(sorted_neg_list)))
+        print("#ofPos: %s" % (len(sorted_pos_list)))
+        print("FDR: %s" % (1.0*len(sorted_neg_list)/(len(sorted_pos_list)+len(sorted_neg_list))))
 
-        print "#ofNegs: %s, #ofPos: %s, FDR: %s" % (len(sorted_neg_list),len(sorted_pos_list),1.0*len(sorted_neg_list)/(len(sorted_pos_list)+len(sorted_neg_list)))
+        print("#ofNegs: %s, #ofPos: %s, FDR: %s" % (len(sorted_neg_list),len(sorted_pos_list),1.0*len(sorted_neg_list)/(len(sorted_pos_list)+len(sorted_neg_list))))
         for k in sorted_neg_list[-100:]:
-            print "neg: %s:%s" % (k[0], k[1])
+            print("neg: %s:%s" % (k[0], k[1]))
         for k in sorted_pos_list[-100:]:
-            print "pos: %s:%s" % (k[0], k[1])
-        print len(true_array)
-        print len(prob_array)
+            print("pos: %s:%s" % (k[0], k[1]))
+        print(len(true_array))
+        print(len(prob_array))
 
         precision, recall, thresholds = precision_recall_curve(true_array, prob_array) 
         #average_precision = average_precision_score(true_array, prob_array)
 
         #print "precision: %s" % (list(precision),)
         #print "recall: %s" % (list(recall),)
-        print "len(precision): %s" % len(precision)
-        print "len(recall): %s" % len(recall)
-        print "len(thresholds): %s" % len(thresholds)
+        print("len(precision): %s" % len(precision))
+        print("len(recall): %s" % len(recall))
+        print("len(thresholds): %s" % len(thresholds))
 
         for threshold_marker in [float(x) for x in args.threshold_markers]:
             try:
                 j = next(i for i,x in enumerate(thresholds) if x >= threshold_marker) 
-                print "threshold: %s, precision: %s" % (threshold_marker, precision[j])
+                print("threshold: %s, precision: %s" % (threshold_marker, precision[j]))
             except StopIteration:
                 pass
 
