@@ -162,7 +162,8 @@ class ComplexComparison(object):
         df = self.get_na_table()
         #kdrew: if we want to only do a range of clusters (topN), we probably want to slice sn_df here
         if topN != None:
-            df = df.ix[:,:topN]
+            #claude: .ix removed from pandas; .loc keeps .ix's label-based slice, which includes column topN (i.e. topN+1 clusters)
+            df = df.loc[:,:topN]
         #print df
         max_df = df.max(axis=1)
 
@@ -174,7 +175,8 @@ class ComplexComparison(object):
         df = self.get_na_table()
         #kdrew: if we want to only do a range of clusters (topN), we probably want to slice sn_df here
         if topN != None:
-            df = df.ix[:,:topN]
+            #claude: .ix removed from pandas; .loc keeps .ix's label-based slice, which includes column topN (i.e. topN+1 clusters)
+            df = df.loc[:,:topN]
         #print df
         max_df = df.max(axis=0)
 
@@ -190,7 +192,8 @@ class ComplexComparison(object):
         df = self.get_intersection_table()
         #kdrew: if we want to only do a range of clusters (topN), we probably want to slice sn_df here
         if topN != None:
-            df = df.ix[:,:topN]
+            #claude: .ix removed from pandas; .loc keeps .ix's label-based slice, which includes column topN (i.e. topN+1 clusters)
+            df = df.loc[:,:topN]
         sn_df = df.divide([len(gs) for gs in self.get_gold_standard()], axis=0)
         #print sn_df.max()
         sn_co = sn_df.max(axis=1)
@@ -208,7 +211,8 @@ class ComplexComparison(object):
         df = self.get_intersection_table()
         #kdrew: if want to do a range of clusters (topN) we probably want to slice df here
         if topN != None:
-            df = df.ix[:,:topN]
+            #claude: .ix removed from pandas; .loc keeps .ix's label-based slice, which includes column topN (i.e. topN+1 clusters)
+            df = df.loc[:,:topN]
         ppv_df = df.divide(1.0*df.sum())
         ppv_df = ppv_df.fillna(0.0)
         PPV_cl = ppv_df.max()

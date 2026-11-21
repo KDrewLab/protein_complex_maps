@@ -32,11 +32,11 @@ def divide_file(input_df, n, seed, label="label"):
         pos_combined_splits.append(pos_combined)
         neg_combined_splits.append(neg_combined)
     
-    #kdrew: store split dataframes
-    df_pos_training = [df_pos.ix[pos_combined_splits[i]] for i in range(n)]
-    df_neg_training = [df_neg.ix[neg_combined_splits[i]] for i in range(n)]
-    df_pos_leaveout = [df_pos.ix[pos_rand_id_splits[i]] for i in range(n)]
-    df_neg_leaveout = [df_neg.ix[neg_rand_id_splits[i]] for i in range(n)]
+    #kdrew (modified by claude): store split dataframes (.ix removed from pandas; indices are row labels, so use .loc)
+    df_pos_training = [df_pos.loc[pos_combined_splits[i]] for i in range(n)]
+    df_neg_training = [df_neg.loc[neg_combined_splits[i]] for i in range(n)]
+    df_pos_leaveout = [df_pos.loc[pos_rand_id_splits[i]] for i in range(n)]
+    df_neg_leaveout = [df_neg.loc[neg_rand_id_splits[i]] for i in range(n)]
 
     return_dict = dict()
     return_dict['pos_train'] = df_pos_training

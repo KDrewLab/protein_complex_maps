@@ -114,9 +114,10 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
   - [x] `evaluation/complex_comparison.py` (`clique_comparison`, `clique_comparison_exact`) — **[TESTED]**
   - [x] `features/shared_bait_feature.py` (`pval_old`) — **[TESTED]**
   - [x] `features/shared_bait_feature_wsampling.py` — **[UNTESTED]** (compiles on Py3)
-- [ ] pandas `.ix` → `.iloc`
-  - `evaluation/complex_comparison.py:165,177,193,211` (only on `topN != None` branch) — **[UNTESTED]** (no test passes `topN`)
-  - `model_fitting/cross_validation/train_leaveout_divide.py:36-39` — **[UNTESTED]**
+- [x] pandas `.ix` → `.loc` (label-based, matching what `.ix` did for these integer-labelled axes). Verified identical output: original `.ix` on Py2/pandas 0.24 vs `.loc` on Py3/pandas 1.1.3, for all four `topN` distributions (topN = None/1/2/4) and the CV train/leaveout splits
+  - [x] `evaluation/complex_comparison.py:165,177,193,211` — **[UNTESTED]** by unit tests (no test or caller passes `topN`); verified by direct comparison
+  - [x] `model_fitting/cross_validation/train_leaveout_divide.py:36-39` — **[UNTESTED]** by unit tests; verified by direct comparison
+  - [ ] **Pre-existing off-by-one** `complex_comparison.py` `topN`: columns are cluster numbers 0..n-1, and the label slice includes the end, so `topN=2` keeps 3 clusters. Behaviour preserved for now; if "first N clusters" is intended, use `df.iloc[:, :topN]`. Nothing in the repo currently passes `topN`
 - [ ] `sklearn.metrics.ranking._binary_clf_curve` → `sklearn.metrics._ranking` or reimplement (`evaluation/plots/prcurve.py:17`) — **[UNTESTED]**
 - [ ] `import matplotlib.mlab` — remove or replace usages in `evaluation/plots/prcurve.py`, `precision_score_curve.py`, `plot_chromatogram.py`, `plot_sparklines.py`, `model_fitting/cross_validation/evaluate_crossvalidation.py` — **[UNTESTED]**
 - [ ] `pd.read_table` → `pd.read_csv(sep=...)` in `features/add_label.py`, `alphabetize_pairs.py`, `combine_feature_matrices.py` (deprecation, not breaking) — **[UNTESTED]**
