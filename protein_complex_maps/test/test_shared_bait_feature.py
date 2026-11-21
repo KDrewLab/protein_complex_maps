@@ -9,6 +9,7 @@ import pandas as pd
 import scipy
 
 
+#claude: NOT EVALUATED BY A HUMAN CODER - written by claude, review before relying on it
 def get_pair(result_table, id1, id2):
     #claude: pair orientation (gene_id1, gene_id2) in shared_bait_feature output depends on set/hash iteration order,
     #claude: so look up the pair in either orientation and require exactly one matching row
@@ -34,6 +35,7 @@ class SharedBaitFeatureTest(unittest.TestCase):
         result_table = sbf.shared_bait_feature(self.feature_table, 'bait_geneid', 'gene_id')
         print("result_table")
         print(result_table)
+        #claude: NOT EVALUATED BY A HUMAN CODER - written by claude, review before relying on it
         #claude: corrected columns are only returned with bh_correct=True
         assert(list(result_table.columns) == ['gene_id1','gene_id2','neg_ln_pval','pair_count','pval'])
 
@@ -74,6 +76,7 @@ class SharedBaitFeatureTest(unittest.TestCase):
         #print result_table.query("gene_id1 == '2' and gene_id2 == '3'")
         np.testing.assert_almost_equal( get_pair(result_table, '2', '3').neg_ln_pval.values, 2.302585 )
 
+        #claude: NOT EVALUATED BY A HUMAN CODER - written by claude, review before relying on it
         #claude: corrected values over the 26 unique pairs; expected values from R p.adjust(pval, method="BH")
         np.testing.assert_almost_equal(get_pair(result_table, '2', '3').pval_corr.values[0], 0.577778, decimal=6 )
         np.testing.assert_almost_equal(get_pair(result_table, '2', 'B').pval_corr.values[0], 0.6, decimal=6 )
