@@ -38,7 +38,7 @@ def main():
 
     args = parser.parse_args()
 
-    outfile = open(args.output_file,"wb")
+    outfile = open(args.output_file,"w")
 
     leaveout_regex = r"leaveout[0-9]+"
     leaveout_ppis_regex = r"leaveout_ppis[0-9]+"
@@ -129,7 +129,7 @@ def calc_metric_files(results_wprob_filenames, positives_filenames, negatives_fi
     neg_ppi_list = []
     for i, filename in enumerate(results_wprob_filenames):
         results_dict = dict()
-        results_file = open(filename,"rb")
+        results_file = open(filename,"r")
         for line in results_file.readlines():
             if len(line.split()) == 3:
                 id1 = line.split()[0]
@@ -143,7 +143,7 @@ def calc_metric_files(results_wprob_filenames, positives_filenames, negatives_fi
         results_dict_list.append(results_dict)
 
 
-        positive_file = open(positives_filenames[i], "rb")
+        positive_file = open(positives_filenames[i], "r")
         all_proteins = set()
         ppis = set()
         neg_ppis = set()
@@ -169,7 +169,7 @@ def calc_metric_files(results_wprob_filenames, positives_filenames, negatives_fi
                     neg_ppis.add(pair)
         else:
             #kdrew: readin from file
-            negative_file = open(negatives_filenames[i],"rb")
+            negative_file = open(negatives_filenames[i],"r")
             for line in negative_file.readlines():
                 if len(line.split()) >= 2:
                     id1 = line.split()[0]

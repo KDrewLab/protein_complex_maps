@@ -22,7 +22,7 @@ def main():
 
     db.create_all()
 
-    node_table_file = open(args.node_table,"rb")
+    node_table_file = open(args.node_table,"r", newline='')
     csvreader = csv.reader(node_table_file, delimiter=',', quotechar='"')
     for line in csvreader:
         #kdrew: header: acc,clustid,clustid_key,genename,key,proteinname,uniprot_link

@@ -24,7 +24,7 @@ def main():
 
     feature_table = pd.read_csv(args.feature_matrix,sep=args.sep)
 
-    exclude_file = open(args.exclude_file,"rb")
+    exclude_file = open(args.exclude_file,"r")
 
     ppis = set()
     for line in exclude_file.readlines():

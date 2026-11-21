@@ -25,14 +25,14 @@ def main():
     args = parser.parse_args()
 
     in_predicted_clusters = set()
-    clpred_f = open(args.cluster_filename,"rb")
+    clpred_f = open(args.cluster_filename,"r")
     for line in clpred_f.readlines():
         #kdrew: ignore singletons
         if len(line.split()) > 1:
             in_predicted_clusters.add(frozenset(line.split()))
 
     final_clusters = merge_complexes(in_predicted_clusters, args.merge_threshold, args.complex_size, args.remove_largest, args.remove_large_subcomplexes)
-    outfile = open(args.output_filename,"wb")
+    outfile = open(args.output_filename,"w")
     for cluster in final_clusters:
         outfile.write(" ".join(cluster) + '\n')
 

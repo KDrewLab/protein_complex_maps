@@ -35,7 +35,7 @@ def main():
     #kdrew: origin of this code is from ipython notebook: corum_test_train_revisit, heavily refactored and modified
 
     complexes = set()
-    f = open(args.complex_filename,"rb")
+    f = open(args.complex_filename,"r")
     for line in f.readlines():
         #kdrew: ignore singletons
         if len(line.split()) > 1:
@@ -53,35 +53,35 @@ def main():
     neg_train_ppis_clean_filename = '.'.join(args.complex_filename.split('.')[:-1]) + '.neg_train_ppis.txt'  
 
     #kdrew: write sets to outfiles
-    test_list_out = open(test_list_clean_filename,"wb")
+    test_list_out = open(test_list_clean_filename,"w")
     for c in test_list_clean:
         test_list_out.write(" ".join(c)+"\n")
     test_list_out.close()
 
-    train_list_out = open(train_list_clean_filename,"wb")
+    train_list_out = open(train_list_clean_filename,"w")
     for c in train_list_clean:
         train_list_out.write(" ".join(c)+"\n")
     train_list_out.close()
 
-    test_out = open(test_ppis_clean_filename,"wb")
+    test_out = open(test_ppis_clean_filename,"w")
     for ppi in test_ppis_clean:
         #test_out.write("%s\t%s\n" % (list(ppi)[0], list(ppi)[1]))
         test_out.write("%s\t%s\n" % (tuple(sorted(ppi))))
     test_out.close()
 
-    train_out = open(train_ppis_clean_filename,"wb")
+    train_out = open(train_ppis_clean_filename,"w")
     for ppi in train_ppis_clean:
         #train_out.write("%s\t%s\n" % (list(ppi)[0], list(ppi)[1]))
         train_out.write("%s\t%s\n" % (tuple(sorted(ppi))))
     train_out.close()
 
-    neg_test_out = open(neg_test_ppis_clean_filename,"wb")
+    neg_test_out = open(neg_test_ppis_clean_filename,"w")
     for ppi in neg_test_ppis_clean:
         #neg_test_out.write("%s\t%s\n" % (list(ppi)[0], list(ppi)[1]))
         neg_test_out.write("%s\t%s\n" % (tuple(sorted(ppi))))
     neg_test_out.close()
 
-    neg_train_out = open(neg_train_ppis_clean_filename,"wb")
+    neg_train_out = open(neg_train_ppis_clean_filename,"w")
     for ppi in neg_train_ppis_clean:
         #neg_train_out.write("%s\t%s\n" % (list(ppi)[0], list(ppi)[1]))
         neg_train_out.write("%s\t%s\n" % (tuple(sorted(ppi))))

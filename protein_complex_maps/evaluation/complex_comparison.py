@@ -631,20 +631,20 @@ def main():
     args = parser.parse_args()
 
     gold_standard_complexes = []
-    gold_file = open(args.gold_standard_filename,"rb")
+    gold_file = open(args.gold_standard_filename,"r")
     for line in gold_file.readlines():
         gold_standard_complexes.append(line.split())
     gold_file.close()
 
     predicted_clusters = []
-    clpred_f = open(args.cluster_filename,"rb")
+    clpred_f = open(args.cluster_filename,"r")
     for line in clpred_f.readlines():
         predicted_clusters.append(line.split())
     clpred_f.close()
 
     excluded_complexes = []
     if args.excluded_complexes != None:
-        exclude_file = open(args.excluded_complexes,"rb")
+        exclude_file = open(args.excluded_complexes,"r")
         for line in exclude_file.readlines():
             excluded_complexes.append(line.split())
 

@@ -116,7 +116,7 @@ def main():
         raise IOError("File not found: %s" % args.clustone_jar)
 
     #kdrew: read gold standard into list
-    gstd_file = open(args.gold_standard_filename,"rb")
+    gstd_file = open(args.gold_standard_filename,"r")
     gold_standard_complexes = []
     for line in gstd_file.readlines():
         gold_standard_complexes.append(line.split())

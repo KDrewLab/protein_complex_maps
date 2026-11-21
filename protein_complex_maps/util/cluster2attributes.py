@@ -24,12 +24,12 @@ def main():
         return
 
     clusters = []
-    f = open(args.filename, "rb")
+    f = open(args.filename, "r")
     for line in f.readlines():
         clusters.append(line.split())
 
     #kdrew: dumps all pairs in clusters one per line in entrez id
-    fout = open(args.out_filename,"wb")
+    fout = open(args.out_filename,"w")
 
     attributes = dict()
     attributes['genes'] = dict()

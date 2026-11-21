@@ -29,7 +29,7 @@ def main():
     removal_pairs_set = set()
     if args.remove_overlap_filename != None:
         #kdrew: read in removal_pairs
-        removal_f = open(args.remove_overlap_filename, "rb")
+        removal_f = open(args.remove_overlap_filename, "r")
         for line in removal_f.readlines():
             for pair in it.combinations( set( line.split() ), 2):
                 removal_pairs_set.add(frozenset(pair))
@@ -42,19 +42,19 @@ def main():
         ko_filename = args.keep_overlap_filename
 
     #kdrew: read in keep_pairs
-    keep_f = open(ko_filename, "rb")
+    keep_f = open(ko_filename, "r")
     for line in keep_f.readlines():
         for pair in it.combinations( set( line.split() ), 2):
             keep_pairs_set.add(frozenset(pair))
 
 
     clusters = []
-    f = open(args.filename, "rb")
+    f = open(args.filename, "r")
     for line in f.readlines():
         clusters.append(line.split())
 
     #kdrew: dumps all pairs in clusters one per line in entrez id
-    fout = open(args.out_filename,"wb")
+    fout = open(args.out_filename,"w")
 
     #kdrew: used to store pairs that have already been outputted, removes redundancy
     output_sets = []

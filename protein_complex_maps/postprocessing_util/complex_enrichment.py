@@ -41,11 +41,11 @@ def main():
 
     background_proteins = []
     if args.background_filename != None:
-        background_file = open(args.background_filename,'rb')
+        background_file = open(args.background_filename,'r')
         for line in background_file.readlines():
             background_proteins.append(line.split()[0])
 
-    complex_file = open(args.complex_filename,'rb')
+    complex_file = open(args.complex_filename,'r')
     results_df = None
     index_count = 0
 

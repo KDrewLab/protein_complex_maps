@@ -25,19 +25,19 @@ def main():
     db.create_all()
 
     bioplex_bait_preys = set()
-    bioplex_bait_prey_file = open(args.bioplex_bait_prey_file,"rb")
+    bioplex_bait_prey_file = open(args.bioplex_bait_prey_file,"r")
     for line in bioplex_bait_prey_file.readlines():
         bioplex_bait_preys.add(tuple([x.strip() for x in line.split(',')]))
 
     hein_bait_preys = set()
-    hein_bait_prey_file = open(args.hein_bait_prey_file,"rb")
+    hein_bait_prey_file = open(args.hein_bait_prey_file,"r")
     for line in hein_bait_prey_file.readlines():
         hein_bait_preys.add(tuple([x.strip() for x in line.split(',')]))
 
     print(bioplex_bait_preys)
     print(hein_bait_preys)
 
-    edge_table_file = open(args.edge_file,"rb")
+    edge_table_file = open(args.edge_file,"r")
     for line in edge_table_file.readlines():
 
         #kdrew: if header do not parse

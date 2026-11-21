@@ -51,7 +51,7 @@ def main():
         featfile.close()
         print(feats)
 
-    outfile = open(args.output_script_name,"wb")
+    outfile = open(args.output_script_name,"w")
     
     outfile.write("#kdrew: trim feature matrix to just labeled entries\n")
     train_only_featmat_filename =  "%s.only.featmat" % os.path.basename(args.feature_matrix).replace(".featmat","")

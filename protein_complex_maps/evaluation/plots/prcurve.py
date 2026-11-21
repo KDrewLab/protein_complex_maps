@@ -123,7 +123,7 @@ def main():
     results_dict_list = []
     for filename in args.results_wprob:
         results_dict = dict()
-        results_file = open(filename,"rb")
+        results_file = open(filename,"r")
         for line in results_file.readlines():
             if len(line.split()) == 3:
                 id1 = line.split()[0]
@@ -136,7 +136,7 @@ def main():
         print("results size: %s" % (len(results_dict)))
         results_dict_list.append(results_dict)
 
-    positive_file = open(args.positives,"rb")
+    positive_file = open(args.positives,"r")
 
     all_proteins = set()
     ppis = set()
@@ -161,7 +161,7 @@ def main():
                 neg_ppis.add(pair)
     else:
         #kdrew: readin from file
-        negative_file = open(args.negatives,"rb")
+        negative_file = open(args.negatives,"r")
         for line in negative_file.readlines():
             if len(line.split()) >= 2:
                 id1 = line.split()[0]

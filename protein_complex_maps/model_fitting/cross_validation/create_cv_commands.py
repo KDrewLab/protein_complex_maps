@@ -63,7 +63,7 @@ def main():
         predict_group_outfile = open("%s.%s.sh" % ('.'.join(args.output_script_name.split('.')[:-1]), "predict_group"), "wb")
         results2pairs_group_outfile = open("%s.%s.sh" % ('.'.join(args.output_script_name.split('.')[:-1]), "results2pairs_group"), "wb")
     else:
-        outfile = open(args.output_script_name,"wb")
+        outfile = open(args.output_script_name,"w")
 
     for i in range(len(args.train_files)):
         train_file = args.train_files[i]

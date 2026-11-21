@@ -40,7 +40,7 @@ def main():
 
     #gold_standard_filename = "/home/kdrew/data/protein_complex_maps/corum_revisit/allComplexesCore_geneid_merged06_testSplit.txt"
     gold_standard_complexes = []
-    gold_file = open(args.gold_standard,"rb")
+    gold_file = open(args.gold_standard,"r")
     for line in gold_file.readlines():
         gold_standard_complexes.append(line.split())
 
@@ -48,7 +48,7 @@ def main():
 
     excluded_complexes = []
     if args.excluded_complexes != None:
-        exclude_file = open(args.excluded_complexes,"rb")
+        exclude_file = open(args.excluded_complexes,"r")
         for line in exclude_file.readlines():
             excluded_complexes.append(line.split())
 
@@ -134,7 +134,7 @@ def main():
     pr_dict['totalProteins'] = totalProteins_dict
 
     #kdrew: output results 
-    outfile = open(args.output_filename,"wb")
+    outfile = open(args.output_filename,"w")
     outfile.write("ii$precision_list$recall_list$f1score_list$grand_f1score$cumulative_precision$cumulative_recall$numOfClusters$weighted_clique_precision$weighted_clique_recall$precision_measure$recall_measure$totalClusters$totalProteins\n" )
     for ii in list(pr_dict['precision'].keys()):
         print(ii)
@@ -173,7 +173,7 @@ def compare2goldstandard(parameter_dict):
     #for i, cluster_filename in enumerate(cluster_filenames):
 
     predicted_clusters = []
-    clpred_f = open(cluster_filename,"rb")
+    clpred_f = open(cluster_filename,"r")
     for line in clpred_f.readlines():
         predicted_clusters.append(line.split())
 
@@ -252,7 +252,7 @@ def read_pr_file(filename, names=None):
 
     print(names)
 
-    pr_file = open(filename,"rb")
+    pr_file = open(filename,"r")
     for j, line in enumerate(pr_file.readlines()):
         if "ii$precision_list$recall_list" in line or '$' not in line:
             #kdrew: header line, do nothing

@@ -336,7 +336,7 @@ def cluster_helper(parameter_dict):
                     #print mcl_out
                     #print err
 
-                    outfile = open(outTemp.name,"rb")
+                    outfile = open(outTemp.name,"r")
                     for line in outfile.readlines():
                     #    print line
                         mcl_clusters.append(line.split())

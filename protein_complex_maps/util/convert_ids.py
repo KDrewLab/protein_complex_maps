@@ -43,7 +43,7 @@ def main():
     #kdrew: save so you can write out ppi score later
     ppi_scores = dict()
     additional_columns = dict()
-    f = open(args.filename, "rb")
+    f = open(args.filename, "r")
     for i, line in enumerate(f.readlines()):
         if args.ppi_with_scores:
             clusters.append(line.split()[:2])
@@ -107,7 +107,7 @@ def main():
 
             output_string += "\n"
 
-        fout = open(args.out_filename,"wb")
+        fout = open(args.out_filename,"w")
         fout.write(output_string)
         fout.close()
 
@@ -175,7 +175,7 @@ def main():
                         output_sets.append(set([out_id1[0],out_id2[0]]))
 
         #kdrew: dumps all pairs in clusters one per line in entrez id
-        fout = open(args.out_filename,"wb")
+        fout = open(args.out_filename,"w")
         fout.write(output_string)
         fout.close()
 

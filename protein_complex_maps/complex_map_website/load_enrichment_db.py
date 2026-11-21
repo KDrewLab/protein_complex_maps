@@ -20,7 +20,7 @@ def main():
 
     db.create_all()
 
-    enrichment_table_file = open(args.enrichment_file,"rb")
+    enrichment_table_file = open(args.enrichment_file,"r")
     complex_id = None
     for line in enrichment_table_file.readlines():
 

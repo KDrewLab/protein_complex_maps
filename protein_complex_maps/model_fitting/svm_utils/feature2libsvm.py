@@ -33,7 +33,7 @@ def main():
         #kdrew: build libsvm formatted string, [label 1 or -1 or 0] 1:[feature value] 2:[feature value] ...
         output_string += "%s %s\n" % (int(i[0]), " ".join(["%s:%s" % (j+1,x) for j, x in enumerate(i.tolist()[1:])]))
 
-    outfile = open(args.output_filename,"wb")
+    outfile = open(args.output_filename,"w")
     outfile.write(output_string)
     outfile.close()
 

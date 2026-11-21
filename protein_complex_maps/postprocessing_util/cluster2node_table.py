@@ -24,7 +24,7 @@ def main():
     protid_set = set()
 
     clusters = []
-    f = open(args.cluster_filename, "rb")
+    f = open(args.cluster_filename, "r")
     for line in f.readlines():
         clusters.append(line.split())
         list(map( protid_set.add, line.split() ))

@@ -32,12 +32,12 @@ def main():
     args = parser.parse_args()
 
     clusters = []
-    f = open(args.cluster_filename, "rb")
+    f = open(args.cluster_filename, "r")
     for line in f.readlines():
         clusters.append(line.split())
 
     pairwise_interactions = dict()
-    f2 = open(args.pairwise_filename, "rb")
+    f2 = open(args.pairwise_filename, "r")
     for line in f2.readlines():
         try:
             pairwise_interactions[frozenset([line.split()[0],line.split()[1]])] = line.split()[2]
@@ -45,7 +45,7 @@ def main():
             continue
 
     print("read input files")
-    fout = open(args.out_filename,"wb")
+    fout = open(args.out_filename,"w")
 
     feature_table = None
     if args.feature_matrix != None:

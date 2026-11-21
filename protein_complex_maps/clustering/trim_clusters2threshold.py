@@ -28,14 +28,14 @@ def main():
         ppi_scores[frozenset([ppi.split()[0],ppi.split()[1]])] = float(ppi.split()[2])
 
     complexes = []
-    f = open(args.input_complexes,"rb")
+    f = open(args.input_complexes,"r")
     for line in f.readlines():
         complexes.append(line.split())
     f.close()
 
     trimed_complexes = cpo.trim_clusters2threshold(complexes, args.threshold, ppi_scores)
 
-    outfile = open(args.output_filename,"wb")
+    outfile = open(args.output_filename,"w")
     for c in trimed_complexes:
         outfile.write("%s\n" % (" ".join(c)))
 

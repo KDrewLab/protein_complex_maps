@@ -24,12 +24,12 @@ def main():
     args = parser.parse_args()
 
     clusters = []
-    f = open(args.cluster_filename, "rb")
+    f = open(args.cluster_filename, "r")
     for line in f.readlines():
         clusters.append(line.split())
 
     pairwise_interactions = dict()
-    f2 = open(args.pairwise_filename, "rb")
+    f2 = open(args.pairwise_filename, "r")
     for line in f2.readlines():
         try:
             pairwise_interactions[frozenset([line.split()[0],line.split()[1]])] = line.split()[2]
@@ -37,7 +37,7 @@ def main():
             continue
 
     test_positive_interactions = set()
-    f3 = open(args.test_ppis_filename, "rb")
+    f3 = open(args.test_ppis_filename, "r")
     for line in f3.readlines():
         try:
             test_positive_interactions.add(frozenset([line.split()[0],line.split()[1]]))
@@ -45,7 +45,7 @@ def main():
             continue
 
     train_positive_interactions = set()
-    f4 = open(args.train_ppis_filename, "rb")
+    f4 = open(args.train_ppis_filename, "r")
     for line in f4.readlines():
         try:
             train_positive_interactions.add(frozenset([line.split()[0],line.split()[1]]))
@@ -53,7 +53,7 @@ def main():
             continue
 
     test_negative_interactions = set()
-    f5 = open(args.test_neg_ppis_filename, "rb")
+    f5 = open(args.test_neg_ppis_filename, "r")
     for line in f5.readlines():
         try:
             test_negative_interactions.add(frozenset([line.split()[0],line.split()[1]]))
@@ -61,7 +61,7 @@ def main():
             continue
 
     train_negative_interactions = set()
-    f6 = open(args.train_neg_ppis_filename, "rb")
+    f6 = open(args.train_neg_ppis_filename, "r")
     for line in f6.readlines():
         try:
             train_negative_interactions.add(frozenset([line.split()[0],line.split()[1]]))
@@ -69,7 +69,7 @@ def main():
             continue
 
     print("read input files")
-    fout = open(args.out_filename,"wb")
+    fout = open(args.out_filename,"w")
 
     fout.write("id1\tgoldstandard\n")
 
