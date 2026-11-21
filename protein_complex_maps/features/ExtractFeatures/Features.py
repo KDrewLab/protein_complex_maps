@@ -167,7 +167,7 @@ class ElutFeatures(Elut,features.FeatureFunctions,resampling.FeatureResampling):
         ## work on 1d pdist output
         return ( sum( feature_function( resample_function(df,rep=i) ) for i in range(iterations) ) / iterations )
         
-    def extract_features(self,feature,resampling=False,iterations=False,threshold=False,normalize=False):
+    def extract_features(self,feature,resampling=False,iterations=False,threshold=False,normalize=False,real_pseudocount=False):
         '''
         Returns a DataFrame of features
         
@@ -177,6 +177,8 @@ class ElutFeatures(Elut,features.FeatureFunctions,resampling.FeatureResampling):
             `iterations`: <int> Used with resampling. Number of iterations to resample for
             `threshold`: <int or float> Remove rows with fewer than `threshold` spectral matches
             `normalize`: <list of str> Whether to normalize the data. Can be one or several of: row_sum, row_max, column
+            `real_pseudocount`: <bool> Used with poisson_noise resampling. Default False reproduces the python2 behaviour where
+                the 1/len(df) pseudocount was integer division and so added 0 (for >1 row). If True, add a real 1/len(df)
         '''
         
         # Assign the function to extract features
@@ -209,7 +211,12 @@ class ElutFeatures(Elut,features.FeatureFunctions,resampling.FeatureResampling):
             
         ## Don't like this part, because it could add pseudocounts twice if jensen-shannon + poisson
         if resampling == "poisson_noise": # this is how Traver's function does it, for some reason
-            self.df = self.df + (1/len(self.df))
+            #claude: under python2 1/len(self.df) was integer division, so this added 0 for any df with more than one row;
+            #claude: keep that by default (1//len) so results match python2. real_pseudocount=True adds a real 1/len(self.df).
+            if real_pseudocount:
+                self.df = self.df + (1/len(self.df))
+            else:
+                self.df = self.df + (1//len(self.df))
         
         # Assign resampling function and return averaged DataFrame
         if resampling:

@@ -12,12 +12,14 @@ parser.add_argument("-i", "--iterations", default=False, type=int, help="Number 
 parser.add_argument("-t", "--threshold", default=False, type=int, help="Remove proteins with fewer than this number of PSMs")
 parser.add_argument("-n", "--normalize", nargs="+", default=False, choices=["row_sum", "row_max","column"], help="Whether to normalize by row or column")
 parser.add_argument("--as_pickle", action='store_true', help='Save output as pickled DataFrame')
+#claude: python2 computed the poisson_noise pseudocount 1/len(df) with integer division, i.e. added 0; that is kept as the default
+parser.add_argument("--real_pseudocount", action='store_true', help="With --resampling poisson_noise, add a real 1/len(df) pseudocount (default: add none, matching the original python2 behaviour)")
 args = parser.parse_args()
 
 if __name__ == '__main__':
     elution = ef()
     elution.load(args.infile, format=args.format)
-    feature_matrix = elution.extract_features(feature=args.feature,resampling=args.resampling,iterations=args.iterations,threshold=args.threshold,normalize=args.normalize)
+    feature_matrix = elution.extract_features(feature=args.feature,resampling=args.resampling,iterations=args.iterations,threshold=args.threshold,normalize=args.normalize,real_pseudocount=args.real_pseudocount)
     
     if feature_matrix is not None: # could be None if nothing left after thresholding, should do something else here though
         outfile = "_".join( [args.infile.split(".")[0], elution.analyses[ elution.analysis_count - 1 ]] ) + ".feat"

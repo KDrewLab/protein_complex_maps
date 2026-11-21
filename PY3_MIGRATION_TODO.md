@@ -93,7 +93,7 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 - [x] `util/protein_util.py` same, in `get_from_uniprot_by_genename` — **[UNTESTED]**
 - [x] `evaluation/complex_comparison.py:582` `len(l)/n` → `len(l)//n` in `rand_combinations` (unused in the repo; kept). Verified over 140 (len, n, m) cases with a fixed numpy seed: new code on Py3 yields exactly the same groups as the original on Py2 (original on Py3 differed in 37 cases, mostly fewer groups). Not covered by unit tests — **[UNTESTED]** by the suite
   - [ ] **Pre-existing quirk** (same on Py2/Py3): `chunks()` uses `i+n < len(l)`, so it also drops the last chunk when it is full (e.g. 4 items, n=2 → 1 chunk, not 2), and `rand_combinations` can yield fewer than `m` groups (it can also yield more — it never truncates to `m`). Should be `<=` if full chunks are intended. Warning comment added above `rand_combinations`
-- [ ] `features/ExtractFeatures/Features.py:212` `self.df + (1/len(self.df))` — Py2 added 0, Py3 adds a real pseudocount. **Decide intended behaviour — results will change** — **[UNTESTED]** (test only covers `sum_difference`, `pearsonR`)
+- [x] `features/ExtractFeatures/Features.py:214` `self.df + (1/len(self.df))` (poisson_noise pseudocount) — Py2 added 0 (integer division), Py3 would add a real 1/len(df). **Decision:** default reproduces Py2 (`1//len(df)`, i.e. no pseudocount) so results match previous runs; new `extract_features(..., real_pseudocount=True)` / `canned_scripts/extract_features.py --real_pseudocount` adds the real 1/len(df) (likely the original intent of the Traver-style code). Verified with seeded `--resampling poisson_noise` pearsonR runs on a 30x12 elution table: default on Py3 matches the original on Py2 (max diff 1.1e-16); `--real_pseudocount` on Py3 matches the original on Py3 exactly (the two settings differ by up to 0.35); default on Py2 unchanged. Unit tests don't cover resampling — **[UNTESTED]** by the suite
 - [ ] Grep remaining `/` between ints in non-`1.0*` expressions and confirm intent
 
 ### Bytes vs str
@@ -148,7 +148,7 @@ Only 7 of 77 in-scope modules have any test; none of the CLI scripts are tested.
 - [x] **Fixed flaky `test_shared_bait_feature` tests**: added `get_pair()` helper that matches a pair in either orientation and asserts exactly one row; all 25 active pair lookups use it. Previously Py2 always failed 3 tests and Py3 failed on some hash seeds. (Underlying output orientation is still hash-order dependent — optionally sort `gene_id1`/`gene_id2` in `shared_bait_feature` output for reproducible files)
 - [ ] `testClustering` — add `assertEqual(sorted(map(sorted, predicted_clusters)), [['A','B','C'],['D','E','F']])` (Py2 baseline output); currently it only prints
 - [ ] `complex_comparison` — add a test passing `topN=` (covers the `.ix` fixes)
-- [ ] `Features.extract_features(..., resampling="poisson_noise")` — pin down the pseudocount behaviour decision
+- [ ] `Features.extract_features(..., resampling="poisson_noise")` — test both `real_pseudocount` settings with a fixed seed
 - [ ] `split_complexes.remove_intersection_random`
 - [ ] `network_clustering` / `cluster_helper` with a stubbed subprocess (covers bytes/str without needing Java tools)
 - [ ] `complex_enrichment` read/write round-trip on a tiny CSV
