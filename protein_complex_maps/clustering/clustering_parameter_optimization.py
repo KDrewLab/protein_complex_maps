@@ -42,9 +42,10 @@ def main():
                                     default=[1.0,0.9,0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1],
                                     help="Use ppis with score higher or equal to threshold score, default = 1.0 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1")
 
+    #claude: tool locations can also be set with the CLUSTERONE_JAR / MCL_BIN environment variables (e.g. once in a Colab notebook)
     parser.add_argument("--clusterone", action="store", dest="clustone_jar", required=False, 
-                                    default="/home/kdrew/programs/clusterone/cluster_one-1.0.jar",
-                                    help="Location of cluster_one jar file, default= /home/kdrew/programs/clusterone/cluster_one-1.0.jar")
+                                    default=os.environ.get("CLUSTERONE_JAR", "/home/kdrew/programs/clusterone/cluster_one-1.0.jar"),
+                                    help="Location of cluster_one jar file, default = $CLUSTERONE_JAR if set, else /home/kdrew/programs/clusterone/cluster_one-1.0.jar")
     parser.add_argument("--clusterone_size", action="store", dest="clusterone_size", nargs='+', required=False, 
                                     default=[2,],
                                     help="ClusterOne Size parameter sweep, default = 2")
@@ -68,8 +69,8 @@ def main():
                                     help="Clixo Beta parameter, default = None")
 
     parser.add_argument("--mcl", action="store", dest="mcl_bin", required=False, 
-                                    default='mcl',
-                                    help="Location of mcl binary, default = 'mcl' ")
+                                    default=os.environ.get("MCL_BIN", 'mcl'),
+                                    help="Location of mcl binary, default = $MCL_BIN if set, else 'mcl' ")
     parser.add_argument("--mcl_inflation", action="store", dest="mcl_inflation", nargs='+', required=False, 
                                     default=[None],
                                     help="MCL Inflation (-I) parameter, default = [None] (no 2-stage clustering), docs suggest = 1.2 - 5.0")
@@ -441,7 +442,8 @@ def cluster_helper(parameter_dict):
     twostep_combination = parameter_dict['twostep_combination']
 
     #kdrew: make temp directory if does not exist
-    if not os.path.exists(args.temp_dir) and args.temp_dir != None:
+    #claude: check for None first; os.path.exists(None) raises TypeError (python2 and python3), so the default --temp_dir crashed
+    if args.temp_dir != None and not os.path.exists(args.temp_dir):
         os.makedirs(args.temp_dir)
     #kdrew (modified by claude): create temp file (text mode for python3) for bootstrapped input network, clusterone requires a file input
     fileTemp = tf.NamedTemporaryFile(mode='w', delete=False, dir=args.temp_dir)
