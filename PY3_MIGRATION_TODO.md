@@ -20,7 +20,7 @@ External tools: ClusterONE `/home/kdrew/programs/cluster_one-1.0.jar`, MCL `/hom
 | `test_features` | ✅ 2/2 | ✅ 2/2 | — |
 | `test_clustering_parameter_optimization` | ✅ `testClustering` (ClusterONE→MCL); `testClustering2` out of scope | ✅ `testClustering` | Text-mode temp files + `universal_newlines=True`; Py3 output identical to Py2 baseline `[['A','B','C'],['D','E','F']]`. `testClustering2` is CFinder→agglomod (out of scope) |
 | `test_shared_bait_feature` | ✅ 9/9 | ✅ 9/9 | rpy2 removed (FDR now statsmodels); order-dependent pair lookups fixed (stable across hash seeds 0-9); `scipy.misc.comb` → `scipy.special.comb` |
-| `test_protein_util` | ❌ import fails | ❌ import fails | **Code bug**: `protein_util.py` is half-converted (`import urllib.request` breaks Py2; `Bio.Alphabet` breaks Py3). No baseline exists |
+| `test_protein_util` | ❌ import fails (Py3-only module) | ✅ 1/1 (network) | Ported `get_from_uniprot` to UniProt REST API; skips if rest.uniprot.org unreachable. Module is Py3-only (no Py2 baseline ever existed) |
 
 Python 2 reference outputs to match after conversion:
 - All asserted values in the 24 passing tests above.
@@ -33,9 +33,15 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 ## 0. Get the existing test suite runnable (do first)
 
 - [ ] Add a `requirements-test.txt` / test extra so tests can be run in Colab (`numpy pandas scipy scikit-learn biopython requests mpmath statsmodels`)
-- [ ] `util/protein_util.py:12` — remove `import Bio.Alphabet as ba` and any `ba.` usages (Biopython ≥1.78 removed it) — **[TESTED]** (blocks `test_protein_util` import)
-- [ ] `test/test_protein_util.py` — `get_from_uniprot` uses the legacy `www.uniprot.org/uniprot/?format=tab` API, retired in 2022. Port to `rest.uniprot.org` and/or mark the test as a network test (`@unittest.skipUnless(...)`) — **[TESTED*]**
-- [ ] `util/protein_util.py` — already partially Py3 (`urllib.request`, `print_function`); finish converting by hand rather than re-running 2to3. Currently imports under neither Python
+- [x] `util/protein_util.py` — removed `Bio.Alphabet`; `get_sequences_uniprot(seqrecord=True)` now sets `annotations={'molecule_type': 'protein'}` on the `SeqRecord` — **[TESTED]** (import) / checked manually (SeqRecord path)
+- [x] `util/protein_util.py` `get_from_uniprot` ported to `https://rest.uniprot.org/uniprotkb/stream` (legacy API retired 2022) — **[TESTED]**:
+  - `requests` instead of `urllib` (str not bytes); query `accession:A OR accession:B`; `stream` endpoint so results aren't truncated at 25 (`search` paginates)
+  - `UNIPROT_FIELD_MAP` translates legacy keywords callers use (`length`, `organism`, `genes`, `genes(PREFERRED)`, `protein+names`, `sequence`, `reviewed`, `id`) to REST field names — all checked manually against live API
+  - only unique, well-formed accessions are queried (`UNIPROT_ACC_REGEX`); the REST API fails the **whole batch** with HTTP 400 if any accession is malformed, so malformed IDs are skipped with a warning. Isoforms (`P12345-2`) still return under the base accession, as before
+  - checked 250 accessions across 3 batches: all returned
+- [x] `test/test_protein_util.py` — `skipUnless` rest.uniprot.org is reachable (verified: skips cleanly with network blocked)
+- [ ] `util/protein_util.py` `get_from_uniprot_by_genename` — still uses legacy URL; port to REST (`reviewed:yes` → `reviewed:true`, `organism:` → `organism_name:`/`organism_id:`) — **[UNTESTED]**, not used by in-scope modules
+- [ ] `util/protein_util.py` `map_protein_ids` — legacy `/mapping/` endpoint is gone (HTTP 405). Port to async ID-mapping API (`POST /idmapping/run` → poll `/idmapping/status/{jobId}` → `/idmapping/uniprotkb/results/stream/{jobId}`); DB names changed (e.g. `ACC` → `UniProtKB_AC-ID`). Used by `convert_ids.py`, `postprocessing_util/cluster2node_table.py`, `util/cluster2node_table_cdm_mod.py` — **[UNTESTED]**; add a network test
 - [ ] (deferred — not installing networkx/agglomcluster) `clustering/clustering_parameter_optimization.py:21-22` — optionally move `import networkx` / `import agglomcluster.agglomod` inside the `agglomod` branch (~line 583) so the module imports without them
 - [x] `test/test_clustering_parameter_optimization.py` — tool paths now read from env vars `CLUSTERONE_JAR`, `MCL_BIN`, `CFINDER_EXE`, `CFINDER_LICENSE`, `CLUSTER_TEMP_DIR`, defaulting to the local install paths
 - [ ] (out of scope — CFinder) `test/test_clustering_parameter_optimization.py` — `testClustering2` could `skipUnless` CFinder exists so the suite is green; currently errors with `OSError: No such file or directory`
@@ -81,8 +87,8 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 ### Integer division (`/` now returns float)
 - [x] `preprocessing_util/complexes/split_complexes.py:96` `split_id = len(complexes)/2` → `//` (slice index → TypeError) — **[TESTED]** (`testSplitComplexes*`)
 - [x] `preprocessing_util/complexes/split_complexes.py:269` same, in `remove_intersection_random` — **[UNTESTED]**
-- [ ] `util/protein_util.py:66` `range(len(ids)/ACC_QUERY_LENGTH + 1)` → `//` — **[TESTED*]** (network)
-- [ ] `util/protein_util.py:110` same, in `get_from_uniprot_by_genename` — **[UNTESTED]**
+- [x] `util/protein_util.py:66` `range(len(ids)/ACC_QUERY_LENGTH + 1)` → `//` — **[TESTED]**
+- [x] `util/protein_util.py` same, in `get_from_uniprot_by_genename` — **[UNTESTED]**
 - [ ] `evaluation/complex_comparison.py:578` `len(l)/n` in `rand_combinations` (function appears unused — consider deleting) — **[UNTESTED]**
 - [ ] `features/ExtractFeatures/Features.py:212` `self.df + (1/len(self.df))` — Py2 added 0, Py3 adds a real pseudocount. **Decide intended behaviour — results will change** — **[UNTESTED]** (test only covers `sum_difference`, `pearsonR`)
 - [ ] Grep remaining `/` between ints in non-`1.0*` expressions and confirm intent

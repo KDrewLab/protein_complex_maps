@@ -3,16 +3,35 @@
 from __future__ import print_function
 
 #import urllib, urllib2 
-import urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse
+import urllib.request, urllib.parse, urllib.error
 
+import re
 import requests
 import difflib
 import Bio.Seq as Seq
 import Bio.SeqRecord as SeqRecord
-import Bio.Alphabet as ba
 
 ACC_QUERY_LENGTH = 100
 FUZZY_MATCH_THRESHOLD = 0.25
+
+#claude: UniProt retired the legacy www.uniprot.org/uniprot/?format=tab API (2022); use the REST API stream endpoint (returns all results, no pagination)
+UNIPROT_STREAM_URL = "https://rest.uniprot.org/uniprotkb/stream"
+
+#claude: map legacy UniProt column names (still used by callers) to REST API field names; unknown keywords are passed through unchanged
+UNIPROT_FIELD_MAP = {
+    'id': 'accession',
+    'length': 'length',
+    'organism': 'organism_name',
+    'genes': 'gene_names',
+    'genes(PREFERRED)': 'gene_primary',
+    'protein+names': 'protein_name',
+    'protein names': 'protein_name',
+    'sequence': 'sequence',
+    'reviewed': 'reviewed',
+}
+
+#claude: UniProtKB accession format (https://www.uniprot.org/help/accession_numbers); the REST API rejects a whole query (HTTP 400) if any accession is malformed
+UNIPROT_ACC_REGEX = re.compile(r'^([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9]([A-Z][A-Z0-9]{2}[0-9]){1,2})$')
 
 ##kdrew: queries uniprot for protein sequence length
 #def get_length_uniprot( protein_id ):
@@ -43,8 +62,9 @@ def get_sequences_uniprot( protein_ids, seqrecord=False ):
         organism_map = get_organism_uniprot( protein_ids )
         for key in seq_map:
             if seq_map[key] != None:
-                s = Seq.Seq(seq_map[key], ba.generic_protein)
-                sr = SeqRecord.SeqRecord(s, id=key, description=organism_map[key])
+                #claude: Bio.Alphabet was removed in Biopython 1.78; molecule type is now a SeqRecord annotation
+                s = Seq.Seq(seq_map[key])
+                sr = SeqRecord.SeqRecord(s, id=key, description=organism_map[key], annotations={"molecule_type": "protein"})
                 #sr = SeqRecord.SeqRecord(Seq.Seq(seq_map[key], ba.generic_protein), id=key, description=organism_map[key])
                 #print(sr)
                 return_seq_map[key] = sr
@@ -62,25 +82,47 @@ def get_from_uniprot( protein_ids, keyword, return_list=False ):
 
     protein_ids = protein_ids + cleaned_protein_ids
 
-    #kdrew: break up query into chunks so as not to get 414 error
-    for i in range( (len(protein_ids)/ACC_QUERY_LENGTH)+1 ):
+    #claude: only query unique, well-formed accessions; results are keyed by the base accession, which is in protein_ids as before
+    query_ids = []
+    for prot in cleaned_protein_ids:
+        if prot in query_ids:
+            continue
+        if UNIPROT_ACC_REGEX.match(prot):
+            query_ids.append(prot)
+        else:
+            print("WARNING: skipping malformed UniProt accession: %s" % prot)
+
+    field = UNIPROT_FIELD_MAP.get(keyword, keyword)
+
+    #kdrew (modified by claude): break up query into chunks so as not to get 414 error
+    for i in range( (len(query_ids)//ACC_QUERY_LENGTH)+1 ):
         start_splice = i*ACC_QUERY_LENGTH
         stop_splice = (i+1)*ACC_QUERY_LENGTH
-        report_query = "https://www.uniprot.org/uniprot/?format=tab&query=accession:(%s)&columns=id,%s" % ("+or+".join(protein_ids[start_splice:stop_splice]), keyword)
-        #print(report_query)
+        chunk = query_ids[start_splice:stop_splice]
+        if len(chunk) == 0:
+            continue
+        params = {
+            'query': " OR ".join(["accession:%s" % prot for prot in chunk]),
+            'fields': "accession,%s" % field,
+            'format': 'tsv',
+        }
         try:
-            f = urllib.request.urlopen(report_query)
-        except urllib.error.HTTPError as msg:
+            f = requests.get(UNIPROT_STREAM_URL, params=params)
+            f.raise_for_status()
+        except requests.exceptions.HTTPError as msg:
             print(msg)
             continue
 
-        for line in f.readlines():
+        for line in f.text.split('\n'):
+            #claude: skip blank lines (response text ends with a newline)
+            if len(line.split()) == 0:
+                continue
             if line.split()[0] in protein_ids:
-                if keyword == "length":
+                if field == "length":
                     return_dict[line.split()[0]] = int(line.split()[1])
-                elif keyword == "organism":
+                elif field == "organism_name":
                     return_dict[line.split()[0]] = line.split('\t')[1]
-                elif keyword == "protein+names":
+                elif field == "protein_name":
                     return_dict[line.split()[0]] = line.split('\t')[1]
                 else:
                     if return_list:
@@ -107,7 +149,7 @@ def get_from_uniprot_by_genename( gene_ids, organism="", gene_prefix="gene_exact
         reviewed_str = "+and+reviewed:yes"
 
     #kdrew: break up query into chunks so as not to get 414 error
-    for i in range( (len(gene_ids)/ACC_QUERY_LENGTH)+1 ):
+    for i in range( (len(gene_ids)//ACC_QUERY_LENGTH)+1 ):
         start_splice = i*ACC_QUERY_LENGTH
         stop_splice = (i+1)*ACC_QUERY_LENGTH                                                                                 
         genes_formatted = ["%s:%s" % (gene_prefix, id1,) for id1 in gene_ids[start_splice:stop_splice]]
