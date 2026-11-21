@@ -200,24 +200,30 @@ def shared_bait_feature(feature_table, bait_id_column, id_column, abundance_colu
         output_dict2['neg_ln_pval'] = output_dict2['neg_ln_pval'] + gene_id_result['neg_ln_pval']
         output_dict2['pval'] = output_dict2['pval'] + gene_id_result['pval']
 
-    if bh_correct:
-        #kdrew (modified by claude): use Benjamini Hochberg to correct for multiple hypothesis testing (equivalent to R p.adjust(method='BH'))
-        p_adjust = multipletests(output_dict2['pval'], method='fdr_bh')[1]
-        output_dict2['pval_corr'] = p_adjust
-        output_dict2['neg_ln_pval_corr'] = []
-        #kdrew: original code without error handling [-1.0*math.log(p) for p in p_adjust]
-        for p in p_adjust:
-            try:
-                output_dict2['neg_ln_pval_corr'].append(-1.0*mpm.log(p))
-            except ValueError as ve:
-                print(str(ve))
-                output_dict2['neg_ln_pval_corr'].append(np.nan)
-
     output_df = pd.DataFrame(output_dict2)
 
     output_df['fset_ids'] = [frozenset(x) for x in output_df[['gene_id1','gene_id2']].values]
     output_df = output_df.groupby(output_df.fset_ids).first()
-    output_df = output_df[['gene_id1','gene_id2','neg_ln_pval','pair_count','pval']]
+    output_columns = ['gene_id1','gene_id2','neg_ln_pval','pair_count','pval']
+
+    #claude: correct after removing duplicate pairs: each pair is computed from both genes' sides, so correcting before
+    #claude: deduplication counted every test twice. The corrected columns were also dropped by the final column selection.
+    if bh_correct:
+        #kdrew (modified by claude): use Benjamini Hochberg to correct for multiple hypothesis testing (equivalent to R p.adjust(method='BH'))
+        p_adjust = multipletests(output_df['pval'].values.astype(float), method='fdr_bh')[1]
+        output_df['pval_corr'] = p_adjust
+        neg_ln_pval_corr = []
+        #kdrew: original code without error handling [-1.0*math.log(p) for p in p_adjust]
+        for p in p_adjust:
+            try:
+                neg_ln_pval_corr.append(-1.0*mpm.log(p))
+            except ValueError as ve:
+                print(str(ve))
+                neg_ln_pval_corr.append(np.nan)
+        output_df['neg_ln_pval_corr'] = neg_ln_pval_corr
+        output_columns += ['pval_corr','neg_ln_pval_corr']
+
+    output_df = output_df[output_columns]
     return output_df
 
 

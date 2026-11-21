@@ -161,9 +161,8 @@ def shared_bait_feature(feature_table, bait_id_column='Fraction', id_column='ID'
             except Exception as e:
                  logger.info(str(e))
                  continue
-             
-    return output_dict 
 
+    #claude: this block used to sit after an early "return output_dict" and so never ran
     if bh_correct:
         #claude: Benjamini Hochberg correction (equivalent to R p.adjust(method='BH'))
         p_adjust = multipletests(output_dict['pval'], method='fdr_bh')[1]

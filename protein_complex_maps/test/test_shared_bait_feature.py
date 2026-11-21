@@ -34,6 +34,8 @@ class SharedBaitFeatureTest(unittest.TestCase):
         result_table = sbf.shared_bait_feature(self.feature_table, 'bait_geneid', 'gene_id')
         print("result_table")
         print(result_table)
+        #claude: corrected columns are only returned with bh_correct=True
+        assert(list(result_table.columns) == ['gene_id1','gene_id2','neg_ln_pval','pair_count','pval'])
 
         #print "result_table 2,3"
         #print result_table[(result_table['gene_id1'] == '2') & (result_table['gene_id2'] == '3')]
@@ -71,6 +73,14 @@ class SharedBaitFeatureTest(unittest.TestCase):
 
         #print result_table.query("gene_id1 == '2' and gene_id2 == '3'")
         np.testing.assert_almost_equal( get_pair(result_table, '2', '3').neg_ln_pval.values, 2.302585 )
+
+        #claude: corrected values over the 26 unique pairs; expected values from R p.adjust(pval, method="BH")
+        np.testing.assert_almost_equal(get_pair(result_table, '2', '3').pval_corr.values[0], 0.577778, decimal=6 )
+        np.testing.assert_almost_equal(get_pair(result_table, '2', 'B').pval_corr.values[0], 0.6, decimal=6 )
+        np.testing.assert_almost_equal(get_pair(result_table, '5', 'C').pval_corr.values[0], 0.577778, decimal=6 )
+        np.testing.assert_almost_equal(get_pair(result_table, '8', 'E').pval_corr.values[0], 0.6, decimal=6 )
+        np.testing.assert_almost_equal(float(get_pair(result_table, '2', '3').neg_ln_pval_corr.values[0]), 0.548566, decimal=6 )
+        np.testing.assert_almost_equal(float(get_pair(result_table, '8', 'E').neg_ln_pval_corr.values[0]), 0.510826, decimal=6 )
 
 
     def testSharedBaitFeatureUseAbundancePresent(self, ):
