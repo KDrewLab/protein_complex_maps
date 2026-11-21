@@ -15,7 +15,7 @@ External tools: ClusterONE `/home/kdrew/programs/cluster_one-1.0.jar`, MCL `/hom
 | Test module | Python 2 (baseline) | Python 3 (today) | Notes |
 |---|---|---|---|
 | `test_complex_comparison` | ✅ 18/18 | ✅ 18/18 | prints, `map()` and `xrange` fixed; stable across hash seeds 0-4 |
-| `test_split_complexes` | ✅ 3/3 | ⚠️ 1/3 | prints converted; `split_complexes.py:96` `len(complexes)/2` slice index (Section 2) |
+| `test_split_complexes` | ✅ 3/3 | ✅ 3/3 | prints converted; `len(...)/2` → `//` (stable across hash seeds 0-4) |
 | `test_merge_complexes` | ✅ 1/1 | ✅ 1/1 | prints converted |
 | `test_features` | ✅ 2/2 | ✅ 2/2 | — |
 | `test_clustering_parameter_optimization` | ✅ `testClustering` (ClusterONE→MCL); `testClustering2` out of scope | ❌ `testClustering` | Now imports on Py3; fails on `Popen` bytes vs str (`clust_out.split('\n')`, Section 2). `testClustering2` is CFinder→agglomod (out of scope) |
@@ -79,8 +79,8 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 - [x] `evaluation/complex_comparison.py` — all `xrange` → `range` (446, 503 **[TESTED]**; 572, 579 in `chunks`/`rand_combinations` **[UNTESTED]**)
 
 ### Integer division (`/` now returns float)
-- [ ] `preprocessing_util/complexes/split_complexes.py:96` `split_id = len(complexes)/2` → `//` (slice index → TypeError) — **[TESTED]** (`testSplitComplexes*`)
-- [ ] `preprocessing_util/complexes/split_complexes.py:269` same, in `remove_intersection_random` — **[UNTESTED]**
+- [x] `preprocessing_util/complexes/split_complexes.py:96` `split_id = len(complexes)/2` → `//` (slice index → TypeError) — **[TESTED]** (`testSplitComplexes*`)
+- [x] `preprocessing_util/complexes/split_complexes.py:269` same, in `remove_intersection_random` — **[UNTESTED]**
 - [ ] `util/protein_util.py:66` `range(len(ids)/ACC_QUERY_LENGTH + 1)` → `//` — **[TESTED*]** (network)
 - [ ] `util/protein_util.py:110` same, in `get_from_uniprot_by_genename` — **[UNTESTED]**
 - [ ] `evaluation/complex_comparison.py:578` `len(l)/n` in `rand_combinations` (function appears unused — consider deleting) — **[UNTESTED]**

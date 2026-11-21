@@ -93,7 +93,7 @@ def split_complexes(complexes, size_threshold=None, threshold_fraction=None, rem
 
     #kdrew: randomly shuffle complexes 
     np.random.shuffle(complexes)
-    split_id = len(complexes)/2
+    split_id = len(complexes)//2
     test_list = complexes[:split_id]
     train_list = complexes[split_id:]
 
@@ -266,7 +266,7 @@ def remove_intersection_random(ppi_set1, ppi_set2):
     np.random.shuffle(intersection)
     
     #kdrew: split shuffled intersection in half
-    split_id = len(intersection)/2
+    split_id = len(intersection)//2
     intersection1 = intersection[:split_id]
     intersection2 = intersection[split_id:]
     #print "intersection1"
