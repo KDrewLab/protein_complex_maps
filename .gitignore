@@ -8,3 +8,7 @@ tmp*
 *.fasta
 *.Rhistory
 
+# claude: python packaging build artifacts
+build/
+dist/
+*.egg-info/

@@ -1,0 +1,40 @@
+# claude: packaging so the repo can be installed with pip, e.g. on Google Colab:
+# claude:   pip install git+https://github.com/KDrewLab/protein_complex_maps@py3-migration
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "protein_complex_maps"
+version = "0.1.0"
+description = "Scripts for building and evaluating protein complex maps"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "scikit-learn",
+    "statsmodels",
+    "biopython",
+    "mpmath",
+    "requests",
+    "matplotlib",
+    "seaborn",
+]
+
+[project.optional-dependencies]
+# claude: agglomod clustering (clustering_parameter_optimization.py / network_clustering.py) also needs
+# claude: agglomcluster, which is not on PyPI; out of scope for now
+agglomod = ["networkx"]
+# claude: only used by postprocessing_util/diffusion_clustering.py (deferred); also needs R
+r = ["rpy2", "python-igraph"]
+
+[project.urls]
+Repository = "https://github.com/KDrewLab/protein_complex_maps"
+
+[tool.setuptools.packages.find]
+include = ["protein_complex_maps*"]
+# claude: the Flask websites are not part of the installable package
+exclude = ["protein_complex_maps.plant_map_website*", "protein_complex_maps.complex_map_website*"]

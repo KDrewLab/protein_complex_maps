@@ -32,7 +32,7 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 
 ## 0. Get the existing test suite runnable (do first)
 
-- [ ] Add a `requirements-test.txt` / test extra so tests can be run in Colab (`numpy pandas scipy scikit-learn biopython requests mpmath statsmodels`)
+- [x] ~~Add a `requirements-test.txt` / test extra~~ — not needed: tests only use `unittest` plus the core dependencies, which `pip install` brings in via `pyproject.toml`
 - [x] `util/protein_util.py` — removed `Bio.Alphabet`; `get_sequences_uniprot(seqrecord=True)` now sets `annotations={'molecule_type': 'protein'}` on the `SeqRecord` — **[TESTED]** (import) / checked manually (SeqRecord path)
 - [x] `util/protein_util.py` `get_from_uniprot` ported to `https://rest.uniprot.org/uniprotkb/stream` (legacy API retired 2022) — **[TESTED]**:
   - `requests` instead of `urllib` (str not bytes); query `accession:A OR accession:B`; `stream` endpoint so results aren't truncated at 25 (`search` paginates)
@@ -137,8 +137,8 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 
 ## 4. Packaging & Colab usability
 
-- [ ] Add `pyproject.toml` (installable via `pip install git+https://github.com/...`) with core deps and optional extras: `r` (rpy2 — only `diffusion_clustering.py`, not currently needed), `agglomod` (networkx, agglomcluster — out of scope for now), `web` (flask, sqlalchemy, wtforms), `plots` (matplotlib, seaborn, bokeh)
-- [ ] Add missing `__init__.py`: `postprocessing_util/`, `model_fitting/cross_validation/`, `model_fitting/svm_utils/`, `features/ExtractFeatures/canned_scripts/` (and `model_fitting/` itself)
+- [x] Add `pyproject.toml` (setuptools; name `protein_complex_maps`, version 0.1.0, MIT, `requires-python >=3.8`). Core deps: numpy, pandas, scipy, scikit-learn, statsmodels, biopython, mpmath, requests, matplotlib, seaborn (seaborn is core because `evaluation/plots/prcurve.py` etc. import it; bokeh is only used by the websites so not listed). Extras: `agglomod` (networkx; agglomcluster is not on PyPI), `r` (rpy2, python-igraph; `diffusion_clustering.py`). `plant_map_website` / `complex_map_website` excluded from the package. `.gitignore` now ignores `build/`, `dist/`, `*.egg-info/`. Verified: wheel contains all 16 in-scope packages (75 .py), no website files; `pip install <repo>` into a fresh venv (Python 3.12, deps from PyPI) then the suite run against the installed copy from outside the repo: 36/37 (only `testClustering2`, CFinder); `python -m protein_complex_maps.<module>` works for scripts; wheel also builds on Python 3.8
+- [x] Add missing `__init__.py` (empty): `postprocessing_util/`, `model_fitting/`, `model_fitting/cross_validation/`, `model_fitting/svm_utils/`, `features/ExtractFeatures/canned_scripts/` — without them setuptools skipped those modules
 - [ ] Replace hardcoded paths with CLI args / env vars:
   `clustering/network_clustering.py`, `clustering/clustering_parameter_optimization.py`, `evaluation/psweep_comparison.py`, `util/cluster2node_table_cdm_mod.py`, `util/label_training_interactions.py`, `util/label_interaction_scores.py`, `test/test_clustering_parameter_optimization.py`
 - [ ] Document installing external tools in Colab (ClusterONE jar via Java, MCL via `apt-get install mcl` or build) — e.g. an example notebook cell
