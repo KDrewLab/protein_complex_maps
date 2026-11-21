@@ -8,6 +8,19 @@ import operator
 
 import protein_complex_maps.preprocessing_util.complexes.complex_merge as cm
 
+#claude: seeded np.random.shuffle results depend on input list order; lists built from sets iterate in hash order,
+#claude: which python3 randomises per process (python2's was fixed). Put set-derived lists in a canonical order before
+#claude: shuffling so the same --random_seed gives the same split on every run and on python2 and python3.
+def _canonical_key(x):
+    if isinstance(x, (set, frozenset)):
+        return "{" + ",".join(sorted(_canonical_key(y) for y in x)) + "}"
+    if isinstance(x, (list, tuple)):
+        return "(" + ",".join(_canonical_key(y) for y in x) + ")"
+    return str(x)
+
+def _canonical_order(items):
+    return sorted(items, key=_canonical_key)
+
 def main():
 
     parser = argparse.ArgumentParser(description="Split gold standard complexes into test and training")
@@ -42,6 +55,8 @@ def main():
             complexes.add(frozenset(line.split()))
 
     merged_complexes = cm.merge_complexes(complexes, args.merge_threshold, remove_largest=args.remove_largest)
+    #claude: canonical order before the seeded shuffle in split_complexes (merged_complexes order comes from sets)
+    merged_complexes = _canonical_order(merged_complexes)
 
     test_list_clean, train_list_clean, test_ppis_clean, train_ppis_clean, neg_test_ppis_clean, neg_train_ppis_clean = split_complexes(merged_complexes, size_threshold=args.size_threshold, threshold_fraction=args.threshold_fraction, remove_large_complexes=args.remove_large_complexes, input_complexes=complexes)
 
@@ -108,7 +123,8 @@ def split_complexes(complexes, size_threshold=None, threshold_fraction=None, rem
         #print clust
         #kdrew: for large complexes sample only a fraction of pairs
         if size_threshold != None and threshold_fraction != None and len(clust) > size_threshold:
-            large_pairs = [pair for pair in it.combinations( set( clust ), 2)]
+            #claude: sorted so pair order before the seeded shuffle doesn't depend on set iteration order
+            large_pairs = [pair for pair in it.combinations( sorted(set( clust )), 2)]
             np.random.shuffle(large_pairs)
             #kdrew: calculate the index of a fraction of the list
             fraction_index = int(len(large_pairs)*threshold_fraction)
@@ -131,7 +147,8 @@ def split_complexes(complexes, size_threshold=None, threshold_fraction=None, rem
         #print clust
         #kdrew: for large complexes sample only a fraction of pairs
         if size_threshold != None and threshold_fraction != None and len(clust) > size_threshold:
-            large_pairs = [pair for pair in it.combinations( set( clust ), 2)]
+            #claude: sorted so pair order before the seeded shuffle doesn't depend on set iteration order
+            large_pairs = [pair for pair in it.combinations( sorted(set( clust )), 2)]
             np.random.shuffle(large_pairs)
             #kdrew: calculate the index of a fraction of the list
             fraction_index = int(len(large_pairs)*threshold_fraction)
@@ -260,7 +277,8 @@ def remove_intersection(ppi_set1, ppi_set2):
 #kdrew: will randomly split intersection and remove half from each
 def remove_intersection_random(ppi_set1, ppi_set2):
     #kdrew: find intersection between ppi_set1 and ppi_set2
-    intersection = list(ppi_set1.intersection(ppi_set2))
+    #claude: canonical order before the seeded shuffle (set intersection iterates in hash order)
+    intersection = _canonical_order(ppi_set1.intersection(ppi_set2))
 
     #kdrew: shuffle intersection
     np.random.shuffle(intersection)
