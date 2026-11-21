@@ -200,6 +200,24 @@ class ComplexComparisonTest(unittest.TestCase):
         np.testing.assert_almost_equal( ccobj.recall_measure(), 0.6944444)
 
 
+    #claude: NOT EVALUATED BY A HUMAN CODER - written by claude, review before relying on it
+    #claude: topN=k should give the same metric as a comparison built from only the first k clusters
+    def testComplexComparisonTopN(self, ):
+        metrics = ['mmr', 'pwmmr', 'mmr_pwmmr_hmean', 'sensitivity', 'ppv', 'acc',
+                   'precision_measure', 'recall_measure', 'precision_recall_product']
+        for gold_standard, clusters in [(self.gold_standard, self.clusters3), (self.gold_standard2, self.clusters2)]:
+            ccobj = cc.ComplexComparison(gold_standard, clusters)
+            #claude: include k larger than the number of clusters (keeps all clusters)
+            for k in range(1, len(clusters) + 2):
+                ccobj_firstk = cc.ComplexComparison(gold_standard, clusters[:k])
+                for metric in metrics:
+                    np.testing.assert_almost_equal(getattr(ccobj, metric)(topN=k), getattr(ccobj_firstk, metric)(),
+                                                   err_msg="%s(topN=%s)" % (metric, k))
+
+        #claude: by hand, only cluster ['a','b','c']: maxNA(gs) = 1.0, 0, 0, 2**2/(2*3), 0 -> MMR = 1.6667/5
+        ccobj = cc.ComplexComparison(self.gold_standard, self.clusters)
+        np.testing.assert_almost_equal(ccobj.mmr(topN=1), 1.0/3)
+
     def testCliqueComparison(self, ):
         ccobj = cc.ComplexComparison(self.gold_standard3, self.clusters3, pseudocount=0)
 

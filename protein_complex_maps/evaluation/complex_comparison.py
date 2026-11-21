@@ -105,7 +105,11 @@ class ComplexComparison(object):
     def precision_measure(self,topN=None):
         max_df = self.prediction_wise_max_matching_ratio_distribution(topN=topN)
         print("precision_measure: %s" % max_df)
-        lengths = [len(x) for x in self.get_clusters()]
+        clusters = self.get_clusters()
+        #claude: with topN, weight only the first topN clusters (all clusters gave a length mismatch ValueError)
+        if topN != None:
+            clusters = clusters[:topN]
+        lengths = [len(x) for x in clusters]
         print("precision_measure: %s" % lengths)
         sum_weighted_max = np.sum(lengths*max_df)
         print("precision_measure: %s" % sum_weighted_max)
@@ -125,8 +129,9 @@ class ComplexComparison(object):
         return recall_measure
 
     def mmr_pwmmr_hmean(self,topN=None):
-        mmr = self.mmr()
-        pwmmr = self.pwmmr()
+        #claude: pass topN through (it was accepted but ignored)
+        mmr = self.mmr(topN=topN)
+        pwmmr = self.pwmmr(topN=topN)
         return hmean([mmr,pwmmr])
 
     #kdrew: convience wrapper function
@@ -152,7 +157,11 @@ class ComplexComparison(object):
         max_df = self.prediction_wise_max_matching_ratio_distribution(topN=topN)
         sum_max_df = max_df.sum()
 
-        num_of_clusters = len(self.get_clusters())
+        clusters = self.get_clusters()
+        #claude: with topN, average over the first topN clusters (dividing by all clusters under-counted pwmmr)
+        if topN != None:
+            clusters = clusters[:topN]
+        num_of_clusters = len(clusters)
 
         pwmmr = sum_max_df / num_of_clusters
         return pwmmr
@@ -162,8 +171,9 @@ class ComplexComparison(object):
         df = self.get_na_table()
         #kdrew: if we want to only do a range of clusters (topN), we probably want to slice sn_df here
         if topN != None:
-            #claude: .ix removed from pandas; .loc keeps .ix's label-based slice, which includes column topN (i.e. topN+1 clusters)
-            df = df.loc[:,:topN]
+            #claude: .ix (removed from pandas) sliced by label, which included column topN and so kept topN+1 clusters;
+            #claude: iloc slices by position so topN keeps exactly the first topN clusters
+            df = df.iloc[:,:topN]
         #print df
         max_df = df.max(axis=1)
 
@@ -175,8 +185,9 @@ class ComplexComparison(object):
         df = self.get_na_table()
         #kdrew: if we want to only do a range of clusters (topN), we probably want to slice sn_df here
         if topN != None:
-            #claude: .ix removed from pandas; .loc keeps .ix's label-based slice, which includes column topN (i.e. topN+1 clusters)
-            df = df.loc[:,:topN]
+            #claude: .ix (removed from pandas) sliced by label, which included column topN and so kept topN+1 clusters;
+            #claude: iloc slices by position so topN keeps exactly the first topN clusters
+            df = df.iloc[:,:topN]
         #print df
         max_df = df.max(axis=0)
 
@@ -192,8 +203,9 @@ class ComplexComparison(object):
         df = self.get_intersection_table()
         #kdrew: if we want to only do a range of clusters (topN), we probably want to slice sn_df here
         if topN != None:
-            #claude: .ix removed from pandas; .loc keeps .ix's label-based slice, which includes column topN (i.e. topN+1 clusters)
-            df = df.loc[:,:topN]
+            #claude: .ix (removed from pandas) sliced by label, which included column topN and so kept topN+1 clusters;
+            #claude: iloc slices by position so topN keeps exactly the first topN clusters
+            df = df.iloc[:,:topN]
         sn_df = df.divide([len(gs) for gs in self.get_gold_standard()], axis=0)
         #print sn_df.max()
         sn_co = sn_df.max(axis=1)
@@ -211,8 +223,9 @@ class ComplexComparison(object):
         df = self.get_intersection_table()
         #kdrew: if want to do a range of clusters (topN) we probably want to slice df here
         if topN != None:
-            #claude: .ix removed from pandas; .loc keeps .ix's label-based slice, which includes column topN (i.e. topN+1 clusters)
-            df = df.loc[:,:topN]
+            #claude: .ix (removed from pandas) sliced by label, which included column topN and so kept topN+1 clusters;
+            #claude: iloc slices by position so topN keeps exactly the first topN clusters
+            df = df.iloc[:,:topN]
         ppv_df = df.divide(1.0*df.sum())
         ppv_df = ppv_df.fillna(0.0)
         PPV_cl = ppv_df.max()
@@ -220,6 +233,9 @@ class ComplexComparison(object):
 
     def ppv(self,topN=None):
         df = self.get_intersection_table()
+        #claude: with topN, weight only the first topN clusters (all clusters misaligned with PPV_cl and gave NaN)
+        if topN != None:
+            df = df.iloc[:,:topN]
         PPV_cl = self.ppv_distribution(topN=topN)
         try:
             PPV = 1.0*sum(PPV_cl * df.sum()) / sum(df.sum())

@@ -14,7 +14,7 @@ External tools: ClusterONE `/home/kdrew/programs/cluster_one-1.0.jar`, MCL `/hom
 
 | Test module | Python 2 (baseline) | Python 3 (today) | Notes |
 |---|---|---|---|
-| `test_complex_comparison` | ✅ 18/18 | ✅ 18/18 | prints, `map()` and `xrange` fixed; stable across hash seeds 0-4 |
+| `test_complex_comparison` | ✅ 19/19 | ✅ 19/19 | prints, `map()` and `xrange` fixed; stable across hash seeds 0-4; `testComplexComparisonTopN` added |
 | `test_split_complexes` | ✅ 3/3 | ✅ 3/3 | prints converted; `len(...)/2` → `//` (stable across hash seeds 0-4) |
 | `test_merge_complexes` | ✅ 1/1 | ✅ 1/1 | prints converted |
 | `test_features` | ✅ 2/2 | ✅ 2/2 | — |
@@ -121,7 +121,11 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 - [x] pandas `.ix` → `.loc` (label-based, matching what `.ix` did for these integer-labelled axes). Verified identical output: original `.ix` on Py2/pandas 0.24 vs `.loc` on Py3/pandas 1.1.3, for all four `topN` distributions (topN = None/1/2/4) and the CV train/leaveout splits
   - [x] `evaluation/complex_comparison.py:165,177,193,211` — **[UNTESTED]** by unit tests (no test or caller passes `topN`); verified by direct comparison
   - [x] `model_fitting/cross_validation/train_leaveout_divide.py:36-39` — **[UNTESTED]** by unit tests; verified by direct comparison
-  - [ ] **Pre-existing off-by-one** `complex_comparison.py` `topN`: columns are cluster numbers 0..n-1, and the label slice includes the end, so `topN=2` keeps 3 clusters. Behaviour preserved for now; if "first N clusters" is intended, use `df.iloc[:, :topN]`. Nothing in the repo currently passes `topN`
+  - [x] **Pre-existing `topN` bugs (fixed)** `complex_comparison.py` — `topN` is never passed anywhere in the repo (checked all files, incl. positional calls), so no existing results change; `topN=None` paths unchanged:
+    - off-by-one: label slice `.loc[:,:topN]` (as `.ix` did) kept topN+1 clusters → `.iloc[:,:topN]` (4 sites)
+    - `mmr_pwmmr_hmean` accepted `topN` but ignored it → passes it through
+    - `pwmmr` divided by all clusters (too small); `ppv` weighted by all clusters (NaN, so `acc` NaN); `precision_measure` used all cluster lengths (`ValueError`, so `precision_recall_product` too) → all now use the first `topN` clusters
+    - **[TESTED]** by new `testComplexComparisonTopN`: for 9 metrics, `metric(topN=k)` equals the metric on a comparison built from `clusters[:k]` (2 datasets, every k incl. k > number of clusters), plus a hand-computed `mmr(topN=1)`; test fails on the previous code
 - [x] `evaluation/plots/prcurve.py` `_binary_clf_curve`: `sklearn.metrics.ranking` removed in sklearn 0.24 → local copy of the function (adapted from sklearn, BSD-3) so it no longer depends on sklearn private internals. Verified identical `fps`/`tps`/`thresholds` vs sklearn 0.24 (`_ranking`) and 0.20 (`ranking`) on 300 random cases (ties, weights, single class, lists). End-to-end `prcurve.py` run on synthetic data (default and `--weight_positives`): AUC, average precision and every precision-marker recall/threshold identical to original code on Py2 — **[UNTESTED]** by unit tests
 - [x] `import matplotlib.mlab` — was never actually broken (module still exists in matplotlib 3.x) and was unused in all 5 files; removed the dead imports from `evaluation/plots/prcurve.py`, `precision_score_curve.py`, `plot_chromatogram.py`, `plot_sparklines.py`, `model_fitting/cross_validation/evaluate_crossvalidation.py`
 - [ ] `pd.read_table` → `pd.read_csv(sep=...)` in `features/add_label.py`, `alphabetize_pairs.py`, `combine_feature_matrices.py` (deprecation, not breaking) — **[UNTESTED]**
@@ -147,7 +151,7 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 Only 7 of 77 in-scope modules have any test; none of the CLI scripts are tested. Cheapest high-value additions:
 - [x] **Fixed flaky `test_shared_bait_feature` tests**: added `get_pair()` helper that matches a pair in either orientation and asserts exactly one row; all 25 active pair lookups use it. Previously Py2 always failed 3 tests and Py3 failed on some hash seeds. (Underlying output orientation is still hash-order dependent — optionally sort `gene_id1`/`gene_id2` in `shared_bait_feature` output for reproducible files)
 - [ ] `testClustering` — add `assertEqual(sorted(map(sorted, predicted_clusters)), [['A','B','C'],['D','E','F']])` (Py2 baseline output); currently it only prints
-- [ ] `complex_comparison` — add a test passing `topN=` (covers the `.ix` fixes)
+- [x] `complex_comparison` — `testComplexComparisonTopN` passes `topN=` (covers the `.ix` → `.iloc` fixes)
 - [ ] `Features.extract_features(..., resampling="poisson_noise")` — test both `real_pseudocount` settings with a fixed seed
 - [ ] `split_complexes.remove_intersection_random`
 - [ ] `network_clustering` / `cluster_helper` with a stubbed subprocess (covers bytes/str without needing Java tools)
