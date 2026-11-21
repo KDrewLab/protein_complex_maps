@@ -1,4 +1,5 @@
-    
+
+import sys
 import numpy as np
 import argparse
 import itertools as it
@@ -13,6 +14,27 @@ try:
 except:
    import pickle
 
+
+#claude: python2 pickles hold byte strings that python3's default ascii decoding rejects (UnicodeDecodeError), so fall back
+#claude: to latin1, which maps each byte to one character. The python2 version of this script stored descriptions as
+#claude: utf-8 encoded bytes, which latin1 turns into mojibake (u'Caf\xe9' -> u'Caf\xc3\xa9'), so re-decode those as utf-8.
+def _latin1_to_utf8(s):
+    try:
+        return s.encode('latin1').decode('utf-8')
+    except (AttributeError, UnicodeEncodeError, UnicodeDecodeError):
+        return s
+
+def load_checkpoint(filename):
+    with open(filename, 'rb') as results_pickle:
+        try:
+            return pickle.load(results_pickle)
+        except UnicodeDecodeError:
+            if sys.version_info[0] < 3:
+                raise
+            results_pickle.seek(0)
+            results_df = pickle.load(results_pickle, encoding='latin1')
+    results_df['description'] = results_df['description'].map(_latin1_to_utf8)
+    return results_df
 
 def main():
 
@@ -50,9 +72,8 @@ def main():
     index_count = 0
 
     if args.resume_from_checkpoint:
-            results_pickle = open('results_checkpoint.pkl', 'rb')
-            results_df = pickle.load(results_pickle)
-            results_pickle.close()
+            #claude: load_checkpoint also handles checkpoints written by the python2 version of this script
+            results_df = load_checkpoint('results_checkpoint.pkl')
 
             index_count = max(results_df['index']) + 1
             checkpoint_complex_id = max(results_df['complex_id'])
@@ -100,7 +121,10 @@ def main():
             del res['intersections']
             #kdrew: pandas to_csv chokes on writing the description of an enrichment due to not unicode encoding
             #kdrew: UnicodeEncodeError: 'ascii' codec can't encode character u'\xef' in position 572: ordinal not in range(128)
-            res['description'] = res['description'].encode('utf-8')
+            #claude: on python3 the description is already unicode str and to_csv(encoding='utf-8') writes it correctly;
+            #claude: encoding it to bytes would write "b'...'" into the output, so only encode on python2
+            if sys.version_info[0] < 3:
+                res['description'] = res['description'].encode('utf-8')
             if results_df is None:
                 results_df = pd.DataFrame.from_dict(res)
             else:
