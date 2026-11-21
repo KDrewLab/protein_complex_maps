@@ -50,7 +50,8 @@ def pval_old(k,n,m,N, adhoc=False, denm=False, logchoose=False):
                 return np.nan
             r3 = logchoose_func(N,m)
 
-            pi = scipy.exp(r1 + r2 - r3)
+            #claude: scipy no longer re-exports numpy functions (scipy.exp removed), use np.exp
+            pi = np.exp(r1 + r2 - r3)
         else:
             pi = ( special.comb(n,i) * special.comb((N-n), (m-i)) ) / special.comb(N,m)
         pv += pi

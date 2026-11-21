@@ -18,8 +18,9 @@ class FeatureTest(unittest.TestCase):
         d['frac2'] = [0.0,0.0,3.0,4.0]
         d['frac3'] = [2.0,1.0,0.0,0.0]
         d['frac4'] = [0.0,0.0,6.0,8.0]
-        df = pd.DataFrame(d, dtype=float)
-        df = df.set_index('ids')
+        #claude: cast after set_index; pandas >= 2 raises on dtype=float with the string 'ids' column (older pandas skipped it)
+        df = pd.DataFrame(d)
+        df = df.set_index('ids').astype(float)
         print(df)
         print(df.dtypes)
         self.elution = eff.ElutFeatures(df)

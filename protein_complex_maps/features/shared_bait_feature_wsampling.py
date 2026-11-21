@@ -266,13 +266,9 @@ if __name__ == "__main__":
     logger.info("number of trials")
     #logger.info(len(sample_dfs))
 
-    concat_df = pd.DataFrame()
-
-
-    for f in list_of_dicts:
-
-        tmp_df = pd.DataFrame.from_records(f)
-        concat_df = concat_df.append(tmp_df)
+    #claude: DataFrame.append was removed in pandas 2; build the per-sample frames and concatenate once
+    tmp_dfs = [pd.DataFrame.from_records(f) for f in list_of_dicts]
+    concat_df = pd.concat(tmp_dfs) if len(tmp_dfs) > 0 else pd.DataFrame()
 
 
     concat_df.to_csv("temp_min2_concatdf_sampled", index=False)
