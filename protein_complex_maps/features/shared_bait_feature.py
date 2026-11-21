@@ -4,7 +4,7 @@ import argparse
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
-import scipy.misc as misc
+import scipy.special as special
 import scipy
 import math
 import logging 
@@ -40,7 +40,7 @@ def pval_old(k,n,m,N, adhoc=False, denm=False, logchoose=False):
         if adhoc:
             pi = ( choose(n,i) * choose((N-n), (m-i)) ) / choose(N,m)
         elif denm:
-            pi = ( misc.comb(n,i) * misc.comb((N-n), (m-i)) ) / m
+            pi = ( special.comb(n,i) * special.comb((N-n), (m-i)) ) / m
         elif logchoose:
             r1 = logchoose_func(n, i)
             try:
@@ -52,7 +52,7 @@ def pval_old(k,n,m,N, adhoc=False, denm=False, logchoose=False):
 
             pi = scipy.exp(r1 + r2 - r3)
         else:
-            pi = ( misc.comb(n,i) * misc.comb((N-n), (m-i)) ) / misc.comb(N,m)
+            pi = ( special.comb(n,i) * special.comb((N-n), (m-i)) ) / special.comb(N,m)
         pv += pi
     return pv
 

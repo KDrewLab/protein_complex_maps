@@ -3,7 +3,7 @@ import argparse
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
-import scipy.misc as misc
+import scipy.special as special
 import math
 import logging 
 import random
@@ -24,7 +24,7 @@ def pval(k,n,m,N, adhoc=False):
         if adhoc:
             pi = ( choose(n,i) * choose((N-n), (m-i)) ) / choose(N,m)
         else:
-            pi = ( misc.comb(n,i) * misc.comb((N-n), (m-i)) ) / misc.comb(N,m)
+            pi = ( special.comb(n,i) * special.comb((N-n), (m-i)) ) / special.comb(N,m)
         pv += pi
     return pv
 

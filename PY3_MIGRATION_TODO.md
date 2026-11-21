@@ -19,7 +19,7 @@ External tools: ClusterONE `/home/kdrew/programs/cluster_one-1.0.jar`, MCL `/hom
 | `test_merge_complexes` | ✅ 1/1 | ❌ import fails | print statements in `complex_merge.py` |
 | `test_features` | ✅ 2/2 | ✅ 2/2 | — |
 | `test_clustering_parameter_optimization` | ✅ `testClustering` (ClusterONE→MCL); `testClustering2` out of scope | ❌ import fails | Run with networkx/agglomcluster stubbed (see below). `testClustering2` is CFinder→agglomod (out of scope; errors since CFinder isn't installed). Py3 blocked by prints in `complex_comparison.py` |
-| `test_shared_bait_feature` | ✅ 9/9 | ⚠️ 8/9 | rpy2 removed (FDR now statsmodels); order-dependent pair lookups fixed (stable across hash seeds 0-9 on both). Py3 failure: `testSharedBaitFeatureTransformPvalOld` → `scipy.misc.comb` (Section 3) |
+| `test_shared_bait_feature` | ✅ 9/9 | ✅ 9/9 | rpy2 removed (FDR now statsmodels); order-dependent pair lookups fixed (stable across hash seeds 0-9); `scipy.misc.comb` → `scipy.special.comb` |
 | `test_protein_util` | ❌ import fails | ❌ import fails | **Code bug**: `protein_util.py` is half-converted (`import urllib.request` breaks Py2; `Bio.Alphabet` breaks Py3). No baseline exists |
 
 Python 2 reference outputs to match after conversion:
@@ -92,11 +92,10 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 
 ## 3. Removed / changed library APIs
 
-- [ ] `scipy.misc.comb` → `scipy.special.comb`
-  - `evaluation/complex_comparison.py:438,465,512` (`clique_comparison`) — **[TESTED]**
-  - `evaluation/complex_comparison.py:382-404` (`clique_comparison_exact`) — **[TESTED]** (`testCliqueComparisonMetricExact`)
-  - `features/shared_bait_feature.py:44,56` (`pval_old`) — **[TESTED]** (`*Old` tests)
-  - `features/shared_bait_feature_wsampling.py:28` — **[UNTESTED]**
+- [x] `scipy.misc.comb` → `scipy.special.comb` (`import scipy.misc as misc` → `import scipy.special as special`; 13 call sites). Verified: `test_shared_bait_feature` 9/9 on Py2 + Py3; `test_complex_comparison` 18/18 and `testClustering` pass on Py2 (Py3 still blocked by print statements)
+  - [x] `evaluation/complex_comparison.py` (`clique_comparison`, `clique_comparison_exact`) — **[TESTED]**
+  - [x] `features/shared_bait_feature.py` (`pval_old`) — **[TESTED]**
+  - [x] `features/shared_bait_feature_wsampling.py` — **[UNTESTED]** (compiles on Py3)
 - [ ] pandas `.ix` → `.iloc`
   - `evaluation/complex_comparison.py:165,177,193,211` (only on `topN != None` branch) — **[UNTESTED]** (no test passes `topN`)
   - `model_fitting/cross_validation/train_leaveout_divide.py:36-39` — **[UNTESTED]**

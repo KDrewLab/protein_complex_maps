@@ -7,7 +7,7 @@ import argparse
 import itertools as it
 import random
 import bisect
-import scipy.misc as misc
+import scipy.special as special
 from scipy.stats import hmean
 
 
@@ -379,14 +379,14 @@ class ComplexComparison(object):
 
             if self.normalize_by_combinations:
                 #kdrew: for each cluster weight true positives by the size of the cluster divided by the number of cliques
-                tp_curr = tp_curr * (1.0*len(clust)/misc.comb(len(clust),clique_size))
+                tp_curr = tp_curr * (1.0*len(clust)/special.comb(len(clust),clique_size))
 
             true_positives += tp_curr
 
             fp_curr = len(is_positive_list) - tp_curr 
             if self.normalize_by_combinations:
                 #kdrew: for each cluster weight false positives by the size of the cluster divided by the number of cliques
-                fp_curr = fp_curr * (1.0*len(clust)/misc.comb(len(clust),clique_size))
+                fp_curr = fp_curr * (1.0*len(clust)/special.comb(len(clust),clique_size))
 
             false_positives += fp_curr
 
@@ -395,13 +395,13 @@ class ComplexComparison(object):
             gs_tp_curr = sum(is_positive_list)
             if self.normalize_by_combinations:
                 #kdrew: for each cluster weight gs true positives by the size of the gold_standard cluster divided by the number of cliques
-                gs_tp_curr = gs_tp_curr * (1.0*len(gs_clust)/misc.comb(len(gs_clust),clique_size))
+                gs_tp_curr = gs_tp_curr * (1.0*len(gs_clust)/special.comb(len(gs_clust),clique_size))
             gs_true_positives += gs_tp_curr
 
             fn_curr = sum(np.logical_not(is_positive_list))
             if self.normalize_by_combinations:
                 #kdrew: for each cluster weight false negatives by the size of the gold_standard cluster divided by the number of cliques
-                fn_curr = fn_curr * (1.0*len(gs_clust)/misc.comb(len(gs_clust),clique_size))
+                fn_curr = fn_curr * (1.0*len(gs_clust)/special.comb(len(gs_clust),clique_size))
             false_negatives += fn_curr
 
         return_dict = dict()
@@ -435,7 +435,7 @@ class ComplexComparison(object):
 
         #kdrew: weight each cluster by the number of combinations of size of clique overlapping with the gold standard
         #kdrew: this is so larger clusters with more possible combinations are sampled more
-        weights_array = [misc.comb(len(clust & self.get_gold_standard_proteins()), clique_size) for clust in clusters ] 
+        weights_array = [special.comb(len(clust & self.get_gold_standard_proteins()), clique_size) for clust in clusters ] 
         #print clique_size
         #print weights_array
         wrg = WeightedRandomGenerator( weights_array )
@@ -462,7 +462,7 @@ class ComplexComparison(object):
 
             random_cliques.add(frozenset(shuffled_l[:clique_size]))
             #kdrew: for each random cluster clique, weight by the size of the random cluster divided by the number of cliques
-            random_clique_weights[frozenset(shuffled_l[:clique_size])] = (1.0*len(clust)/misc.comb(len(clust),clique_size)) 
+            random_clique_weights[frozenset(shuffled_l[:clique_size])] = (1.0*len(clust)/special.comb(len(clust),clique_size)) 
 
         for random_clique in random_cliques:
             #kdrew: the max just finds if any are true, could probably use .any here
@@ -495,7 +495,7 @@ class ComplexComparison(object):
         #kdrew: weight each complex by number of possible combinations of clique size for each complex
         #kdrew: NOTE: all individual cliques should be treated equally but this might be overweighting cliques that are in multiple complexes, not sure how to fix yet 
         #kdrew: this should be fixed now with the random_gs_cliques set, only evaluates a clique once
-        gs_wrg = WeightedRandomGenerator( [misc.comb(len(gs_clust), clique_size) for gs_clust in gs_clusters ] )
+        gs_wrg = WeightedRandomGenerator( [special.comb(len(gs_clust), clique_size) for gs_clust in gs_clusters ] )
 
         #kdrew: generate set of random cliques
         random_gs_cliques = set()
@@ -509,7 +509,7 @@ class ComplexComparison(object):
             #print "sampled: %s" % (shuffled_l[:clique_size],)
 
             random_gs_cliques.add(frozenset(shuffled_l[:clique_size]))
-            random_gs_clique_weights[frozenset(shuffled_l[:clique_size])] = (1.0*len(gs_clust)/misc.comb(len(gs_clust),clique_size)) 
+            random_gs_clique_weights[frozenset(shuffled_l[:clique_size])] = (1.0*len(gs_clust)/special.comb(len(gs_clust),clique_size)) 
 
         for random_clique in random_gs_cliques:
 
