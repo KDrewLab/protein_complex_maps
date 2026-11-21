@@ -191,7 +191,7 @@ class ComplexComparison(object):
         #kdrew: if we want to only do a range of clusters (topN), we probably want to slice sn_df here
         if topN != None:
             df = df.ix[:,:topN]
-        sn_df = df.divide(map(len,self.get_gold_standard()), axis=0)
+        sn_df = df.divide([len(gs) for gs in self.get_gold_standard()], axis=0)
         #print sn_df.max()
         sn_co = sn_df.max(axis=1)
         return sn_co
@@ -199,7 +199,7 @@ class ComplexComparison(object):
     def sensitivity(self, topN=None):
         sn_co = self.sensitivity_distribution(topN=topN)
         #print sn_co.max()
-        goldstd_sizes = map(len,self.get_gold_standard())
+        goldstd_sizes = [len(gs) for gs in self.get_gold_standard()]
         Sn = 1.0*sum(sn_co * goldstd_sizes) / sum(goldstd_sizes)
         return Sn
         
@@ -288,8 +288,8 @@ class ComplexComparison(object):
         clusters = [clust & self.get_gold_standard_proteins() for clust in self.get_clusters()]
         #print "clusters in gold standard"
         #print clusters
-        clust_max_len = np.max(map(len,clusters))
-        gs_max_len = np.max(map(len,self.get_gold_standard()))
+        clust_max_len = np.max([len(clust) for clust in clusters])
+        gs_max_len = np.max([len(gs) for gs in self.get_gold_standard()])
 
         #kdrew: find the max cluster sizes of all clusters and gold standard complexes, then find the min between the maxes 
         #kdrew: I don't know if I like this because it will not report anything for predictions that are considered false positives but are to large to be considered
@@ -374,7 +374,7 @@ class ComplexComparison(object):
         clusters = [clust & self.get_gold_standard_proteins() for clust in self.get_clusters() if len(clust & self.get_gold_standard_proteins()) >= clique_size]
 
         for clust in clusters:
-            is_positive_list = [ np.max(map(set(group).issubset,self.get_gold_standard())) for group in it.combinations(clust, clique_size)]
+            is_positive_list = [ any(set(group).issubset(gs) for gs in self.get_gold_standard()) for group in it.combinations(clust, clique_size)]
             tp_curr = sum(is_positive_list)
 
             if self.normalize_by_combinations:
@@ -391,7 +391,7 @@ class ComplexComparison(object):
             false_positives += fp_curr
 
         for gs_clust in self.get_gold_standard():
-            is_positive_list = [ np.max(map(set(gs_group).issubset,clusters)) for gs_group in it.combinations(gs_clust, clique_size) ]
+            is_positive_list = [ any(set(gs_group).issubset(c) for c in clusters) for gs_group in it.combinations(gs_clust, clique_size) ]
             gs_tp_curr = sum(is_positive_list)
             if self.normalize_by_combinations:
                 #kdrew: for each cluster weight gs true positives by the size of the gold_standard cluster divided by the number of cliques
@@ -443,7 +443,7 @@ class ComplexComparison(object):
         #kdrew: generate set of random cliques
         random_cliques = set()
         random_clique_weights = dict()
-        for s in xrange(self.samples):
+        for s in range(self.samples):
 
             #kdrew: get a random cluster weighted by the number of possible clique combinations
             clust = clusters[wrg()]
@@ -465,14 +465,14 @@ class ComplexComparison(object):
             random_clique_weights[frozenset(shuffled_l[:clique_size])] = (1.0*len(clust)/special.comb(len(clust),clique_size)) 
 
         for random_clique in random_cliques:
-            #kdrew: the max just finds if any are true, could probably use .any here
-            if np.max(map(random_clique.issubset,self.get_gold_standard())):
+            #kdrew (modified by claude): find if the clique is in any gold standard complex (any() replaces np.max(map(...)), which is always truthy in python3)
+            if any(random_clique.issubset(gs) for gs in self.get_gold_standard()):
                 if self.normalize_by_combinations:
                     true_positives += 1 * random_clique_weights[random_clique]
                 else:
                     true_positives += 1 
             else:
-                if len(self.get_exclusion_complexes()) > 0 and np.max(map(random_clique.issubset,self.get_exclusion_complexes())):
+                if len(self.get_exclusion_complexes()) > 0 and any(random_clique.issubset(ec) for ec in self.get_exclusion_complexes()):
                     #print "excluded clique"
                     continue
                 else:
@@ -500,7 +500,7 @@ class ComplexComparison(object):
         #kdrew: generate set of random cliques
         random_gs_cliques = set()
         random_gs_clique_weights = dict()
-        for s in xrange(self.samples):
+        for s in range(self.samples):
 
             #kdrew: get a random cluster
             gs_clust = gs_clusters[gs_wrg()]
@@ -514,7 +514,7 @@ class ComplexComparison(object):
         for random_clique in random_gs_cliques:
 
             #if np.max(map( set( shuffled_l[:clique_size] ).issubset, clusters )):
-            if np.max(map( random_clique.issubset, clusters )):
+            if any(random_clique.issubset(c) for c in clusters):
                 if self.normalize_by_combinations:
                     gs_true_positives += 1 * random_gs_clique_weights[random_clique]
                 else:
@@ -569,14 +569,14 @@ def chunks(l,n):
     n = max(1, n)
     #kdrew: generator that slices list into n chunks, 
     #kdrew: if the last slice is smaller than n, ignore
-    return [l[i:i + n] for i in xrange(0, len(l), n) if i+n< len(l)]
+    return [l[i:i + n] for i in range(0, len(l), n) if i+n< len(l)]
 
 #kdrew: generator to return m number of random combinations of size n from list l
 def rand_combinations(l,n,m):
     #kdrew: determine the number of shuffling needed
     try:
         i = int(np.ceil(1.0*m/(len(l)/n)))
-        for ii in xrange(i):
+        for ii in range(i):
             shuffled_l = rand.permutation(l)
             for ch in chunks(shuffled_l,n):
                 yield ch

@@ -14,7 +14,7 @@ External tools: ClusterONE `/home/kdrew/programs/cluster_one-1.0.jar`, MCL `/hom
 
 | Test module | Python 2 (baseline) | Python 3 (today) | Notes |
 |---|---|---|---|
-| `test_complex_comparison` | ✅ 18/18 | ❌ 6/18 | prints converted; now fails on `map()` iterators (lines 194, 202, 291-292) and `xrange` (line 446) — Section 2 |
+| `test_complex_comparison` | ✅ 18/18 | ✅ 18/18 | prints, `map()` and `xrange` fixed; stable across hash seeds 0-4 |
 | `test_split_complexes` | ✅ 3/3 | ⚠️ 1/3 | prints converted; `split_complexes.py:96` `len(complexes)/2` slice index (Section 2) |
 | `test_merge_complexes` | ✅ 1/1 | ✅ 1/1 | prints converted |
 | `test_features` | ✅ 2/2 | ✅ 2/2 | — |
@@ -74,9 +74,9 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
   - **[TESTED]** for occurrences in `complex_comparison.py` (31 2to3 changes), `split_complexes.py`, `complex_merge.py`, `clustering_parameter_optimization.py`
   - **[UNTESTED]** elsewhere
 
-- [ ] **Silent bug** `evaluation/complex_comparison.py:377, 394, 469, 475, 517` — `np.max(map(...))` returns the `map` object itself on Py3 (always truthy), so these checks silently become always-True instead of erroring. Use `any(...)` / `np.max(list(map(...)))` — **[TESTED]** (clique tests, once lines 291-292 are fixed)
-- [ ] `evaluation/complex_comparison.py:194, 202, 291, 292` — `map(len, ...)` passed to `df.divide` / `np.max` → `list(map(...))` — **[TESTED]**
-- [ ] `evaluation/complex_comparison.py:446` — `xrange` → `range` — **[TESTED]**
+- [x] **Silent bug** `evaluation/complex_comparison.py:377, 394, 469, 475, 517` — `np.max(map(...))` (always truthy on Py3) → `any(...)`. Same results; short-circuits (faster). Only difference: empty input returns False instead of raising — **[TESTED]**
+- [x] `evaluation/complex_comparison.py:194, 202, 291, 292` — `map(len, ...)` → list comprehensions (line 202 would also have silently divided by 0 as the iterator was consumed twice) — **[TESTED]**
+- [x] `evaluation/complex_comparison.py` — all `xrange` → `range` (446, 503 **[TESTED]**; 572, 579 in `chunks`/`rand_combinations` **[UNTESTED]**)
 
 ### Integer division (`/` now returns float)
 - [ ] `preprocessing_util/complexes/split_complexes.py:96` `split_id = len(complexes)/2` → `//` (slice index → TypeError) — **[TESTED]** (`testSplitComplexes*`)
