@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
-import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 
 import argparse

@@ -2,7 +2,6 @@
 import numpy as np
 import matplotlib as mpl
 mpl.use('Agg')
-import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 
 import argparse
@@ -14,7 +13,50 @@ from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import average_precision_score
 from sklearn.metrics import auc
 #from sklearn.metrics import _binary_clf_curve
-from sklearn.metrics.ranking import _binary_clf_curve
+#from sklearn.metrics.ranking import _binary_clf_curve
+
+
+#claude: local copy of sklearn's private _binary_clf_curve (adapted from scikit-learn 0.24, BSD-3-Clause).
+#claude: sklearn.metrics.ranking was renamed to the private sklearn.metrics._ranking (removed in 0.24), so a local
+#claude: version avoids depending on sklearn internals. Returns cumulative false/true positive counts per distinct threshold.
+def _binary_clf_curve(y_true, y_score, pos_label=None, sample_weight=None):
+    y_true = np.ravel(np.asarray(y_true))
+    y_score = np.ravel(np.asarray(y_score))
+    if sample_weight is not None:
+        sample_weight = np.ravel(np.asarray(sample_weight))
+    if len(y_true) != len(y_score) or (sample_weight is not None and len(sample_weight) != len(y_true)):
+        raise ValueError("y_true, y_score and sample_weight must have the same length")
+
+    #claude: as in sklearn, default pos_label is 1 when labels are {0, 1} or {-1, 1}
+    if pos_label is None:
+        classes = set(np.unique(y_true).tolist())
+        if not classes.issubset({0, 1}) and not classes.issubset({-1, 1}):
+            raise ValueError("y_true takes values in %s and pos_label is not specified" % sorted(classes))
+        pos_label = 1
+
+    #claude: make y_true a boolean vector
+    y_true = (y_true == pos_label)
+
+    #claude: sort scores and corresponding truth values (descending, stable)
+    desc_score_indices = np.argsort(y_score, kind="mergesort")[::-1]
+    y_score = y_score[desc_score_indices]
+    y_true = y_true[desc_score_indices]
+    if sample_weight is not None:
+        weight = sample_weight[desc_score_indices]
+    else:
+        weight = 1.
+
+    #claude: indices of the last occurrence of each distinct score, plus the end of the curve
+    distinct_value_indices = np.where(np.diff(y_score))[0]
+    threshold_idxs = np.r_[distinct_value_indices, y_true.size - 1]
+
+    #claude: accumulate true positives (and false positives) with decreasing threshold
+    tps = np.cumsum(y_true * weight, dtype=np.float64)[threshold_idxs]
+    if sample_weight is not None:
+        fps = np.cumsum((1 - y_true) * weight, dtype=np.float64)[threshold_idxs]
+    else:
+        fps = 1 + threshold_idxs - tps
+    return fps, tps, y_score[threshold_idxs]
 
 
 from matplotlib import rcParams
