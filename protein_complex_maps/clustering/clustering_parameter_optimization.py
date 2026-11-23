@@ -18,8 +18,8 @@ import shutil
 
 
 
-import networkx as nx
-import agglomcluster.agglomod as ag
+#claude: networkx / agglomcluster are imported in the agglomod branch of cluster_helper, so the module (and ClusterONE / MCL
+#claude: clustering) works without them installed
 
 import protein_complex_maps.evaluation.complex_comparison as cc
 
@@ -580,6 +580,9 @@ def cluster_helper(parameter_dict):
         elif twostep_combination[1] == 'agglomod':
             print("AGGLOMOD")
             sys.stdout.flush()
+
+            import networkx as nx
+            import agglomcluster.agglomod as ag
 
             agglomod_clusters = []
             for clust in predicted_clusters:
