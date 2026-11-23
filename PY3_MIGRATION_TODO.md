@@ -154,12 +154,12 @@ How to run the clustering test without networkx/agglomcluster installed: a wrapp
 
 Only 7 of 77 in-scope modules have any test; none of the CLI scripts are tested. Cheapest high-value additions:
 - [x] **Fixed flaky `test_shared_bait_feature` tests**: added `get_pair()` helper that matches a pair in either orientation and asserts exactly one row; all 25 active pair lookups use it. Previously Py2 always failed 3 tests and Py3 failed on some hash seeds. (Underlying output orientation is still hash-order dependent — optionally sort `gene_id1`/`gene_id2` in `shared_bait_feature` output for reproducible files)
-- [ ] `testClustering` — add `assertEqual(sorted(map(sorted, predicted_clusters)), [['A','B','C'],['D','E','F']])` (Py2 baseline output); currently it only prints
+- [x] `testClustering` — now asserts the clusters (sorted) equal `[['A','B','C'],['D','E','F']]` (Py2 baseline output). Passes in py3colab, base Py3.8 and Py2
 - [x] `complex_comparison` — `testComplexComparisonTopN` passes `topN=` (covers the `.ix` → `.iloc` fixes)
 - [ ] `Features.extract_features(..., resampling="poisson_noise")` — test both `real_pseudocount` settings with a fixed seed
 - [ ] `split_complexes.remove_intersection_random`
 - [ ] `network_clustering` / `cluster_helper` with a stubbed subprocess (covers bytes/str without needing Java tools)
 - [ ] `complex_enrichment` read/write round-trip on a tiny CSV
 - [ ] `prcurve` smoke test on a tiny score file (covers `_binary_clf_curve`, `mlab`)
-- [ ] Smoke test: `python -m py_compile` on every in-scope file (catches all Section 1 regressions cheaply)
+- [x] Smoke test: `test/test_compile.py` compiles every package `.py` file in memory (websites skipped; warnings as errors, so Py3.12 invalid escapes fail too). 75 files pass in py3colab, base Py3.8 and Py2; checked that it fails on a copy of the package with a planted `print "x"` file and a `"\d"` escape
 - [ ] Optional: run a few key scripts end-to-end under Py2 and Py3 on the same small input and diff outputs

@@ -57,6 +57,9 @@ class ClusterTest(unittest.TestCase):
 
         predicted_clusters, i  = cpo.cluster_helper(self.parameter_dict)
         print(predicted_clusters)
+        #claude: NOT EVALUATED BY A HUMAN CODER - written by claude, review before relying on it
+        #claude: expected clusters are the Py2 baseline output (ClusterONE then MCL); cluster and member order are not compared
+        self.assertEqual(sorted(sorted(c) for c in predicted_clusters), [['A','B','C'],['D','E','F']])
         #assert (Y[0][0] == 4)
         #assert (Y[0][1] == 7)
         #assert (Y[1][0] == 8)
