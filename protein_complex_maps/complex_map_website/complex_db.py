@@ -45,6 +45,7 @@ class Complex(db.Model):
     #kdrew: uses table name for EdgeComplexMapping class (annoying sqlalchemy magic)
     edges = db.relationship('Edge', secondary='edge_complex_mapping', back_populates='complexes')
     enrichments = db.relationship('ComplexEnrichment')
+    complexportal_mappings = db.relationship('ComplexPortalMapping')
     top_rank = db.Column(db.Integer)
     average_precision = db.Column(db.Float)
     average_precision_rank = db.Column(db.Integer)
@@ -57,12 +58,20 @@ class Complex(db.Model):
         return retstr
 
     def complexportal_link(self,):
-        if self.complexportal_id == None:
-            retstr = None
-        else:
-            retstr = "<a href=https://www.ebi.ac.uk/complexportal/complex/%s target='_blank'>%s</a>" % (self.complexportal_id, self.complexportal_id)
+        #kdrew: exact matches first, then subsets (yeast.MAP complex fully contained in the ComplexPortal complex) in CPX order
+        mappings = sorted(self.complexportal_mappings, key=lambda m: (m.match_type != 'exact', int(m.complexportal_id.split('-')[1])))
+        if len(mappings) == 0:
+            return None
 
-        return retstr
+        links = []
+        for m in mappings:
+            label = m.complexportal_id
+            if m.match_type == 'subset':
+                label = "%s (subset)" % m.complexportal_id
+            #kdrew: nowrap keeps "CPX-N (subset)" on one line when a complex has many links
+            links.append("<a href=https://www.ebi.ac.uk/complexportal/complex/%s target='_blank' style='white-space:nowrap'>%s</a>" % (m.complexportal_id, label))
+
+        return ", ".join(links)
 
     def sorted_proteins(self,):
         return sorted(self.proteins, key=lambda p: len([g for g in p.genenames]), reverse=True)
@@ -206,6 +215,15 @@ class EdgeComplexMapping(db.Model):
     __tablename__ = 'edge_complex_mapping'
     edge_key = db.Column(db.Integer, db.ForeignKey('edge.id'), primary_key=True)
     complex_key = db.Column(db.Integer, db.ForeignKey('complex.id'), primary_key=True)
+
+class ComplexPortalMapping(db.Model):
+    """A mapping between complexes and ComplexPortal complexes"""
+    __tablename__ = 'complex_portal_mapping'
+    id = db.Column(db.Integer, primary_key=True)
+    complex_key = db.Column(db.Integer, db.ForeignKey('complex.id'), index=True)
+    complexportal_id = db.Column(db.String(63), index=True)
+    #kdrew: 'exact' (identical membership) or 'subset' (complex fully contained in the ComplexPortal complex)
+    match_type = db.Column(db.String(15))
 
 
 class ComplexEnrichment(db.Model):
