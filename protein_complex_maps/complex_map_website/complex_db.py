@@ -167,7 +167,8 @@ class Edge(db.Model):
     window_precision = db.Column(db.Float)
     interface_mutex = db.Column(db.String(255))
 
-    evidences = db.relationship('Evidence')
+    #kdrew: loaded in a fixed type order (Michaelis_correlation, Humphreys_RF, Hart_wmm), so id order keeps display order consistent
+    evidences = db.relationship('Evidence', order_by='Evidence.id')
     prothd = db.relationship('ProtHD')
 
     def get_proteins(self,):
@@ -196,9 +197,19 @@ class Edge(db.Model):
 
 class Evidence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    edge_key = db.Column(db.Integer, db.ForeignKey('edge.id'))
+    edge_key = db.Column(db.Integer, db.ForeignKey('edge.id'), index=True)
     evidence_type = db.Column(db.String(255))
-    
+    #kdrew: feature value for this pair and its confidence bin ('high', 'medium', 'low'), see load_evidence_from_featmat.py
+    value = db.Column(db.Float)
+    confidence = db.Column(db.String(15))
+
+    CONFIDENCE_COLORS = {'high': '#2166ac', 'medium': '#e08214', 'low': '#b2182b'}
+
+    def evidence_html(self,):
+        if self.confidence not in self.CONFIDENCE_COLORS:
+            return self.evidence_type
+        return "<span style='color:%s;font-weight:bold' title='%s = %.3g (%s)'>%s</span>" % (self.CONFIDENCE_COLORS[self.confidence], self.evidence_type, self.value, self.confidence, self.evidence_type)
+
 class ProtHD(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     edge_key = db.Column(db.Integer, db.ForeignKey('edge.id'))
