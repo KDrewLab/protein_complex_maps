@@ -246,10 +246,7 @@
                     </th>
 		    -->
 
-		    {% set EDGELIMIT = 50 %}
-		    {% if edges|length < EDGELIMIT %}
-
-                    <th>Evidence <button class="btn btn-default btn-xs" onclick="evidenceFunction()">?</button>
+                    <th>Evidence<button class="btn btn-default btn-xs" onclick="evidenceFunction()">?</button>
                     <script>
                         function evidenceFunction() {
                             alert("Edge Evidence Key\n\nNote: Evidence listed does not necessiarily mean positive evidence but rather only means there is data for this particular pair of proteins\n\nMichaelis_correlation = relationship in Michaelis et al. (2023) affinity enrichment pulldown assays\n\nHumphreys_RF = RosettaFold pairwise values from Humphreys et al. (2021)\n\nHart_wmm = prey-prey relationship in Hart et al. (2007) based on weighted matrix model (WMM) of Gavin et al. (2006) and Krogan et al. (2006)\n\nEvidence Confidence (color)\n\nBlue = high, Orange = medium, Red = low. Hover over an evidence to see its value.\n\nMichaelis_correlation: high >= 0.602, low < 0.163 (top and bottom 25% of yeast.MAP complex edges)\n\nHumphreys_RF: high >= 0.99, low < 0.3 (values below 0.3 are no more likely to be true interactions than background)\n\nHart_wmm: high >= 17.6, low < 3.11 (top and bottom 25% of yeast.MAP complex edges)");
@@ -257,7 +254,6 @@
                     </script>
                     <br><small style="font-weight:normal"><span style="color:#2166ac;font-weight:bold">high</span> &nbsp <span style="color:#e08214;font-weight:bold">medium</span> &nbsp <span style="color:#b2182b;font-weight:bold">low</span></small>
                     </th>
-			{% endif %}
 
                 </tr>
                 </thead>
@@ -315,7 +311,6 @@
 				{% endif %}
 			</td>
 			-->
-			{% if edges|length < EDGELIMIT %}
 
 				<td>
 				    {% for evidence in edge.evidences %}
@@ -324,8 +319,6 @@
 					<em> No Evidences</em>
 				    {% endfor %}
 				</td>
-
-			{% endif %}
 
                     </tr>
                 {% else %}
